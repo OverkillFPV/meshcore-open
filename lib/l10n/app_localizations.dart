@@ -2182,6 +2182,30 @@ abstract class AppLocalizations {
   /// **'Show a channel message\'s region on the same line as its hop count instead of below it.'**
   String get appSettings_regionOnHopsLineSubtitle;
 
+  /// No description provided for @appSettings_showMessageLatency.
+  ///
+  /// In en, this message translates to:
+  /// **'Message latency'**
+  String get appSettings_showMessageLatency;
+
+  /// No description provided for @appSettings_showMessageLatencySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show how long a received channel message took to arrive, next to its hop count.'**
+  String get appSettings_showMessageLatencySubtitle;
+
+  /// No description provided for @appSettings_showPathByteMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Path byte mode'**
+  String get appSettings_showPathByteMode;
+
+  /// No description provided for @appSettings_showPathByteModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the routing hash byte width (1B/2B/3B) next to a channel message\'s hop count.'**
+  String get appSettings_showPathByteModeSubtitle;
+
   /// No description provided for @appSettings_notifications.
   ///
   /// In en, this message translates to:
@@ -4041,6 +4065,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} {count, plural, =1{hop} other{hops}}'**
   String chat_hopsCount(int count);
+
+  /// No description provided for @chat_latencySeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}s'**
+  String chat_latencySeconds(int count);
+
+  /// No description provided for @chat_latencyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m'**
+  String chat_latencyMinutes(int count);
+
+  /// No description provided for @chat_latencyHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h'**
+  String chat_latencyHours(int count);
+
+  /// No description provided for @chat_hashWidthChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}B'**
+  String chat_hashWidthChip(int width);
 
   /// No description provided for @chat_removePath.
   ///
@@ -7808,6 +7856,12 @@ abstract class AppLocalizations {
   /// **'{fetched} of {total} fetched'**
   String neighbors_fetchedOfTotal(int fetched, int total);
 
+  /// No description provided for @neighbors_retryRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry remaining'**
+  String get neighbors_retryRemaining;
+
   /// No description provided for @neighbors_mapNoNeighborLocations.
   ///
   /// In en, this message translates to:
@@ -7849,6 +7903,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hop details are not provided for this packet.'**
   String get channelPath_noHopDetails;
+
+  /// No description provided for @channelPath_hashWidthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Width'**
+  String get channelPath_hashWidthLabel;
+
+  /// No description provided for @channelPath_hashWidthValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}-byte'**
+  String channelPath_hashWidthValue(int width);
+
+  /// No description provided for @channelPath_distanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get channelPath_distanceLabel;
+
+  /// No description provided for @channelPath_travelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get channelPath_travelLabel;
+
+  /// No description provided for @channelPath_ambiguousTag.
+  ///
+  /// In en, this message translates to:
+  /// **'ambiguous'**
+  String get channelPath_ambiguousTag;
+
+  /// No description provided for @channelPath_hopCandidatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hop {index} candidates'**
+  String channelPath_hopCandidatesTitle(int index);
+
+  /// No description provided for @channelPath_networkMapTag.
+  ///
+  /// In en, this message translates to:
+  /// **'network map'**
+  String get channelPath_networkMapTag;
 
   /// No description provided for @channelPath_messageDetails.
   ///

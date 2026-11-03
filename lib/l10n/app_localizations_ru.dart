@@ -1189,6 +1189,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Показывать регион сообщения канала в одной строке с числом хопов, а не под ней.';
 
   @override
+  String get appSettings_showMessageLatency => 'Message latency';
+
+  @override
+  String get appSettings_showMessageLatencySubtitle =>
+      'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showPathByteMode => 'Path byte mode';
+
+  @override
+  String get appSettings_showPathByteModeSubtitle =>
+      'Show the routing hash byte width (1B/2B/3B) next to a channel message\'s hop count.';
+
+  @override
   String get appSettings_notifications => 'Уведомления';
 
   @override
@@ -2288,6 +2302,26 @@ class AppLocalizationsRu extends AppLocalizations {
       one: 'хоп',
     );
     return '$count $_temp0';
+  }
+
+  @override
+  String chat_latencySeconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String chat_latencyMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String chat_latencyHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String chat_hashWidthChip(int width) {
+    return '${width}B';
   }
 
   @override
@@ -4531,6 +4565,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get neighbors_retryRemaining => 'Retry remaining';
+
+  @override
   String get neighbors_mapNoNeighborLocations =>
       'No neighbors have a location to map.';
 
@@ -4554,6 +4591,31 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get channelPath_noHopDetails =>
       'Детали хопов для этого пакета не предоставлены.';
+
+  @override
+  String get channelPath_hashWidthLabel => 'Width';
+
+  @override
+  String channelPath_hashWidthValue(int width) {
+    return '$width-byte';
+  }
+
+  @override
+  String get channelPath_distanceLabel => 'Distance';
+
+  @override
+  String get channelPath_travelLabel => 'Travel';
+
+  @override
+  String get channelPath_ambiguousTag => 'ambiguous';
+
+  @override
+  String channelPath_hopCandidatesTitle(int index) {
+    return 'Hop $index candidates';
+  }
+
+  @override
+  String get channelPath_networkMapTag => 'network map';
 
   @override
   String get channelPath_messageDetails => 'Детали сообщения';

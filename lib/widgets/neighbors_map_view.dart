@@ -45,12 +45,19 @@ class NeighborsMapView extends StatefulWidget {
   /// Optional banner shown over the map, e.g. a partial-fetch notice.
   final String? notice;
 
+  /// Optional action button shown inside the [notice] banner, e.g. retry the
+  /// neighbors that have not been fetched yet.
+  final String? retryLabel;
+  final VoidCallback? onRetry;
+
   const NeighborsMapView({
     super.key,
     required this.repeater,
     required this.links,
     required this.hiddenCount,
     this.notice,
+    this.retryLabel,
+    this.onRetry,
   });
 
   @override
@@ -246,8 +253,10 @@ class _NeighborsMapViewState extends State<NeighborsMapView> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
-                                Icons.cloud_off,
+                              Icon(
+                                widget.retryLabel == null
+                                    ? Icons.sync
+                                    : Icons.cloud_off,
                                 size: 15,
                                 color: MeshPalette.warn,
                               ),
@@ -261,6 +270,21 @@ class _NeighborsMapViewState extends State<NeighborsMapView> {
                                   ),
                                 ),
                               ),
+                              if (widget.retryLabel != null) ...[
+                                const SizedBox(width: 4),
+                                TextButton.icon(
+                                  onPressed: widget.onRetry,
+                                  icon: const Icon(Icons.refresh, size: 16),
+                                  label: Text(widget.retryLabel!),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: MeshPalette.warn,
+                                    visualDensity: VisualDensity.compact,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

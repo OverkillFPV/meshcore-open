@@ -53,7 +53,6 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
   bool _isLoading = false;
   bool _isLoaded = false;
   bool _hasData = false;
-  bool _timedOut = false;
   bool _isDiscovering = false;
   bool _isErasing = false;
   Timer? _statusTimeout;
@@ -230,7 +229,6 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
         _isLoading = false;
         _isLoaded = true;
         _hasData = true;
-        _timedOut = false;
       });
     } catch (e) {
       appLogger.error('Error handling neighbors response: $e');
@@ -247,7 +245,6 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
     setState(() {
       _isLoading = true;
       _isLoaded = false;
-      _timedOut = false;
     });
     try {
       final connector = Provider.of<MeshCoreConnector>(context, listen: false);
@@ -296,7 +293,6 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
         setState(() {
           _isLoading = false;
           _isLoaded = false;
-          _timedOut = true;
         });
         showDismissibleSnackBar(
           context,
@@ -563,10 +559,8 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
                         icon: Icons.wifi_find,
                         title: l10n.neighbors_noData,
                       ),
-                    if (_isLoaded ||
-                        (_hasData || _timedOut) &&
-                            !(_parsedNeighbors == null ||
-                                _parsedNeighbors!.isEmpty))
+                    if (!(_parsedNeighbors == null ||
+                        _parsedNeighbors!.isEmpty))
                       _buildNeighborsList(connector),
                   ],
                 ),
@@ -591,27 +585,56 @@ class _NeighborsScreenState extends State<NeighborsScreen> {
     }
     final links = _buildLinks(connector);
     final fetched = _parsedNeighbors!.length;
+    final partial = fetched < _neighborCount;
     return NeighborsMapView(
       repeater: _resolveRepeater(connector),
       links: links,
       hiddenCount: _parsedNeighbors!.length - links.length,
-      notice: _timedOut && fetched < _neighborCount
+      notice: partial
           ? context.l10n.neighbors_fetchedOfTotal(fetched, _neighborCount)
           : null,
+      retryLabel: partial && !_isLoading
+          ? context.l10n.neighbors_retryRemaining
+          : null,
+      onRetry: partial && !_isLoading
+          ? () => _loadNeighbors(offset: fetched)
+          : null,
+    );
+  }
+
+  /// Re-requests only the pages the repeater has not delivered yet, from the
+  /// first missing offset onwards. Responses merge into what is already
+  /// shown, deduped by pubkey prefix.
+  Widget _retryRemainingButton(AppLocalizations l10n, int fetched) {
+    return TextButton.icon(
+      onPressed: () => _loadNeighbors(offset: fetched),
+      icon: const Icon(Icons.refresh, size: 16),
+      label: Text(l10n.neighbors_retryRemaining),
+      style: TextButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+      ),
     );
   }
 
   Widget _buildNeighborsList(MeshCoreConnector connector) {
     final l10n = context.l10n;
     final fetched = _parsedNeighbors?.length ?? 0;
-    final header = _timedOut && fetched < _neighborCount
+    final partial = fetched < _neighborCount;
+    final header = partial
         ? '${l10n.repeater_neighbors} — '
               '${l10n.neighbors_fetchedOfTotal(fetched, _neighborCount)}'
         : '${l10n.repeater_neighbors} — $_neighborCount';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(header, padding: const EdgeInsets.fromLTRB(4, 8, 4, 10)),
+        SectionHeader(
+          header,
+          padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+          trailing: partial && !_isLoading
+              ? _retryRemainingButton(l10n, fetched)
+              : null,
+        ),
         for (var i = 0; i < _parsedNeighbors!.length; i++)
           ListEntrance(
             index: i,

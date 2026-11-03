@@ -24,6 +24,7 @@ import '../helpers/message_url_image_helper.dart';
 import '../helpers/path_helper.dart';
 import '../helpers/reaction_helper.dart';
 import '../helpers/snack_bar_builder.dart';
+import '../l10n/app_localizations.dart';
 import '../l10n/l10n.dart';
 import '../models/channel.dart';
 import '../models/channel_message.dart';
@@ -697,6 +698,9 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
       displayPathHashWidth,
       message.pathLength,
     );
+    final latencyLabel = settingsService.settings.showMessageLatency
+        ? _formatLatency(message, context.l10n)
+        : null;
 
     final colors = MessageBubbleColors.of(context, isOutgoing: isOutgoing);
     final textColor = colors.text;
@@ -921,6 +925,66 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                           ),
                                           child: Text(
                                             _displayRegion(message.region!),
+                                            style: MeshTheme.mono(
+                                              fontSize: 12 * textScale,
+                                              color: metaColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    if (latencyLabel != null)
+                                      Padding(
+                                        padding: regionOnHopsLine
+                                            ? EdgeInsets.zero
+                                            : const EdgeInsets.only(top: 2),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: scheme.surfaceContainerHigh,
+                                            borderRadius: BorderRadius.circular(
+                                              MeshRadii.xs,
+                                            ),
+                                            border: Border.all(
+                                              color: scheme.outlineVariant,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            latencyLabel,
+                                            style: MeshTheme.mono(
+                                              fontSize: 12 * textScale,
+                                              color: metaColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    if (settingsService
+                                        .settings
+                                        .showPathByteMode)
+                                      Padding(
+                                        padding: regionOnHopsLine
+                                            ? EdgeInsets.zero
+                                            : const EdgeInsets.only(top: 2),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: scheme.surfaceContainerHigh,
+                                            borderRadius: BorderRadius.circular(
+                                              MeshRadii.xs,
+                                            ),
+                                            border: Border.all(
+                                              color: scheme.outlineVariant,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            context.l10n.chat_hashWidthChip(
+                                              displayPathHashWidth,
+                                            ),
                                             style: MeshTheme.mono(
                                               fontSize: 12 * textScale,
                                               color: metaColor,
@@ -2470,6 +2534,20 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
 
   String _displayRegion(String region) {
     return region.startsWith('#') ? region.substring(1) : region;
+  }
+
+  /// Delivery latency: sender timestamp versus the local clock when the
+  /// message arrived. Null for outgoing messages or when the sender clock
+  /// runs ahead of the local one.
+  String? _formatLatency(ChannelMessage message, AppLocalizations l10n) {
+    if (message.isOutgoing) return null;
+    final latency = message.receivedAt.difference(message.timestamp);
+    if (latency.isNegative) return null;
+    if (latency.inHours > 0) return l10n.chat_latencyHours(latency.inHours);
+    if (latency.inMinutes > 0) {
+      return l10n.chat_latencyMinutes(latency.inMinutes);
+    }
+    return l10n.chat_latencySeconds(latency.inSeconds);
   }
 
   Future<void> openRegionSelectDialog(Channel channel) async {

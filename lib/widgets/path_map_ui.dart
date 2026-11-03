@@ -46,6 +46,21 @@ String formatDistance(
   return '(${(distanceMeters / 1000).toStringAsFixed(2)} ${l10n?.units_km ?? 'km'})';
 }
 
+/// Same units as [formatDistance] without the wrapping parentheses, for
+/// labels drawn on map segments.
+String formatDistanceLabel(
+  double distanceMeters, {
+  required bool isImperial,
+  AppLocalizations? l10n,
+}) {
+  final text = formatDistance(
+    distanceMeters,
+    isImperial: isImperial,
+    l10n: l10n,
+  );
+  return text.substring(1, text.length - 1);
+}
+
 String formatLastObserved(BuildContext context, DateTime timestamp) {
   final l10n = context.l10n;
   final diff = DateTime.now().difference(timestamp);

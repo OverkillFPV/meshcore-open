@@ -131,6 +131,8 @@ Individual channels can be muted from the channel chat bell icon, the channel li
   - Max Message Retries (2–10, default 5)
 - **Enable Message Tracing**: Shows path trace overlays and extra metadata on messages
 - **Region next to hop count** (default off): Shows a channel message's region chip on the same line as its hop count instead of below it
+- **Message latency** (default on): Shows how long a received channel message took to arrive, next to its hop count
+- **Path byte mode** (default on): Shows the routing hash byte width (`1B`/`2B`/`3B`) next to a channel message's hop count
 - **Resend channel messages until they travel far enough** (default off): If your channel message isn't heard coming back through enough repeaters, it's sent again. Uses more airtime. When on, it shows:
   - Required hops (1–8, default 2)
   - Resend up to (1–5 times, default 1)

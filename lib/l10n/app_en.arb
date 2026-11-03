@@ -533,6 +533,10 @@
   "appSettings_enableMessageTracingSubtitle": "Also show repeat counts and trip times. Long-press a message and choose Path for full details.",
   "appSettings_regionOnHopsLine": "Region next to hop count",
   "appSettings_regionOnHopsLineSubtitle": "Show a channel message's region on the same line as its hop count instead of below it.",
+  "appSettings_showMessageLatency": "Message latency",
+  "appSettings_showMessageLatencySubtitle": "Show how long a received channel message took to arrive, next to its hop count.",
+  "appSettings_showPathByteMode": "Path byte mode",
+  "appSettings_showPathByteModeSubtitle": "Show the routing hash byte width (1B/2B/3B) next to a channel message's hop count.",
   "appSettings_notifications": "Notifications",
   "appSettings_enableNotifications": "Enable Notifications",
   "appSettings_enableNotificationsSubtitle": "Receive notifications for messages and adverts",
@@ -1199,6 +1203,38 @@
   "@chat_hopsCount": {
     "placeholders": {
       "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chat_latencySeconds": "{count}s",
+  "@chat_latencySeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chat_latencyMinutes": "{count}m",
+  "@chat_latencyMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chat_latencyHours": "{count}h",
+  "@chat_latencyHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chat_hashWidthChip": "{width}B",
+  "@chat_hashWidthChip": {
+    "placeholders": {
+      "width": {
         "type": "int"
       }
     }
@@ -2382,6 +2418,7 @@
       }
     }
   },
+  "neighbors_retryRemaining": "Retry remaining",
   "neighbors_mapNoNeighborLocations": "No neighbors have a location to map.",
   "neighbors_mapHiddenWithoutLocation": "{count} neighbors without location hidden.",
   "@neighbors_mapHiddenWithoutLocation": {
@@ -2396,6 +2433,27 @@
   "channelPath_otherObservedPaths": "Other Observed Paths",
   "channelPath_repeaterHops": "Repeater Hops",
   "channelPath_noHopDetails": "Hop details are not provided for this packet.",
+  "channelPath_hashWidthLabel": "Width",
+  "channelPath_hashWidthValue": "{width}-byte",
+  "@channelPath_hashWidthValue": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      }
+    }
+  },
+  "channelPath_distanceLabel": "Distance",
+  "channelPath_travelLabel": "Travel",
+  "channelPath_ambiguousTag": "ambiguous",
+  "channelPath_hopCandidatesTitle": "Hop {index} candidates",
+  "@channelPath_hopCandidatesTitle": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "channelPath_networkMapTag": "network map",
   "channelPath_messageDetails": "Message Details",
   "channelPath_senderLabel": "Sender",
   "channelPath_timeLabel": "Time",
