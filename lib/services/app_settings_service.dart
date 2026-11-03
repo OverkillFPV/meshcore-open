@@ -131,6 +131,14 @@ class AppSettingsService extends ChangeNotifier {
     await updateSettings(_settings.copyWith(regionOnHopsLine: value));
   }
 
+  Future<void> setShowMessageLatency(bool value) async {
+    await updateSettings(_settings.copyWith(showMessageLatency: value));
+  }
+
+  Future<void> setShowPathByteMode(bool value) async {
+    await updateSettings(_settings.copyWith(showPathByteMode: value));
+  }
+
   Future<void> setMapCacheBounds(Map<String, double>? value) async {
     await updateSettings(_settings.copyWith(mapCacheBounds: value));
   }

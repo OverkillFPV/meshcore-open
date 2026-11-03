@@ -1182,6 +1182,20 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mostrar la región de un mensaje de canal en la misma línea que su número de saltos en lugar de debajo.';
 
   @override
+  String get appSettings_showMessageLatency => 'Message latency';
+
+  @override
+  String get appSettings_showMessageLatencySubtitle =>
+      'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showPathByteMode => 'Path byte mode';
+
+  @override
+  String get appSettings_showPathByteModeSubtitle =>
+      'Show the routing hash byte width (1B/2B/3B) next to a channel message\'s hop count.';
+
+  @override
   String get appSettings_notifications => 'Notificaciones';
 
   @override
@@ -2286,6 +2300,26 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String chat_latencySeconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String chat_latencyMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String chat_latencyHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String chat_hashWidthChip(int width) {
+    return '${width}B';
+  }
+
+  @override
   String get chat_removePath => 'Eliminar ruta';
 
   @override
@@ -3331,6 +3365,24 @@ class AppLocalizationsEs extends AppLocalizations {
       '¿Está seguro de que desea reiniciar este repetidor?';
 
   @override
+  String get repeater_startOta => 'Iniciar OTA';
+
+  @override
+  String get repeater_startOtaSubtitle =>
+      'Esto pondrá el repetidor en modo OTA';
+
+  @override
+  String get repeater_startOtaConfirm =>
+      'Esto pondrá el repetidor en modo OTA. ¿Continuar?';
+
+  @override
+  String get repeater_setFromMap => 'Establecer desde el mapa';
+
+  @override
+  String get repeater_locationPickerHint =>
+      'Toca el mapa para colocar el marcador y confirma.';
+
+  @override
   String get repeater_regenerateIdentityKey => 'Regenerar clave de identidad';
 
   @override
@@ -4345,6 +4397,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get telemetry_powerLabel => 'Potencia';
 
   @override
+  String get telemetry_computedPowerLabel => 'Potencia calculada';
+
+  @override
   String get telemetry_distanceLabel => 'Distancia';
 
   @override
@@ -4461,6 +4516,56 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get neighbors_tabList => 'List';
+
+  @override
+  String get neighbors_tabMap => 'Map';
+
+  @override
+  String get neighbors_discoverTooltip => 'Send discovery request';
+
+  @override
+  String get neighbors_discoverySent =>
+      'Discovery request sent to the repeater.';
+
+  @override
+  String neighbors_discoveryFailed(String error) {
+    return 'Discovery failed: $error';
+  }
+
+  @override
+  String get neighbors_eraseTooltip => 'Erase all neighbors';
+
+  @override
+  String get neighbors_eraseConfirm =>
+      'This removes every neighbor from the repeater. They will reappear as adverts are heard.';
+
+  @override
+  String get neighbors_erased => 'All neighbors erased.';
+
+  @override
+  String neighbors_eraseFailed(String error) {
+    return 'Failed to erase neighbors: $error';
+  }
+
+  @override
+  String neighbors_fetchedOfTotal(int fetched, int total) {
+    return '$fetched of $total fetched';
+  }
+
+  @override
+  String get neighbors_retryRemaining => 'Retry remaining';
+
+  @override
+  String get neighbors_mapNoNeighborLocations =>
+      'No neighbors have a location to map.';
+
+  @override
+  String neighbors_mapHiddenWithoutLocation(int count) {
+    return '$count neighbors without location hidden.';
+  }
+
+  @override
   String get channelPath_title => 'Ruta del paquete';
 
   @override
@@ -4475,6 +4580,31 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get channelPath_noHopDetails =>
       'Los detalles del paquete no están disponibles.';
+
+  @override
+  String get channelPath_hashWidthLabel => 'Width';
+
+  @override
+  String channelPath_hashWidthValue(int width) {
+    return '$width-byte';
+  }
+
+  @override
+  String get channelPath_distanceLabel => 'Distance';
+
+  @override
+  String get channelPath_travelLabel => 'Travel';
+
+  @override
+  String get channelPath_ambiguousTag => 'ambiguous';
+
+  @override
+  String channelPath_hopCandidatesTitle(int index) {
+    return 'Hop $index candidates';
+  }
+
+  @override
+  String get channelPath_networkMapTag => 'network map';
 
   @override
   String get channelPath_messageDetails => 'Detalles del mensaje';
@@ -6691,6 +6821,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String neighbors_durationHours(int hours, int minutes) {
     return '$hours h $minutes min';
+  }
+
+  @override
+  String neighbors_durationDays(int days, int hours) {
+    return '$days d $hours h';
   }
 
   @override

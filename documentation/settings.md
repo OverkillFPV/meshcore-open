@@ -74,6 +74,7 @@ Opens the radio statistics screen for the paired radio: noise floor, last RSSI, 
 ### Location
 Opens a dialog pre-populated with the device's current coordinates (if known):
 - Latitude and longitude fields (decimal, 6 decimal places). If only one field is provided, the other uses the device's current value
+- **Set from map** button: opens a map picker centered on the phone's location (when available), where you tap to place a pin and confirm; the picked point fills the latitude and longitude fields
 - If GPS-capable hardware (detected via `gps` custom variable):
   - GPS Update Interval (seconds, 60–86399, default 900 = 15 minutes). Validated and sent separately before lat/lon
   - Enable GPS toggle (takes effect immediately, not deferred to Save)
@@ -130,6 +131,8 @@ Individual channels can be muted from the channel chat bell icon, the channel li
   - Max Message Retries (2–10, default 5)
 - **Enable Message Tracing**: Shows path trace overlays and extra metadata on messages
 - **Region next to hop count** (default off): Shows a channel message's region chip on the same line as its hop count instead of below it
+- **Message latency** (default on): Shows how long a received channel message took to arrive, next to its hop count
+- **Path byte mode** (default on): Shows the routing hash byte width (`1B`/`2B`/`3B`) next to a channel message's hop count
 - **Resend channel messages until they travel far enough** (default off): If your channel message isn't heard coming back through enough repeaters, it's sent again. Uses more airtime. When on, it shows:
   - Required hops (1–8, default 2)
   - Resend up to (1–5 times, default 1)

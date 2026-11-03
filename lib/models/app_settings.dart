@@ -111,6 +111,8 @@ class AppSettings {
   final bool mapClusterNodes;
   final bool enableMessageTracing;
   final bool regionOnHopsLine;
+  final bool showMessageLatency;
+  final bool showPathByteMode;
   final Map<String, double>? mapCacheBounds;
   final int mapCacheMinZoom;
   final int mapCacheMaxZoom;
@@ -263,6 +265,8 @@ class AppSettings {
     this.mapClusterNodes = true,
     this.enableMessageTracing = false,
     this.regionOnHopsLine = false,
+    this.showMessageLatency = true,
+    this.showPathByteMode = true,
     this.mapCacheBounds,
     this.mapCacheMinZoom = 10,
     this.mapCacheMaxZoom = 15,
@@ -358,6 +362,8 @@ class AppSettings {
       'map_cluster_nodes': mapClusterNodes,
       'enable_message_tracing': enableMessageTracing,
       'region_on_hops_line': regionOnHopsLine,
+      'show_message_latency': showMessageLatency,
+      'show_path_byte_mode': showPathByteMode,
       'map_cache_bounds': mapCacheBounds,
       'map_cache_min_zoom': mapCacheMinZoom,
       'map_cache_max_zoom': mapCacheMaxZoom,
@@ -492,6 +498,8 @@ class AppSettings {
       mapClusterNodes: json['map_cluster_nodes'] as bool? ?? true,
       enableMessageTracing: json['enable_message_tracing'] as bool? ?? false,
       regionOnHopsLine: json['region_on_hops_line'] as bool? ?? false,
+      showMessageLatency: json['show_message_latency'] as bool? ?? true,
+      showPathByteMode: json['show_path_byte_mode'] as bool? ?? true,
       mapCacheBounds: (json['map_cache_bounds'] as Map?)?.map(
         (key, value) => MapEntry(key.toString(), (value as num).toDouble()),
       ),
@@ -657,6 +665,8 @@ class AppSettings {
     bool? mapClusterNodes,
     bool? enableMessageTracing,
     bool? regionOnHopsLine,
+    bool? showMessageLatency,
+    bool? showPathByteMode,
     Object? mapCacheBounds = _unset,
     int? mapCacheMinZoom,
     int? mapCacheMaxZoom,
@@ -737,6 +747,8 @@ class AppSettings {
       mapClusterNodes: mapClusterNodes ?? this.mapClusterNodes,
       enableMessageTracing: enableMessageTracing ?? this.enableMessageTracing,
       regionOnHopsLine: regionOnHopsLine ?? this.regionOnHopsLine,
+      showMessageLatency: showMessageLatency ?? this.showMessageLatency,
+      showPathByteMode: showPathByteMode ?? this.showPathByteMode,
       mapCacheBounds: mapCacheBounds == _unset
           ? this.mapCacheBounds
           : mapCacheBounds as Map<String, double>?,

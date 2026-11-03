@@ -1119,6 +1119,20 @@ class AppLocalizationsZh extends AppLocalizations {
       '将频道消息的地区与跳数显示在同一行，而不是在其下方。';
 
   @override
+  String get appSettings_showMessageLatency => 'Message latency';
+
+  @override
+  String get appSettings_showMessageLatencySubtitle =>
+      'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showPathByteMode => 'Path byte mode';
+
+  @override
+  String get appSettings_showPathByteModeSubtitle =>
+      'Show the routing hash byte width (1B/2B/3B) next to a channel message\'s hop count.';
+
+  @override
   String get appSettings_notifications => '通知';
 
   @override
@@ -2154,6 +2168,26 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String chat_latencySeconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String chat_latencyMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String chat_latencyHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String chat_hashWidthChip(int width) {
+    return '${width}B';
+  }
+
+  @override
   String get chat_removePath => '移除路径';
 
   @override
@@ -3155,6 +3189,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repeater_rebootRepeaterConfirm => '确定要重启此转发节点吗？';
 
   @override
+  String get repeater_startOta => '开始OTA';
+
+  @override
+  String get repeater_startOtaSubtitle => '这会将转发节点置于OTA模式';
+
+  @override
+  String get repeater_startOtaConfirm => '这会将转发节点置于OTA模式。是否继续?';
+
+  @override
+  String get repeater_setFromMap => '从地图设置';
+
+  @override
+  String get repeater_locationPickerHint => '点按地图放置图钉,然后确认。';
+
+  @override
   String get repeater_regenerateIdentityKey => '重新生成身份密钥';
 
   @override
@@ -4032,6 +4081,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get telemetry_powerLabel => '功率';
 
   @override
+  String get telemetry_computedPowerLabel => '计算功率';
+
+  @override
   String get telemetry_distanceLabel => '距离';
 
   @override
@@ -4147,6 +4199,56 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get neighbors_tabList => 'List';
+
+  @override
+  String get neighbors_tabMap => 'Map';
+
+  @override
+  String get neighbors_discoverTooltip => 'Send discovery request';
+
+  @override
+  String get neighbors_discoverySent =>
+      'Discovery request sent to the repeater.';
+
+  @override
+  String neighbors_discoveryFailed(String error) {
+    return 'Discovery failed: $error';
+  }
+
+  @override
+  String get neighbors_eraseTooltip => 'Erase all neighbors';
+
+  @override
+  String get neighbors_eraseConfirm =>
+      'This removes every neighbor from the repeater. They will reappear as adverts are heard.';
+
+  @override
+  String get neighbors_erased => 'All neighbors erased.';
+
+  @override
+  String neighbors_eraseFailed(String error) {
+    return 'Failed to erase neighbors: $error';
+  }
+
+  @override
+  String neighbors_fetchedOfTotal(int fetched, int total) {
+    return '$fetched of $total fetched';
+  }
+
+  @override
+  String get neighbors_retryRemaining => 'Retry remaining';
+
+  @override
+  String get neighbors_mapNoNeighborLocations =>
+      'No neighbors have a location to map.';
+
+  @override
+  String neighbors_mapHiddenWithoutLocation(int count) {
+    return '$count neighbors without location hidden.';
+  }
+
+  @override
   String get channelPath_title => '数据包路径';
 
   @override
@@ -4160,6 +4262,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get channelPath_noHopDetails => '此数据包未提供详细信息';
+
+  @override
+  String get channelPath_hashWidthLabel => 'Width';
+
+  @override
+  String channelPath_hashWidthValue(int width) {
+    return '$width-byte';
+  }
+
+  @override
+  String get channelPath_distanceLabel => 'Distance';
+
+  @override
+  String get channelPath_travelLabel => 'Travel';
+
+  @override
+  String get channelPath_ambiguousTag => 'ambiguous';
+
+  @override
+  String channelPath_hopCandidatesTitle(int index) {
+    return 'Hop $index candidates';
+  }
+
+  @override
+  String get channelPath_networkMapTag => 'network map';
 
   @override
   String get channelPath_messageDetails => '消息详情';
@@ -6237,6 +6364,11 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String neighbors_durationHours(int hours, int minutes) {
     return '$hours小时$minutes分';
+  }
+
+  @override
+  String neighbors_durationDays(int days, int hours) {
+    return '$days天$hours小时';
   }
 
   @override

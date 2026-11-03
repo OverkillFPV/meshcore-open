@@ -2182,6 +2182,30 @@ abstract class AppLocalizations {
   /// **'Show a channel message\'s region on the same line as its hop count instead of below it.'**
   String get appSettings_regionOnHopsLineSubtitle;
 
+  /// No description provided for @appSettings_showMessageLatency.
+  ///
+  /// In en, this message translates to:
+  /// **'Message latency'**
+  String get appSettings_showMessageLatency;
+
+  /// No description provided for @appSettings_showMessageLatencySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show how long a received channel message took to arrive, next to its hop count.'**
+  String get appSettings_showMessageLatencySubtitle;
+
+  /// No description provided for @appSettings_showPathByteMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Path byte mode'**
+  String get appSettings_showPathByteMode;
+
+  /// No description provided for @appSettings_showPathByteModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the routing hash byte width (1B/2B/3B) next to a channel message\'s hop count.'**
+  String get appSettings_showPathByteModeSubtitle;
+
   /// No description provided for @appSettings_notifications.
   ///
   /// In en, this message translates to:
@@ -4042,6 +4066,30 @@ abstract class AppLocalizations {
   /// **'{count} {count, plural, =1{hop} other{hops}}'**
   String chat_hopsCount(int count);
 
+  /// No description provided for @chat_latencySeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}s'**
+  String chat_latencySeconds(int count);
+
+  /// No description provided for @chat_latencyMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m'**
+  String chat_latencyMinutes(int count);
+
+  /// No description provided for @chat_latencyHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h'**
+  String chat_latencyHours(int count);
+
+  /// No description provided for @chat_hashWidthChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}B'**
+  String chat_hashWidthChip(int width);
+
   /// No description provided for @chat_removePath.
   ///
   /// In en, this message translates to:
@@ -5888,6 +5936,36 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to reboot this repeater?'**
   String get repeater_rebootRepeaterConfirm;
 
+  /// No description provided for @repeater_startOta.
+  ///
+  /// In en, this message translates to:
+  /// **'Start OTA'**
+  String get repeater_startOta;
+
+  /// No description provided for @repeater_startOtaSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This will put the repeater into OTA mode'**
+  String get repeater_startOtaSubtitle;
+
+  /// No description provided for @repeater_startOtaConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This will put the repeater into OTA mode. Continue?'**
+  String get repeater_startOtaConfirm;
+
+  /// No description provided for @repeater_setFromMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Set from map'**
+  String get repeater_setFromMap;
+
+  /// No description provided for @repeater_locationPickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the map to place the pin, then confirm.'**
+  String get repeater_locationPickerHint;
+
   /// No description provided for @repeater_regenerateIdentityKey.
   ///
   /// In en, this message translates to:
@@ -7538,6 +7616,12 @@ abstract class AppLocalizations {
   /// **'Power'**
   String get telemetry_powerLabel;
 
+  /// No description provided for @telemetry_computedPowerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Computed power'**
+  String get telemetry_computedPowerLabel;
+
   /// No description provided for @telemetry_distanceLabel.
   ///
   /// In en, this message translates to:
@@ -7712,6 +7796,84 @@ abstract class AppLocalizations {
   /// **'Heard: {time} ago'**
   String neighbors_heardAgo(String time);
 
+  /// No description provided for @neighbors_tabList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get neighbors_tabList;
+
+  /// No description provided for @neighbors_tabMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get neighbors_tabMap;
+
+  /// No description provided for @neighbors_discoverTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Send discovery request'**
+  String get neighbors_discoverTooltip;
+
+  /// No description provided for @neighbors_discoverySent.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovery request sent to the repeater.'**
+  String get neighbors_discoverySent;
+
+  /// No description provided for @neighbors_discoveryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovery failed: {error}'**
+  String neighbors_discoveryFailed(String error);
+
+  /// No description provided for @neighbors_eraseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Erase all neighbors'**
+  String get neighbors_eraseTooltip;
+
+  /// No description provided for @neighbors_eraseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes every neighbor from the repeater. They will reappear as adverts are heard.'**
+  String get neighbors_eraseConfirm;
+
+  /// No description provided for @neighbors_erased.
+  ///
+  /// In en, this message translates to:
+  /// **'All neighbors erased.'**
+  String get neighbors_erased;
+
+  /// No description provided for @neighbors_eraseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to erase neighbors: {error}'**
+  String neighbors_eraseFailed(String error);
+
+  /// No description provided for @neighbors_fetchedOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{fetched} of {total} fetched'**
+  String neighbors_fetchedOfTotal(int fetched, int total);
+
+  /// No description provided for @neighbors_retryRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry remaining'**
+  String get neighbors_retryRemaining;
+
+  /// No description provided for @neighbors_mapNoNeighborLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'No neighbors have a location to map.'**
+  String get neighbors_mapNoNeighborLocations;
+
+  /// No description provided for @neighbors_mapHiddenWithoutLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} neighbors without location hidden.'**
+  String neighbors_mapHiddenWithoutLocation(int count);
+
   /// No description provided for @channelPath_title.
   ///
   /// In en, this message translates to:
@@ -7741,6 +7903,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hop details are not provided for this packet.'**
   String get channelPath_noHopDetails;
+
+  /// No description provided for @channelPath_hashWidthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Width'**
+  String get channelPath_hashWidthLabel;
+
+  /// No description provided for @channelPath_hashWidthValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{width}-byte'**
+  String channelPath_hashWidthValue(int width);
+
+  /// No description provided for @channelPath_distanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get channelPath_distanceLabel;
+
+  /// No description provided for @channelPath_travelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get channelPath_travelLabel;
+
+  /// No description provided for @channelPath_ambiguousTag.
+  ///
+  /// In en, this message translates to:
+  /// **'ambiguous'**
+  String get channelPath_ambiguousTag;
+
+  /// No description provided for @channelPath_hopCandidatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hop {index} candidates'**
+  String channelPath_hopCandidatesTitle(int index);
+
+  /// No description provided for @channelPath_networkMapTag.
+  ///
+  /// In en, this message translates to:
+  /// **'network map'**
+  String get channelPath_networkMapTag;
 
   /// No description provided for @channelPath_messageDetails.
   ///
@@ -11214,6 +11418,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{hours}h {minutes}m'**
   String neighbors_durationHours(int hours, int minutes);
+
+  /// No description provided for @neighbors_durationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {hours}h'**
+  String neighbors_durationDays(int days, int hours);
 
   /// No description provided for @networkMap_settingsSection.
   ///
