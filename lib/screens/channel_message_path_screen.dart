@@ -21,6 +21,7 @@ import '../models/contact.dart';
 import '../models/display_path.dart';
 import '../models/path_playback.dart';
 import '../services/network_map/network_map_api_client.dart';
+import '../storage/region_store.dart';
 import '../theme/mesh_theme.dart';
 import '../widgets/adaptive_app_bar_title.dart';
 import '../widgets/mesh_ui.dart';
@@ -280,7 +281,9 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             _buildDetailRow(
               context,
               l10n.settings_regionName,
-              widget.message.region!,
+              widget.message.region == kUnscopedRegion
+                  ? l10n.chat_regionUnscoped
+                  : widget.message.region!,
               scheme: scheme,
             ),
         ],
@@ -2156,6 +2159,7 @@ String _formatHopCount(
 }
 
 String _formatTravelTime(Duration travel, AppLocalizations l10n) {
+  if (travel.inMilliseconds > 9999) return l10n.chat_latencyUnsynced;
   return l10n.chat_latencyMilliseconds(travel.inMilliseconds);
 }
 

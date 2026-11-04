@@ -2686,18 +2686,6 @@ abstract class AppLocalizations {
   /// **'Last week'**
   String get appSettings_lastWeek;
 
-  /// No description provided for @appSettings_showLivePackets.
-  ///
-  /// In en, this message translates to:
-  /// **'Show Live Packets'**
-  String get appSettings_showLivePackets;
-
-  /// No description provided for @appSettings_showLivePacketsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Animate packets travelling their paths on the map'**
-  String get appSettings_showLivePacketsSubtitle;
-
   /// No description provided for @appSettings_showPacketPaths.
   ///
   /// In en, this message translates to:
@@ -4162,11 +4150,23 @@ abstract class AppLocalizations {
   /// **'{count}ms'**
   String chat_latencyMilliseconds(int count);
 
+  /// No description provided for @chat_latencyUnsynced.
+  ///
+  /// In en, this message translates to:
+  /// **'unsynced'**
+  String get chat_latencyUnsynced;
+
   /// No description provided for @chat_hashWidthChip.
   ///
   /// In en, this message translates to:
   /// **'{width}B'**
   String chat_hashWidthChip(int width);
+
+  /// No description provided for @chat_regionUnscoped.
+  ///
+  /// In en, this message translates to:
+  /// **'unscoped'**
+  String get chat_regionUnscoped;
 
   /// No description provided for @chat_signalChip.
   ///
@@ -4989,6 +4989,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public key prefix'**
   String get map_publicKeyPrefix;
+
+  /// No description provided for @map_packets.
+  ///
+  /// In en, this message translates to:
+  /// **'Packets'**
+  String get map_packets;
 
   /// No description provided for @map_markers.
   ///

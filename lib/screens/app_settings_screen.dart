@@ -1166,33 +1166,6 @@ class AppSettingsScreen extends StatelessWidget {
           onChanged: (value) => settingsService.setMapShowOtherNodes(value),
         ),
         const Divider(height: 1, indent: 16),
-        SwitchListTile(
-          contentPadding: tilePadding,
-          secondary: const Icon(Icons.play_circle_outline, size: 24),
-          title: Text(context.l10n.appSettings_showLivePackets),
-          subtitle: Text(context.l10n.appSettings_showLivePacketsSubtitle),
-          value: settings.mapShowLivePackets,
-          onChanged: (value) => settingsService.setMapShowLivePackets(value),
-        ),
-        const Divider(height: 1, indent: 16),
-        SwitchListTile(
-          contentPadding: tilePadding,
-          secondary: const Icon(Icons.timeline_outlined, size: 24),
-          title: Text(context.l10n.appSettings_showPacketPaths),
-          subtitle: Text(context.l10n.appSettings_showPacketPathsSubtitle),
-          value: settings.mapShowPacketPaths,
-          onChanged: (value) => settingsService.setMapShowPacketPaths(value),
-        ),
-        const Divider(height: 1, indent: 16),
-        MeshNavTile(
-          icon: Icons.timer_outlined,
-          title: context.l10n.appSettings_packetPathWindow,
-          subtitle: context.l10n.appSettings_packetPathWindowShowLast(
-            settings.packetPathWindowHours.toInt(),
-          ),
-          onTap: () => _showPacketPathWindowSheet(context, settingsService),
-        ),
-        const Divider(height: 1, indent: 16),
         MeshNavTile(
           icon: Icons.timer_outlined,
           title: context.l10n.appSettings_timeFilter,
@@ -1579,64 +1552,6 @@ class AppSettingsScreen extends StatelessWidget {
               selected: settingsService.settings.mapTimeFilterHours == 168,
               onTap: () {
                 settingsService.setMapTimeFilterHours(168);
-                Navigator.pop(ctx);
-              },
-            ),
-            SizedBox(height: MediaQuery.paddingOf(ctx).bottom + 8),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showPacketPathWindowSheet(
-    BuildContext context,
-    AppSettingsService settingsService,
-  ) {
-    showMeshSheet(
-      context,
-      builder: (ctx) => SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BottomSheetHeader(title: context.l10n.appSettings_packetPathWindow),
-            MeshSheetOption(
-              label: context.l10n.appSettings_last24Hours,
-              selected: settingsService.settings.packetPathWindowHours == 24,
-              onTap: () {
-                settingsService.setPacketPathWindowHours(24);
-                Navigator.pop(ctx);
-              },
-            ),
-            MeshSheetOption(
-              label: context.l10n.appSettings_last3Days,
-              selected: settingsService.settings.packetPathWindowHours == 72,
-              onTap: () {
-                settingsService.setPacketPathWindowHours(72);
-                Navigator.pop(ctx);
-              },
-            ),
-            MeshSheetOption(
-              label: context.l10n.appSettings_lastWeek,
-              selected: settingsService.settings.packetPathWindowHours == 168,
-              onTap: () {
-                settingsService.setPacketPathWindowHours(168);
-                Navigator.pop(ctx);
-              },
-            ),
-            MeshSheetOption(
-              label: context.l10n.appSettings_last2Weeks,
-              selected: settingsService.settings.packetPathWindowHours == 336,
-              onTap: () {
-                settingsService.setPacketPathWindowHours(336);
-                Navigator.pop(ctx);
-              },
-            ),
-            MeshSheetOption(
-              label: context.l10n.appSettings_last4Weeks,
-              selected: settingsService.settings.packetPathWindowHours == 672,
-              onTap: () {
-                settingsService.setPacketPathWindowHours(672);
                 Navigator.pop(ctx);
               },
             ),

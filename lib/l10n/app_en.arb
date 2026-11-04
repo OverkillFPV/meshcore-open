@@ -631,8 +631,6 @@
   "appSettings_last6Hours": "Last 6 hours",
   "appSettings_last24Hours": "Last 24 hours",
   "appSettings_lastWeek": "Last week",
-  "appSettings_showLivePackets": "Show Live Packets",
-  "appSettings_showLivePacketsSubtitle": "Animate packets travelling their paths on the map",
   "appSettings_showPacketPaths": "Show Packet Paths",
   "appSettings_showPacketPathsSubtitle": "Draw lines between repeaters along paths packets were seen taking",
   "appSettings_packetPathWindow": "Packet Path Time Window",
@@ -1237,6 +1235,7 @@
       }
     }
   },
+  "chat_latencyUnsynced": "unsynced",
   "chat_hashWidthChip": "{width}B",
   "@chat_hashWidthChip": {
     "placeholders": {
@@ -1245,6 +1244,7 @@
       }
     }
   },
+  "chat_regionUnscoped": "unscoped",
   "chat_signalChip": "{rssi}dBm {snr}dB",
   "@chat_signalChip": {
     "placeholders": {
@@ -1472,6 +1472,7 @@
   "map_keyPrefix": "Key Prefix",
   "map_filterByKeyPrefix": "Filter by key prefix",
   "map_publicKeyPrefix": "Public key prefix",
+  "map_packets": "Packets",
   "map_markers": "Markers",
   "map_showSharedMarkers": "Show shared markers",
   "map_showGuessedLocations": "Show guessed node locations",

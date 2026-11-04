@@ -36,11 +36,11 @@ The saved region-name list is global to the app. Default and channel assignments
 
 ## Regions displayed on messages
 
-Channel text messages show a region label beside routing metadata when a region is known. The label appears in the message bubble only when the message has path data; message tracing does not otherwise need to be enabled. The message-path screen always shows the known region.
+Channel text messages show a region label beside routing metadata when a region is known. The message-path screen always shows the known region.
 
-Outgoing messages retain the effective region used when they were sent. Changing a channel or default region does not relabel earlier messages. Region metadata persists with message history; older records may have no region.
+Outgoing messages retain the effective region used when they were sent. A message sent with **No region (unscoped)** shows the label `unscoped` in the bubble and on the message-path screen. Changing a channel or default region does not relabel earlier messages. Region metadata persists with message history; older records may have no region.
 
-Incoming region names are inferred from raw **transport-flood** packets by testing locally known names (saved regions, channel overrides, the app default, and the radio default region). The name is not sent as plain text in the packet. Unknown names, ambiguous matches, and messages without suitable raw transport metadata do not get a region label. `foo` and `#foo` are treated as the same candidate for matching.
+Incoming region names are inferred from raw **transport-flood** packets by testing locally known names (saved regions, channel overrides, the app default, and the radio default region). The name is not sent as plain text in the packet. Unknown names, ambiguous matches, and messages without suitable raw transport metadata do not get a region label. `foo` and `#foo` are treated as the same candidate for matching. Incoming messages that carry no scope at all — legacy flood packets without transport codes, or a zero (null-region) transport code — are labelled `unscoped`.
 
 **No label does not prove a message was unscoped.** It can mean that its region could not be identified. A region label is routing metadata, not proof of the sender’s location or identity.
 

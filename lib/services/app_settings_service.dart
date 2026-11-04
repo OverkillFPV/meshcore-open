@@ -119,10 +119,6 @@ class AppSettingsService extends ChangeNotifier {
     await updateSettings(_settings.copyWith(mapShowGuessedLocations: value));
   }
 
-  Future<void> setMapShowLivePackets(bool value) async {
-    await updateSettings(_settings.copyWith(mapShowLivePackets: value));
-  }
-
   Future<void> setMapShowPacketPaths(bool value) async {
     await updateSettings(_settings.copyWith(mapShowPacketPaths: value));
   }

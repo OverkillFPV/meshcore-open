@@ -1388,13 +1388,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appSettings_lastWeek => '上周';
 
   @override
-  String get appSettings_showLivePackets => 'Show Live Packets';
-
-  @override
-  String get appSettings_showLivePacketsSubtitle =>
-      'Animate packets travelling their paths on the map';
-
-  @override
   String get appSettings_showPacketPaths => 'Show Packet Paths';
 
   @override
@@ -2225,9 +2218,15 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get chat_latencyUnsynced => 'unsynced';
+
+  @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
   }
+
+  @override
+  String get chat_regionUnscoped => 'unscoped';
 
   @override
   String chat_signalChip(int rssi, String snr) {
@@ -2664,6 +2663,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get map_publicKeyPrefix => '关键字前缀';
+
+  @override
+  String get map_packets => 'Packets';
 
   @override
   String get map_markers => '标记';

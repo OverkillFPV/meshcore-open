@@ -35,7 +35,6 @@ import '../utils/battery_utils.dart';
 import '../utils/route_transitions.dart';
 import '../widgets/map_poi_cluster.dart';
 import '../widgets/marker_label_dialog.dart';
-import '../widgets/live_packet_layer.dart';
 import '../widgets/network_map_online_layer.dart';
 import '../widgets/quick_switch_bar.dart';
 import '../widgets/sync_progress_overlay.dart';
@@ -45,6 +44,7 @@ import 'chat_screen.dart';
 import 'contacts_screen.dart';
 import '../theme/mesh_theme.dart';
 import '../widgets/mesh_ui.dart';
+import '../widgets/mesh_nav_tile.dart';
 import '../widgets/node_info_sheet.dart';
 import '../widgets/set_my_location_dialog.dart';
 import '../helpers/guessed_location_estimator.dart';
@@ -126,11 +126,10 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
   int? _sharedMarkersCacheSignature;
   Locale? _sharedMarkersCacheLocale;
   List<_SharedMarker> _cachedSharedMarkers = const [];
-  // Packet-path lines and live animations are resolved lazily and cached
-  // until the packet store, contacts, or self position change.
+  // Packet-path lines are resolved lazily and cached until the packet store,
+  // contacts, or self position change.
   int? _packetLayerCacheKey;
   List<Polyline> _cachedPacketPathPolylines = const [];
-  List<LivePacketRoute> _cachedLiveRoutes = const [];
   _NodeMarkersCacheKey? _nodeMarkersCacheKey;
   List<Marker> _cachedNodeMarkers = const [];
   // Online/recent status is derived from DateTime.now(); rebuild periodically
@@ -169,21 +168,21 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
     } catch (_) {}
   }
 
-  static const Duration _livePacketWindow = Duration(seconds: 45);
-
   /// Resolves stored packet paths against the current contacts and caches
-  /// the resulting line polylines and live animation routes.
+  /// the resulting line polylines. While node icons are collapsed into
+  /// clusters, hop positions snap to the cluster they fall in so lines
+  /// follow the grouped icons instead of pointing at empty spots.
   void _rebuildPacketLayers(
     PacketPathService packetPaths,
     AppSettings settings,
     List<Contact> contacts,
     double? selfLat,
     double? selfLon,
-    Color lineColor,
-  ) {
+    Color lineColor, {
+    required List<Contact> clusterItems,
+  }) {
     _cachedPacketPathPolylines = const [];
-    _cachedLiveRoutes = const [];
-    if (!settings.mapShowPacketPaths && !settings.mapShowLivePackets) return;
+    if (!settings.mapShowPacketPaths) return;
 
     final windowMinutes = (settings.packetPathWindowHours.clamp(1, 720) * 60)
         .round();
@@ -197,9 +196,42 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
         ? LatLng(selfLat, selfLon)
         : null;
 
+    Map<String, LatLng>? clusterCenters;
+    if (settings.mapClusterNodes &&
+        _zoom < _clusterOffZoom &&
+        !settings.mapShowOverlaps &&
+        !_isBuildingPathTrace) {
+      final cellDeg = 360.0 / (256.0 * pow(2.0, _zoom)) * 64.0;
+      final cells = <String, List<Contact>>{};
+      for (final contact in clusterItems) {
+        if (!contact.hasLocation) continue;
+        final key =
+            '${(contact.latitude! / cellDeg).floor()}:${(contact.longitude! / cellDeg).floor()}';
+        (cells[key] ??= []).add(contact);
+      }
+      clusterCenters = {};
+      cells.forEach((key, members) {
+        if (members.length < 2) return;
+        var lat = 0.0, lon = 0.0;
+        for (final m in members) {
+          lat += m.latitude!;
+          lon += m.longitude!;
+        }
+        clusterCenters![key] = LatLng(
+          lat / members.length,
+          lon / members.length,
+        );
+      });
+    }
+    LatLng snap(LatLng point) {
+      if (clusterCenters == null) return point;
+      final cellDeg = 360.0 / (256.0 * pow(2.0, _zoom)) * 64.0;
+      final key =
+          '${(point.latitude / cellDeg).floor()}:${(point.longitude / cellDeg).floor()}';
+      return clusterCenters[key] ?? point;
+    }
+
     final routesByShape = <String, List<LatLng>>{};
-    final live = <LivePacketRoute>[];
-    final nowMs = DateTime.now().millisecondsSinceEpoch;
     for (final path in observed) {
       final hops = PathHopResolver.resolve(
         pathBytes: path.pathBytes,
@@ -211,7 +243,7 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
       final positions = <LatLng>[];
       for (final hop in hops) {
         if (hop == null || !hop.hasLocation) continue;
-        final point = LatLng(hop.latitude!, hop.longitude!);
+        final point = snap(LatLng(hop.latitude!, hop.longitude!));
         if (positions.isEmpty || positions.last != point) positions.add(point);
       }
       if (positions.length < 2) continue;
@@ -222,24 +254,17 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
           )
           .join('|');
       routesByShape.putIfAbsent(shape, () => positions);
-      if (settings.mapShowLivePackets &&
-          nowMs - path.lastSeenMs <= _livePacketWindow.inMilliseconds) {
-        live.add(LivePacketRoute(points: positions, seenAtMs: path.lastSeenMs));
-      }
     }
 
-    if (settings.mapShowPacketPaths) {
-      _cachedPacketPathPolylines = [
-        for (final positions in routesByShape.values)
-          Polyline(
-            points: positions,
-            color: lineColor.withValues(alpha: 0.85),
-            strokeWidth: 3,
-            strokeCap: StrokeCap.round,
-          ),
-      ];
-    }
-    _cachedLiveRoutes = live;
+    _cachedPacketPathPolylines = [
+      for (final positions in routesByShape.values)
+        Polyline(
+          points: positions,
+          color: lineColor.withValues(alpha: 0.3),
+          strokeWidth: 2,
+          strokeCap: StrokeCap.round,
+        ),
+    ];
   }
 
   @override
@@ -754,27 +779,6 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
           }
         }
 
-        final packetLayerCacheKey = Object.hash(
-          packetPathVersion,
-          settings.packetPathWindowHours,
-          connectorSnapshot.contactsSignature,
-          connector.selfLatitude,
-          connector.selfLongitude,
-          settings.mapShowPacketPaths,
-          settings.mapShowLivePackets,
-        );
-        if (packetLayerCacheKey != _packetLayerCacheKey) {
-          _packetLayerCacheKey = packetLayerCacheKey;
-          _rebuildPacketLayers(
-            packetPaths,
-            settings,
-            allContacts,
-            connector.selfLatitude,
-            connector.selfLongitude,
-            MeshMapTheme.of(context).accent,
-          );
-        }
-
         // Only the first frame's camera matters; afterwards reuse it instead
         // of re-reading prefs and re-running the spread statistics on every
         // rebuild. The "center map" control recomputes on demand.
@@ -837,6 +841,39 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
         final repeaterCount = visibleContacts
             .where((c) => c.type == advTypeRepeater)
             .length;
+
+        final clusterItems = visibleContacts
+            .where((c) => c.publicKeyHex != selectedContact?.publicKeyHex)
+            .toList();
+        final packetLayerCacheKey = Object.hash(
+          packetPathVersion,
+          settings.packetPathWindowHours,
+          connectorSnapshot.contactsSignature,
+          connector.selfLatitude,
+          connector.selfLongitude,
+          settings.mapShowPacketPaths,
+          _zoom,
+          settings.mapClusterNodes,
+          settings.mapShowOverlaps,
+          _isBuildingPathTrace,
+          Object.hashAllUnordered(
+            clusterItems.map(
+              (c) => Object.hash(c.publicKeyHex, c.latitude, c.longitude),
+            ),
+          ),
+        );
+        if (packetLayerCacheKey != _packetLayerCacheKey) {
+          _packetLayerCacheKey = packetLayerCacheKey;
+          _rebuildPacketLayers(
+            packetPaths,
+            settings,
+            allContacts,
+            connector.selfLatitude,
+            connector.selfLongitude,
+            MeshMapTheme.of(context).accent,
+            clusterItems: clusterItems,
+          );
+        }
 
         return PopScope(
           canPop: allowBack && !_isBuildingPathTrace,
@@ -1036,6 +1073,8 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
                   ),
                   children: [
                     tileCache.buildTileLayer(context),
+                    if (_cachedPacketPathPolylines.isNotEmpty)
+                      PolylineLayer(polylines: _cachedPacketPathPolylines),
                     if (_polylines.isNotEmpty && _isBuildingPathTrace)
                       PolylineLayer(polylines: _polylines),
                     if (sharedMarkerPolylines.isNotEmpty)
@@ -1134,15 +1173,9 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
                           ),
                       ],
                     ),
-                    if (_cachedPacketPathPolylines.isNotEmpty)
-                      PolylineLayer(polylines: _cachedPacketPathPolylines),
-                    if (_cachedLiveRoutes.isNotEmpty)
-                      LivePacketLayer(
-                        routes: _cachedLiveRoutes,
-                        color: MeshMapTheme.of(context).accent,
-                      ),
                   ],
                 ),
+
                 if (selectedContact == null)
                   _buildControlRail(
                     context,
@@ -3764,6 +3797,64 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
     );
   }
 
+  void _showPacketPathWindowSheet(
+    BuildContext context,
+    AppSettingsService settingsService,
+  ) {
+    showMeshSheet(
+      context,
+      builder: (ctx) => SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BottomSheetHeader(title: ctx.l10n.appSettings_packetPathWindow),
+            MeshSheetOption(
+              label: ctx.l10n.appSettings_last24Hours,
+              selected: settingsService.settings.packetPathWindowHours == 24,
+              onTap: () {
+                settingsService.setPacketPathWindowHours(24);
+                Navigator.pop(ctx);
+              },
+            ),
+            MeshSheetOption(
+              label: ctx.l10n.appSettings_last3Days,
+              selected: settingsService.settings.packetPathWindowHours == 72,
+              onTap: () {
+                settingsService.setPacketPathWindowHours(72);
+                Navigator.pop(ctx);
+              },
+            ),
+            MeshSheetOption(
+              label: ctx.l10n.appSettings_lastWeek,
+              selected: settingsService.settings.packetPathWindowHours == 168,
+              onTap: () {
+                settingsService.setPacketPathWindowHours(168);
+                Navigator.pop(ctx);
+              },
+            ),
+            MeshSheetOption(
+              label: ctx.l10n.appSettings_last2Weeks,
+              selected: settingsService.settings.packetPathWindowHours == 336,
+              onTap: () {
+                settingsService.setPacketPathWindowHours(336);
+                Navigator.pop(ctx);
+              },
+            ),
+            MeshSheetOption(
+              label: ctx.l10n.appSettings_last4Weeks,
+              selected: settingsService.settings.packetPathWindowHours == 672,
+              onTap: () {
+                settingsService.setPacketPathWindowHours(672);
+                Navigator.pop(ctx);
+              },
+            ),
+            SizedBox(height: MediaQuery.paddingOf(ctx).bottom + 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showFilterSheet(
     BuildContext context,
     AppSettingsService settingsService,
@@ -3897,6 +3988,35 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
                           dense: true,
                           onChanged: (value) =>
                               service.setMapShowOtherNodes(value),
+                        ),
+                        SectionHeader(sheetContext.l10n.map_packets),
+                        SwitchListTile(
+                          title: Text(
+                            sheetContext.l10n.appSettings_showPacketPaths,
+                          ),
+                          subtitle: Text(
+                            sheetContext
+                                .l10n
+                                .appSettings_showPacketPathsSubtitle,
+                          ),
+                          value: settings.mapShowPacketPaths,
+                          dense: true,
+                          onChanged: (value) =>
+                              service.setMapShowPacketPaths(value),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.timer_outlined),
+                          title: Text(
+                            sheetContext.l10n.appSettings_packetPathWindow,
+                          ),
+                          subtitle: Text(
+                            sheetContext.l10n
+                                .appSettings_packetPathWindowShowLast(
+                                  settings.packetPathWindowHours.toInt(),
+                                ),
+                          ),
+                          onTap: () =>
+                              _showPacketPathWindowSheet(sheetContext, service),
                         ),
                         SectionHeader(sheetContext.l10n.map_markers),
                         SwitchListTile(

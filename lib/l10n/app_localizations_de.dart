@@ -1487,13 +1487,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appSettings_lastWeek => 'Letzte Woche';
 
   @override
-  String get appSettings_showLivePackets => 'Show Live Packets';
-
-  @override
-  String get appSettings_showLivePacketsSubtitle =>
-      'Animate packets travelling their paths on the map';
-
-  @override
   String get appSettings_showPacketPaths => 'Show Packet Paths';
 
   @override
@@ -2366,9 +2359,15 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get chat_latencyUnsynced => 'unsynced';
+
+  @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
   }
+
+  @override
+  String get chat_regionUnscoped => 'unscoped';
 
   @override
   String chat_signalChip(int rssi, String snr) {
@@ -2821,6 +2820,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get map_publicKeyPrefix => 'Präfix des öffentlichen Schlüssels';
+
+  @override
+  String get map_packets => 'Packets';
 
   @override
   String get map_markers => 'Marker';

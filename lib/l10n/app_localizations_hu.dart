@@ -1477,13 +1477,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get appSettings_lastWeek => 'Elmúlt hét';
 
   @override
-  String get appSettings_showLivePackets => 'Show Live Packets';
-
-  @override
-  String get appSettings_showLivePacketsSubtitle =>
-      'Animate packets travelling their paths on the map';
-
-  @override
   String get appSettings_showPacketPaths => 'Show Packet Paths';
 
   @override
@@ -2353,9 +2346,15 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get chat_latencyUnsynced => 'unsynced';
+
+  @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
   }
+
+  @override
+  String get chat_regionUnscoped => 'unscoped';
 
   @override
   String chat_signalChip(int rssi, String snr) {
@@ -2809,6 +2808,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get map_publicKeyPrefix => 'Nyilvános kulcs előtagja';
+
+  @override
+  String get map_packets => 'Packets';
 
   @override
   String get map_markers => 'Jelölők';

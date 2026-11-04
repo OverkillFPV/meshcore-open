@@ -4945,7 +4945,7 @@ class MeshCoreConnector extends ChangeNotifier {
         (sendScope == kUnscopedRegion && !supportsExplicitUnscopedFlood);
     final sendRegion = radioDefaultApplies
         ? (_defaultFloodScopeName ?? '')
-        : (sendScope == kUnscopedRegion ? '' : sendScope);
+        : sendScope;
 
     // Check if this is a reaction - if so, process it immediately instead of adding as a message
     final reactionInfo = ReactionHelper.parseReaction(text);
@@ -8484,10 +8484,16 @@ class MeshCoreConnector extends ChangeNotifier {
   }
 
   String? _resolveTransportRegion(_RawPacket packet) {
-    if (packet.routeType != _routeTransportFlood ||
-        packet.transportCodes == null) {
-      return null;
+    if (!packet.isFlood) return null;
+
+    final codes = packet.transportCodes;
+    if (codes == null) {
+      // Legacy flood packets carry no transport codes at all: unscoped.
+      return kUnscopedRegion;
     }
+    // The firmware maps a zero transport code to the null region "*", and
+    // named regions never derive it because 0x0000 and 0xFFFF are reserved.
+    if (codes[0] == 0 && codes[1] == 0) return kUnscopedRegion;
 
     // `foo` and `#foo` share a scope key, so dedupe without the prefix or a
     // region listed both ways would always look ambiguous.

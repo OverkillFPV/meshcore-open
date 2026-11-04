@@ -984,24 +984,26 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                       ChannelMessageStatus.failed,
                                   onColor: metaColor,
                                 ),
-                              if (displayPath.isNotEmpty) ...[
+                              if (displayPath.isNotEmpty ||
+                                  (message.region?.isNotEmpty ?? false)) ...[
                                 _RouteRegionChips(
                                   sameLine: regionOnHopsLine,
                                   children: [
-                                    Text(
-                                      (message.pathLength ?? -1) >= 0
-                                          ? (displayHopCount == null ||
-                                                    displayHopCount == 0
-                                                ? context.l10n.chat_direct
-                                                : context.l10n.chat_hopsCount(
-                                                    displayHopCount,
-                                                  ))
-                                          : context.l10n.routing_modeFlood,
-                                      style: MeshTheme.mono(
-                                        fontSize: 12 * textScale,
-                                        color: metaColor,
+                                    if (displayPath.isNotEmpty)
+                                      Text(
+                                        (message.pathLength ?? -1) >= 0
+                                            ? (displayHopCount == null ||
+                                                      displayHopCount == 0
+                                                  ? context.l10n.chat_direct
+                                                  : context.l10n.chat_hopsCount(
+                                                      displayHopCount,
+                                                    ))
+                                            : context.l10n.routing_modeFlood,
+                                        style: MeshTheme.mono(
+                                          fontSize: 12 * textScale,
+                                          color: metaColor,
+                                        ),
                                       ),
-                                    ),
                                     if (message.region?.isNotEmpty ?? false)
                                       Padding(
                                         padding: regionOnHopsLine
@@ -1015,7 +1017,8 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                           ),
                                         ),
                                       ),
-                                    if (latencyLabel != null)
+                                    if (displayPath.isNotEmpty &&
+                                        latencyLabel != null)
                                       Padding(
                                         padding: regionOnHopsLine
                                             ? EdgeInsets.zero
@@ -1028,9 +1031,10 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                           ),
                                         ),
                                       ),
-                                    if (settingsService
-                                        .settings
-                                        .showPathByteMode)
+                                    if (displayPath.isNotEmpty &&
+                                        settingsService
+                                            .settings
+                                            .showPathByteMode)
                                       Padding(
                                         padding: regionOnHopsLine
                                             ? EdgeInsets.zero
@@ -1047,7 +1051,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                       ),
                                   ],
                                 ),
-                                if (enableTracing)
+                                if (enableTracing && displayPath.isNotEmpty)
                                   Text(
                                     context.l10n.channels_via(
                                       _formatPathPrefixes(
@@ -2088,7 +2092,9 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                   ),
                 ),
                 child: Text(
-                  context.l10n.channels_regionSetTo(replyRegion!),
+                  context.l10n.channels_regionSetTo(
+                    _displayRegion(replyRegion!),
+                  ),
                   style:
                       MeshTheme.mono(
                         fontSize: 12 * textScale,
@@ -2542,16 +2548,19 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
   }
 
   String _displayRegion(String region) {
+    if (region == kUnscopedRegion) return context.l10n.chat_regionUnscoped;
     return region.startsWith('#') ? region.substring(1) : region;
   }
 
   /// Delivery latency: sender timestamp versus the local clock when the
   /// message arrived. Null for outgoing messages or when the sender clock
-  /// runs ahead of the local one.
+  /// runs ahead of the local one. Values above 9999 ms are treated as clock
+  /// drift and reported as unsynced.
   String? _formatLatency(ChannelMessage message, AppLocalizations l10n) {
     if (message.isOutgoing) return null;
     final latency = message.receivedAt.difference(message.timestamp);
     if (latency.isNegative) return null;
+    if (latency.inMilliseconds > 9999) return l10n.chat_latencyUnsynced;
     return l10n.chat_latencyMilliseconds(latency.inMilliseconds);
   }
 

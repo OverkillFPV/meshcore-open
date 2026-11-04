@@ -110,9 +110,6 @@ class AppSettings {
   final bool mapShowGuessedLocations;
   final bool mapClusterNodes;
 
-  /// Animate packets travelling their observed paths on the map.
-  final bool mapShowLivePackets;
-
   /// Draw lines between repeaters along paths packets were seen taking.
   final bool mapShowPacketPaths;
 
@@ -273,7 +270,6 @@ class AppSettings {
     this.mapShowMarkers = true,
     this.mapShowGuessedLocations = true,
     this.mapClusterNodes = true,
-    this.mapShowLivePackets = true,
     this.mapShowPacketPaths = true,
     this.packetPathWindowHours = 336,
     this.enableMessageTracing = false,
@@ -374,7 +370,6 @@ class AppSettings {
       'map_show_markers': mapShowMarkers,
       'map_show_guessed_locations': mapShowGuessedLocations,
       'map_cluster_nodes': mapClusterNodes,
-      'map_show_live_packets': mapShowLivePackets,
       'map_show_packet_paths': mapShowPacketPaths,
       'packet_path_window_hours': packetPathWindowHours,
       'enable_message_tracing': enableMessageTracing,
@@ -514,7 +509,6 @@ class AppSettings {
       mapShowGuessedLocations:
           json['map_show_guessed_locations'] as bool? ?? true,
       mapClusterNodes: json['map_cluster_nodes'] as bool? ?? true,
-      mapShowLivePackets: json['map_show_live_packets'] as bool? ?? true,
       mapShowPacketPaths: json['map_show_packet_paths'] as bool? ?? true,
       packetPathWindowHours:
           (json['packet_path_window_hours'] as num?)?.toDouble() ?? 336,
@@ -686,7 +680,6 @@ class AppSettings {
     bool? mapShowMarkers,
     bool? mapShowGuessedLocations,
     bool? mapClusterNodes,
-    bool? mapShowLivePackets,
     bool? mapShowPacketPaths,
     double? packetPathWindowHours,
     bool? enableMessageTracing,
@@ -772,7 +765,6 @@ class AppSettings {
       mapShowGuessedLocations:
           mapShowGuessedLocations ?? this.mapShowGuessedLocations,
       mapClusterNodes: mapClusterNodes ?? this.mapClusterNodes,
-      mapShowLivePackets: mapShowLivePackets ?? this.mapShowLivePackets,
       mapShowPacketPaths: mapShowPacketPaths ?? this.mapShowPacketPaths,
       packetPathWindowHours:
           packetPathWindowHours ?? this.packetPathWindowHours,
