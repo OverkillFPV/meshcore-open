@@ -3289,6 +3289,7 @@
   "scanner_getNodeBody": "Do tamanho de uma carteira, roda MeshCore, GPS dual-band, à prova d'água, bateria para 5 dias.",
   "scanner_getNodeAction": "Compre aqui",
   "scanner_getNodeDisclosure": "Link de afiliado: cada compra apoia o MeshCore Open.",
+  "scanner_getNodeDismiss": "Não mostrar novamente",
   "networkMap_settingsSection": "Mapa da rede",
   "networkMap_uploadTitle": "Compartilhar o que meu rádio ouve",
   "networkMap_uploadExplanation": "Quando isto está ativado e o seu rádio está conectado, o app envia um breve resumo dos pacotes que o seu rádio ouve para o mapa da rede do MeshCore Open, para que todos possam ver quais repetidores existem e como se conectam. Ele envia o tipo, a rota, os saltos, a intensidade do sinal e o tamanho de cada pacote, além dos nomes e localizações aproximadas dos repetidores, obtidos dos próprios anúncios. Nunca envia o texto das mensagens, quem fala com quem, nomes de canais, seus contactos nem a sua posição exata: as localizações são arredondadas para cerca de 2 km, e o seu app recebe um novo ID aleatório todos os dias.",
@@ -3449,6 +3450,9 @@
   "notification_sentImage": "Enviou uma imagem",
   "snrIndicator_unknownRepeater": "Repetidor desconhecido",
   "snrIndicator_unknownRepeaterHint": "Este repetidor ainda não está nos seus contatos. O nome, a localização e as opções aparecem quando o seu rádio receber o respetivo anúncio.",
+  "snrIndicator_packets": "Pacotes",
+  "snrIndicator_snrOverTime": "SNR ao longo do tempo",
+  "snrIndicator_packetCount": "{count, plural, =1{1 pacote} other{{count} pacotes}}",
   "contacts_keyPrefixSemantics": "Prefixo da chave {prefix}",
   "@contacts_keyPrefixSemantics": {
     "placeholders": {

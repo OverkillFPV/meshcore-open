@@ -357,6 +357,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scanner_getNodeDisclosure => '推广链接：每次购买都会支持 MeshCore Open。';
 
   @override
+  String get scanner_getNodeDismiss => '不再显示';
+
+  @override
   String get scanner_bluetoothWebUnsupported => '浏览器不支持蓝牙，请改用 USB 连接。';
 
   @override
@@ -1069,6 +1072,17 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get companionCli_title => 'Companion CLI';
+
+  @override
+  String get companionCli_settingsSubtitle =>
+      'Run CLI commands on the connected radio';
+
+  @override
+  String get companionCli_noReply =>
+      'No reply (reboot and poweroff never answer)';
+
+  @override
   String get appSettings_channelMinHops => '重发频道消息，直到传得足够远';
 
   @override
@@ -1124,6 +1138,13 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get appSettings_showMessageLatencySubtitle =>
       'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showMessageSignal => 'Signal strength';
+
+  @override
+  String get appSettings_showMessageSignalSubtitle =>
+      'Show the RSSI and SNR the message was received with, coloured by quality.';
 
   @override
   String get appSettings_showPathByteMode => 'Path byte mode';
@@ -1365,6 +1386,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appSettings_lastWeek => '上周';
+
+  @override
+  String get appSettings_showLivePackets => 'Show Live Packets';
+
+  @override
+  String get appSettings_showLivePacketsSubtitle =>
+      'Animate packets travelling their paths on the map';
+
+  @override
+  String get appSettings_showPacketPaths => 'Show Packet Paths';
+
+  @override
+  String get appSettings_showPacketPathsSubtitle =>
+      'Draw lines between repeaters along paths packets were seen taking';
+
+  @override
+  String get appSettings_packetPathWindow => 'Packet Path Time Window';
+
+  @override
+  String appSettings_packetPathWindowShowLast(int hours) {
+    return 'Show packet paths from the last $hours hours';
+  }
+
+  @override
+  String get appSettings_last3Days => 'Last 3 days';
+
+  @override
+  String get appSettings_last2Weeks => 'Last 2 weeks';
+
+  @override
+  String get appSettings_last4Weeks => 'Last 4 weeks';
 
   @override
   String get appSettings_rasterTileSource => '栅格瓦片源';
@@ -2168,23 +2220,23 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String chat_latencySeconds(int count) {
-    return '${count}s';
-  }
-
-  @override
-  String chat_latencyMinutes(int count) {
-    return '${count}m';
-  }
-
-  @override
-  String chat_latencyHours(int count) {
-    return '${count}h';
+  String chat_latencyMilliseconds(int count) {
+    return '${count}ms';
   }
 
   @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
+  }
+
+  @override
+  String chat_signalChip(int rssi, String snr) {
+    return '${rssi}dBm ${snr}dB';
+  }
+
+  @override
+  String chat_snrChip(String snr) {
+    return '${snr}dB';
   }
 
   @override
@@ -2438,6 +2490,33 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get map_noGps => '无 GPS';
+
+  @override
+  String get map_mapStyle => 'Map style';
+
+  @override
+  String get map_mapStyleAuto => 'Auto';
+
+  @override
+  String get map_mapStyleAutoHint => 'Follows the app light or dark theme';
+
+  @override
+  String get map_mapStyleStreet => 'Street';
+
+  @override
+  String get map_mapStyleStreetHint => 'OpenStreetMap street map';
+
+  @override
+  String get map_mapStyleTopo => 'Topographic';
+
+  @override
+  String get map_mapStyleTopoHint => 'Terrain map with hill shading';
+
+  @override
+  String get map_mapStyleSatellite => 'Satellite';
+
+  @override
+  String get map_mapStyleSatelliteHint => 'Satellite imagery';
 
   @override
   String get map_noResults => '未找到匹配的节点';
@@ -4298,15 +4377,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get channelPath_timeLabel => '时间';
 
   @override
-  String get channelPath_repeatsLabel => '重复';
+  String get channelPath_uniquePathsLabel => 'Unique paths';
 
   @override
   String channelPath_pathLabel(int index) {
     return '路径 $index';
   }
-
-  @override
-  String get channelPath_observedLabel => '观察到的';
 
   @override
   String channelPath_observedPathTitle(int index, String hops) {
@@ -4336,14 +4412,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get channelPath_directPath => '直连';
 
   @override
-  String channelPath_observedZeroOf(int total) {
-    return '0 / $total 跳';
-  }
-
-  @override
-  String channelPath_observedSomeOf(int observed, int total) {
-    return '$observed / $total 跳';
-  }
+  String get channelPath_shortestPathNote =>
+      'Overall shortest likely path shown.';
 
   @override
   String get channelPath_mapTitle => '路径地图';
@@ -4890,6 +4960,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contacts_contactAdvertCopyFailed => '复制广播到剪贴板失败。';
 
   @override
+  String get contacts_showDetails => 'Show details';
+
+  @override
+  String get contacts_detailNodeHash => 'Node hash';
+
+  @override
+  String get contacts_detailPathBytes => 'Path bytes';
+
+  @override
+  String get contacts_detailLastMessage => 'Last message';
+
+  @override
+  String get contacts_detailLastModified => 'Last modified';
+
+  @override
+  String get contacts_detailFavorite => 'Favorite';
+
+  @override
+  String get contacts_detailStatus => 'Status';
+
+  @override
+  String get contacts_detailActive => 'Active';
+
+  @override
+  String get contacts_detailInactive => 'Inactive';
+
+  @override
+  String get contacts_detailYes => 'Yes';
+
+  @override
+  String get contacts_detailNo => 'No';
+
+  @override
+  String get contacts_detailTelemetryNone => 'None';
+
+  @override
   String get notification_activityTitle => 'MeshCore 活动';
 
   @override
@@ -5039,6 +5145,23 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get snrIndicator_unknownRepeaterHint =>
       '此中继器还不在你的联系人中。待你的无线电收到它的广播后，将显示其名称、位置和选项。';
+
+  @override
+  String get snrIndicator_packets => '数据包';
+
+  @override
+  String get snrIndicator_snrOverTime => 'SNR 随时间变化';
+
+  @override
+  String snrIndicator_packetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个数据包',
+      one: '1 个数据包',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get contactsSettings_title => '联系人设置';

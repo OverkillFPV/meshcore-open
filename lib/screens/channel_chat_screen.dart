@@ -19,6 +19,7 @@ import '../connector/meshcore_protocol.dart';
 import '../helpers/cyr2lat.dart';
 import '../helpers/gif_helper.dart';
 import '../helpers/ipfs_link_attach_flow.dart';
+import '../helpers/mention_search.dart';
 import '../helpers/marker_message.dart';
 import '../helpers/message_url_image_helper.dart';
 import '../helpers/path_helper.dart';
@@ -674,7 +675,6 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     final enableTracing = settingsService.settings.enableMessageTracing;
     final regionOnHopsLine = settingsService.settings.regionOnHopsLine;
     final isOutgoing = message.isOutgoing;
-    final scheme = Theme.of(context).colorScheme;
     final gifId = GifHelper.parseGif(message.text);
     final poi = parseMarkerText(message.text);
     final translatedDisplayText =
@@ -701,11 +701,30 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     final latencyLabel = settingsService.settings.showMessageLatency
         ? _formatLatency(message, context.l10n)
         : null;
+    final lastHopHex = displayPath.isEmpty
+        ? null
+        : PathHelper.formatHopHex(
+            PathHelper.splitPathBytes(displayPath, displayPathHashWidth).last,
+          );
+    final signalLabel =
+        (isOutgoing || !settingsService.settings.showMessageSignal)
+        ? null
+        : _formatSignal(message.snrDb, message.rssiDbm, context.l10n);
 
     final colors = MessageBubbleColors.of(context, isOutgoing: isOutgoing);
     final textColor = colors.text;
     final metaColor = colors.meta;
     const bodyFontSize = 14.0;
+
+    Widget metaChip(String label, {Color? color}) {
+      return Text(
+        label,
+        style: MeshTheme.mono(
+          fontSize: 12 * textScale,
+          color: color ?? metaColor,
+        ),
+      );
+    }
 
     Widget buildTextContent() {
       return Row(
@@ -887,136 +906,6 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                               buildTextContent(),
                             ],
                           ),
-                        if (displayPath.isNotEmpty) ...[
-                          const SizedBox(height: 3),
-                          Padding(
-                            padding: gifId != null
-                                ? const EdgeInsets.symmetric(horizontal: 8)
-                                : EdgeInsets.zero,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _RouteRegionChips(
-                                  sameLine: regionOnHopsLine,
-                                  children: [
-                                    RouteChip(
-                                      isDirect: (message.pathLength ?? -1) >= 0,
-                                      hops: displayHopCount,
-                                    ),
-                                    if (message.region?.isNotEmpty ?? false)
-                                      Padding(
-                                        padding: regionOnHopsLine
-                                            ? EdgeInsets.zero
-                                            : const EdgeInsets.only(top: 2),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: scheme.surfaceContainerHigh,
-                                            borderRadius: BorderRadius.circular(
-                                              MeshRadii.xs,
-                                            ),
-                                            border: Border.all(
-                                              color: scheme.outlineVariant,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            _displayRegion(message.region!),
-                                            style: MeshTheme.mono(
-                                              fontSize: 12 * textScale,
-                                              color: metaColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    if (latencyLabel != null)
-                                      Padding(
-                                        padding: regionOnHopsLine
-                                            ? EdgeInsets.zero
-                                            : const EdgeInsets.only(top: 2),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: scheme.surfaceContainerHigh,
-                                            borderRadius: BorderRadius.circular(
-                                              MeshRadii.xs,
-                                            ),
-                                            border: Border.all(
-                                              color: scheme.outlineVariant,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            latencyLabel,
-                                            style: MeshTheme.mono(
-                                              fontSize: 12 * textScale,
-                                              color: metaColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    if (settingsService
-                                        .settings
-                                        .showPathByteMode)
-                                      Padding(
-                                        padding: regionOnHopsLine
-                                            ? EdgeInsets.zero
-                                            : const EdgeInsets.only(top: 2),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: scheme.surfaceContainerHigh,
-                                            borderRadius: BorderRadius.circular(
-                                              MeshRadii.xs,
-                                            ),
-                                            border: Border.all(
-                                              color: scheme.outlineVariant,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            context.l10n.chat_hashWidthChip(
-                                              displayPathHashWidth,
-                                            ),
-                                            style: MeshTheme.mono(
-                                              fontSize: 12 * textScale,
-                                              color: metaColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                if (enableTracing) ...[
-                                  const SizedBox(width: 4),
-                                  Flexible(
-                                    child: Text(
-                                      context.l10n.channels_via(
-                                        _formatPathPrefixes(
-                                          displayPath,
-                                          displayPathHashWidth,
-                                        ),
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: MeshTheme.mono(
-                                        fontSize: 12 * textScale,
-                                        color: metaColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
                         const SizedBox(height: 3),
                         Padding(
                           padding: gifId != null
@@ -1026,40 +915,56 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                   bottom: 4,
                                 )
                               : EdgeInsets.zero,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 2,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              Text(
-                                formatChatTime(context, message.timestamp),
-                                style: MeshTheme.mono(
-                                  fontSize: 12 * textScale,
-                                  color: metaColor,
-                                ),
-                              ),
-                              if (message.hasFutureTimestamp) ...[
-                                const SizedBox(width: 4),
-                                FutureTimestampIndicator(size: 16 * textScale),
-                              ],
-                              if (enableTracing &&
-                                  !isOutgoing &&
-                                  message.repeatCount > 0) ...[
-                                const SizedBox(width: 6),
-                                Icon(
-                                  Icons.repeat,
-                                  size: 14 * textScale,
-                                  color: metaColor,
-                                ),
-                                const SizedBox(width: 2),
-                                Text(
-                                  '${message.repeatCount}',
-                                  style: MeshTheme.mono(
-                                    fontSize: 12 * textScale,
-                                    color: metaColor,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    formatChatTime(context, message.timestamp),
+                                    style: MeshTheme.mono(
+                                      fontSize: 12 * textScale,
+                                      color: metaColor,
+                                    ),
                                   ),
+                                  if (message.hasFutureTimestamp) ...[
+                                    const SizedBox(width: 4),
+                                    FutureTimestampIndicator(
+                                      size: 16 * textScale,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              if (!isOutgoing && message.repeatCount > 0)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Tooltip(
+                                      message: context.l10n
+                                          .messageStatus_heardRepeatedCount(
+                                            message.repeatCount,
+                                          ),
+                                      triggerMode: TooltipTriggerMode.tap,
+                                      child: Icon(
+                                        Icons.repeat,
+                                        size: 14 * textScale,
+                                        color: metaColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      '${message.repeatCount}',
+                                      style: MeshTheme.mono(
+                                        fontSize: 12 * textScale,
+                                        color: metaColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                              if (isOutgoing) ...[
-                                const SizedBox(width: 4),
+                              if (isOutgoing)
                                 MessageStatusIcon(
                                   size: 16 * textScale,
                                   isAcked: false,
@@ -1079,6 +984,97 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                       ChannelMessageStatus.failed,
                                   onColor: metaColor,
                                 ),
+                              if (displayPath.isNotEmpty) ...[
+                                _RouteRegionChips(
+                                  sameLine: regionOnHopsLine,
+                                  children: [
+                                    Text(
+                                      (message.pathLength ?? -1) >= 0
+                                          ? (displayHopCount == null ||
+                                                    displayHopCount == 0
+                                                ? context.l10n.chat_direct
+                                                : context.l10n.chat_hopsCount(
+                                                    displayHopCount,
+                                                  ))
+                                          : context.l10n.routing_modeFlood,
+                                      style: MeshTheme.mono(
+                                        fontSize: 12 * textScale,
+                                        color: metaColor,
+                                      ),
+                                    ),
+                                    if (message.region?.isNotEmpty ?? false)
+                                      Padding(
+                                        padding: regionOnHopsLine
+                                            ? EdgeInsets.zero
+                                            : const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          _displayRegion(message.region!),
+                                          style: MeshTheme.mono(
+                                            fontSize: 12 * textScale,
+                                            color: metaColor,
+                                          ),
+                                        ),
+                                      ),
+                                    if (latencyLabel != null)
+                                      Padding(
+                                        padding: regionOnHopsLine
+                                            ? EdgeInsets.zero
+                                            : const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          latencyLabel,
+                                          style: MeshTheme.mono(
+                                            fontSize: 12 * textScale,
+                                            color: metaColor,
+                                          ),
+                                        ),
+                                      ),
+                                    if (settingsService
+                                        .settings
+                                        .showPathByteMode)
+                                      Padding(
+                                        padding: regionOnHopsLine
+                                            ? EdgeInsets.zero
+                                            : const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          context.l10n.chat_hashWidthChip(
+                                            displayPathHashWidth,
+                                          ),
+                                          style: MeshTheme.mono(
+                                            fontSize: 12 * textScale,
+                                            color: metaColor,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                if (enableTracing)
+                                  Text(
+                                    context.l10n.channels_via(
+                                      _formatPathPrefixes(
+                                        displayPath,
+                                        displayPathHashWidth,
+                                      ),
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: MeshTheme.mono(
+                                      fontSize: 12 * textScale,
+                                      color: metaColor,
+                                    ),
+                                  ),
+                              ],
+                              if (!isOutgoing &&
+                                  (lastHopHex != null ||
+                                      signalLabel != null)) ...[
+                                if (lastHopHex != null) metaChip(lastHopHex),
+                                if (signalLabel != null)
+                                  metaChip(
+                                    signalLabel,
+                                    color: MeshTheme.signalColor(
+                                      snrDb: message.snrDb,
+                                      rssiDbm: message.rssiDbm,
+                                    ),
+                                  ),
                               ],
                             ],
                           ),
@@ -2155,6 +2151,18 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
   static String _replyPrefix(ChannelMessage replyTo) =>
       '@[${replyTo.senderName}] ';
 
+  /// Names for the composer's `@` picker: contacts plus this channel's
+  /// senders, most recent group message first.
+  List<MentionCandidate> _mentionSearch(String query) {
+    final connector = context.read<MeshCoreConnector>();
+    return searchMentionCandidates(
+      messages: connector.getChannelMessages(widget.channel),
+      contacts: connector.contacts,
+      query: query,
+      selfName: connector.selfName,
+    );
+  }
+
   Widget _buildInputBar() {
     // Only the fields the composer depends on, so unrelated connector
     // notifications (adverts, other chats, radio stats) don't rebuild it.
@@ -2192,6 +2200,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
           : null,
       onSend: _sendMessage,
       sendTooltip: context.l10n.chat_sendMessage,
+      mentionSearch: _mentionSearch,
       header: [
         if (replyTo != null)
           Builder(
@@ -2543,11 +2552,17 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     if (message.isOutgoing) return null;
     final latency = message.receivedAt.difference(message.timestamp);
     if (latency.isNegative) return null;
-    if (latency.inHours > 0) return l10n.chat_latencyHours(latency.inHours);
-    if (latency.inMinutes > 0) {
-      return l10n.chat_latencyMinutes(latency.inMinutes);
+    return l10n.chat_latencyMilliseconds(latency.inMilliseconds);
+  }
+
+  /// Signal our radio measured for a received copy, e.g. `-103dBm 7.2dB`.
+  /// SNR-only when the firmware did not report RSSI.
+  String? _formatSignal(double? snrDb, int? rssiDbm, AppLocalizations l10n) {
+    if (snrDb == null && rssiDbm == null) return null;
+    if (snrDb != null && rssiDbm != null) {
+      return l10n.chat_signalChip(rssiDbm, snrDb.toStringAsFixed(1));
     }
-    return l10n.chat_latencySeconds(latency.inSeconds);
+    return l10n.chat_snrChip(snrDb!.toStringAsFixed(1));
   }
 
   Future<void> openRegionSelectDialog(Channel channel) async {
@@ -3057,15 +3072,11 @@ class _RouteRegionChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sameLine) {
-      // Flexible bounds the Wrap's width inside the bubble's Row so a long
-      // region name wraps under the hop chip instead of overflowing.
-      return Flexible(
-        child: Wrap(
-          spacing: 4,
-          runSpacing: 2,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: children,
-        ),
+      return Wrap(
+        spacing: 4,
+        runSpacing: 2,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: children,
       );
     }
     return Column(

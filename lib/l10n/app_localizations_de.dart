@@ -380,6 +380,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Affiliate-Link: Jeder Kauf unterstützt MeshCore Open.';
 
   @override
+  String get scanner_getNodeDismiss => 'Nicht mehr anzeigen';
+
+  @override
   String get scanner_bluetoothWebUnsupported =>
       'Bluetooth ist im Browser nicht verfügbar. Verwenden Sie stattdessen eine USB-Verbindung.';
 
@@ -1135,6 +1138,17 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get companionCli_title => 'Companion CLI';
+
+  @override
+  String get companionCli_settingsSubtitle =>
+      'Run CLI commands on the connected radio';
+
+  @override
+  String get companionCli_noReply =>
+      'No reply (reboot and poweroff never answer)';
+
+  @override
   String get appSettings_channelMinHops =>
       'Kanalnachrichten erneut senden, bis sie weit genug gelangen';
 
@@ -1194,6 +1208,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get appSettings_showMessageLatencySubtitle =>
       'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showMessageSignal => 'Signal strength';
+
+  @override
+  String get appSettings_showMessageSignalSubtitle =>
+      'Show the RSSI and SNR the message was received with, coloured by quality.';
 
   @override
   String get appSettings_showPathByteMode => 'Path byte mode';
@@ -1464,6 +1485,37 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get appSettings_lastWeek => 'Letzte Woche';
+
+  @override
+  String get appSettings_showLivePackets => 'Show Live Packets';
+
+  @override
+  String get appSettings_showLivePacketsSubtitle =>
+      'Animate packets travelling their paths on the map';
+
+  @override
+  String get appSettings_showPacketPaths => 'Show Packet Paths';
+
+  @override
+  String get appSettings_showPacketPathsSubtitle =>
+      'Draw lines between repeaters along paths packets were seen taking';
+
+  @override
+  String get appSettings_packetPathWindow => 'Packet Path Time Window';
+
+  @override
+  String appSettings_packetPathWindowShowLast(int hours) {
+    return 'Show packet paths from the last $hours hours';
+  }
+
+  @override
+  String get appSettings_last3Days => 'Last 3 days';
+
+  @override
+  String get appSettings_last2Weeks => 'Last 2 weeks';
+
+  @override
+  String get appSettings_last4Weeks => 'Last 4 weeks';
 
   @override
   String get appSettings_rasterTileSource => 'Quelle für Rasterkacheln';
@@ -2309,23 +2361,23 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String chat_latencySeconds(int count) {
-    return '${count}s';
-  }
-
-  @override
-  String chat_latencyMinutes(int count) {
-    return '${count}m';
-  }
-
-  @override
-  String chat_latencyHours(int count) {
-    return '${count}h';
+  String chat_latencyMilliseconds(int count) {
+    return '${count}ms';
   }
 
   @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
+  }
+
+  @override
+  String chat_signalChip(int rssi, String snr) {
+    return '${rssi}dBm ${snr}dB';
+  }
+
+  @override
+  String chat_snrChip(String snr) {
+    return '${snr}dB';
   }
 
   @override
@@ -2590,6 +2642,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get map_noGps => 'Kein GPS';
+
+  @override
+  String get map_mapStyle => 'Map style';
+
+  @override
+  String get map_mapStyleAuto => 'Auto';
+
+  @override
+  String get map_mapStyleAutoHint => 'Follows the app light or dark theme';
+
+  @override
+  String get map_mapStyleStreet => 'Street';
+
+  @override
+  String get map_mapStyleStreetHint => 'OpenStreetMap street map';
+
+  @override
+  String get map_mapStyleTopo => 'Topographic';
+
+  @override
+  String get map_mapStyleTopoHint => 'Terrain map with hill shading';
+
+  @override
+  String get map_mapStyleSatellite => 'Satellite';
+
+  @override
+  String get map_mapStyleSatelliteHint => 'Satellite imagery';
 
   @override
   String get map_noResults => 'Keine passenden Knoten gefunden';
@@ -4628,15 +4707,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get channelPath_timeLabel => 'Zeit';
 
   @override
-  String get channelPath_repeatsLabel => 'Wiederholungen';
+  String get channelPath_uniquePathsLabel => 'Unique paths';
 
   @override
   String channelPath_pathLabel(int index) {
     return 'Pfad $index';
   }
-
-  @override
-  String get channelPath_observedLabel => 'Beobachtet';
 
   @override
   String channelPath_observedPathTitle(int index, String hops) {
@@ -4666,14 +4742,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get channelPath_directPath => 'Direkt';
 
   @override
-  String channelPath_observedZeroOf(int total) {
-    return '0 von $total Sprüngen';
-  }
-
-  @override
-  String channelPath_observedSomeOf(int observed, int total) {
-    return '$observed von $total Sprüngen';
-  }
+  String get channelPath_shortestPathNote =>
+      'Overall shortest likely path shown.';
 
   @override
   String get channelPath_mapTitle => 'Pfadkarte';
@@ -5252,6 +5322,42 @@ class AppLocalizationsDe extends AppLocalizations {
       'Kopieren der Ankündigung in die Zwischenablage fehlgeschlagen.';
 
   @override
+  String get contacts_showDetails => 'Show details';
+
+  @override
+  String get contacts_detailNodeHash => 'Node hash';
+
+  @override
+  String get contacts_detailPathBytes => 'Path bytes';
+
+  @override
+  String get contacts_detailLastMessage => 'Last message';
+
+  @override
+  String get contacts_detailLastModified => 'Last modified';
+
+  @override
+  String get contacts_detailFavorite => 'Favorite';
+
+  @override
+  String get contacts_detailStatus => 'Status';
+
+  @override
+  String get contacts_detailActive => 'Active';
+
+  @override
+  String get contacts_detailInactive => 'Inactive';
+
+  @override
+  String get contacts_detailYes => 'Yes';
+
+  @override
+  String get contacts_detailNo => 'No';
+
+  @override
+  String get contacts_detailTelemetryNone => 'None';
+
+  @override
   String get notification_activityTitle => 'MeshCore Aktivität';
 
   @override
@@ -5430,6 +5536,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get snrIndicator_unknownRepeaterHint =>
       'Dieser Repeater ist noch nicht in Ihren Kontakten. Name, Standort und Optionen erscheinen, sobald Ihr Funkgerät seinen Advert empfängt.';
+
+  @override
+  String get snrIndicator_packets => 'Pakete';
+
+  @override
+  String get snrIndicator_snrOverTime => 'SNR im Zeitverlauf';
+
+  @override
+  String snrIndicator_packetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Pakete',
+      one: '1 Paket',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get contactsSettings_title => 'Kontakteinstellungen';

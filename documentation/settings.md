@@ -132,6 +132,7 @@ Individual channels can be muted from the channel chat bell icon, the channel li
 - **Enable Message Tracing**: Shows path trace overlays and extra metadata on messages
 - **Region next to hop count** (default off): Shows a channel message's region chip on the same line as its hop count instead of below it
 - **Message latency** (default on): Shows how long a received channel message took to arrive, next to its hop count
+- **Signal strength** (default on): Shows the RSSI (dBm) and SNR (dB) a message was received with, coloured by quality (green/amber/red)
 - **Path byte mode** (default on): Shows the routing hash byte width (`1B`/`2B`/`3B`) next to a channel message's hop count
 - **Resend channel messages until they travel far enough** (default off): If your channel message isn't heard coming back through enough repeaters, it's sent again. Uses more airtime. When on, it shows:
   - Required hops (1–8, default 2)
@@ -151,6 +152,8 @@ Individual channels can be muted from the channel chat bell icon, the channel li
   - OpenStreetMap (Auto/Standard/Dark) is provided by the free OpenStreetMap tile server. (Can only be used for live view or already cached.)
   - Stamen Terrain / AlidadeSmooth Dark / Outdoors / OSM Bright are [StadiaMaps.com raster tile maps](https://stadiamaps.com/products/maps/interactive-basemaps/) for which you can choose an Hosted Endpoint (Worldwide / Europe hosted) and have to provide the API key to your subscription. (You can cache these maps for offline Map usage.)
   There will be no account provided by meshcore-open. You will have to get you own subscription. Check [current Stadia Maps plans and terms](https://stadiamaps.com/pricing/) for quotas and offline-use permissions.
+  - Satellite uses free Esri World Imagery tiles. (Live view only.)
+  The map itself also has a quick style switcher (layers button) for Auto / Street / Topographic / Satellite; see [Map & Location](map-and-location.md#map-style-layers-button).
 - **Offline Map Cache**: Navigate to tile download screen
 
 ### Translation

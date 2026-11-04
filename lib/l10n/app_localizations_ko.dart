@@ -362,6 +362,9 @@ class AppLocalizationsKo extends AppLocalizations {
       '제휴 링크: 구매할 때마다 MeshCore Open을 후원하게 됩니다.';
 
   @override
+  String get scanner_getNodeDismiss => '다시 표시하지 않음';
+
+  @override
   String get scanner_bluetoothWebUnsupported =>
       '브라우저에서는 블루투스를 사용할 수 없습니다. 대신 USB로 연결하세요.';
 
@@ -1084,6 +1087,17 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get companionCli_title => 'Companion CLI';
+
+  @override
+  String get companionCli_settingsSubtitle =>
+      'Run CLI commands on the connected radio';
+
+  @override
+  String get companionCli_noReply =>
+      'No reply (reboot and poweroff never answer)';
+
+  @override
   String get appSettings_channelMinHops => '충분히 멀리 전달될 때까지 채널 메시지 재전송';
 
   @override
@@ -1140,6 +1154,13 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get appSettings_showMessageLatencySubtitle =>
       'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showMessageSignal => 'Signal strength';
+
+  @override
+  String get appSettings_showMessageSignalSubtitle =>
+      'Show the RSSI and SNR the message was received with, coloured by quality.';
 
   @override
   String get appSettings_showPathByteMode => 'Path byte mode';
@@ -1388,6 +1409,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get appSettings_lastWeek => '지난 주';
+
+  @override
+  String get appSettings_showLivePackets => 'Show Live Packets';
+
+  @override
+  String get appSettings_showLivePacketsSubtitle =>
+      'Animate packets travelling their paths on the map';
+
+  @override
+  String get appSettings_showPacketPaths => 'Show Packet Paths';
+
+  @override
+  String get appSettings_showPacketPathsSubtitle =>
+      'Draw lines between repeaters along paths packets were seen taking';
+
+  @override
+  String get appSettings_packetPathWindow => 'Packet Path Time Window';
+
+  @override
+  String appSettings_packetPathWindowShowLast(int hours) {
+    return 'Show packet paths from the last $hours hours';
+  }
+
+  @override
+  String get appSettings_last3Days => 'Last 3 days';
+
+  @override
+  String get appSettings_last2Weeks => 'Last 2 weeks';
+
+  @override
+  String get appSettings_last4Weeks => 'Last 4 weeks';
 
   @override
   String get appSettings_rasterTileSource => '래스터 타일 소스';
@@ -2204,23 +2256,23 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String chat_latencySeconds(int count) {
-    return '${count}s';
-  }
-
-  @override
-  String chat_latencyMinutes(int count) {
-    return '${count}m';
-  }
-
-  @override
-  String chat_latencyHours(int count) {
-    return '${count}h';
+  String chat_latencyMilliseconds(int count) {
+    return '${count}ms';
   }
 
   @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
+  }
+
+  @override
+  String chat_signalChip(int rssi, String snr) {
+    return '${rssi}dBm ${snr}dB';
+  }
+
+  @override
+  String chat_snrChip(String snr) {
+    return '${snr}dB';
   }
 
   @override
@@ -2476,6 +2528,33 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get map_noGps => 'GPS 없음';
+
+  @override
+  String get map_mapStyle => 'Map style';
+
+  @override
+  String get map_mapStyleAuto => 'Auto';
+
+  @override
+  String get map_mapStyleAutoHint => 'Follows the app light or dark theme';
+
+  @override
+  String get map_mapStyleStreet => 'Street';
+
+  @override
+  String get map_mapStyleStreetHint => 'OpenStreetMap street map';
+
+  @override
+  String get map_mapStyleTopo => 'Topographic';
+
+  @override
+  String get map_mapStyleTopoHint => 'Terrain map with hill shading';
+
+  @override
+  String get map_mapStyleSatellite => 'Satellite';
+
+  @override
+  String get map_mapStyleSatelliteHint => 'Satellite imagery';
 
   @override
   String get map_noResults => '일치하는 노드가 없습니다.';
@@ -4409,15 +4488,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get channelPath_timeLabel => '시간';
 
   @override
-  String get channelPath_repeatsLabel => '반복';
+  String get channelPath_uniquePathsLabel => 'Unique paths';
 
   @override
   String channelPath_pathLabel(int index) {
     return '경로 $index';
   }
-
-  @override
-  String get channelPath_observedLabel => '관찰';
 
   @override
   String channelPath_observedPathTitle(int index, String hops) {
@@ -4447,14 +4523,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get channelPath_directPath => '직접';
 
   @override
-  String channelPath_observedZeroOf(int total) {
-    return '$total 중 0개';
-  }
-
-  @override
-  String channelPath_observedSomeOf(int observed, int total) {
-    return '$observed/$total 홉 관찰됨';
-  }
+  String get channelPath_shortestPathNote =>
+      'Overall shortest likely path shown.';
 
   @override
   String get channelPath_mapTitle => '경로 지도';
@@ -5004,6 +5074,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get contacts_contactAdvertCopyFailed => '어드버트를 클립보드에 복사하는 데 실패했습니다.';
 
   @override
+  String get contacts_showDetails => 'Show details';
+
+  @override
+  String get contacts_detailNodeHash => 'Node hash';
+
+  @override
+  String get contacts_detailPathBytes => 'Path bytes';
+
+  @override
+  String get contacts_detailLastMessage => 'Last message';
+
+  @override
+  String get contacts_detailLastModified => 'Last modified';
+
+  @override
+  String get contacts_detailFavorite => 'Favorite';
+
+  @override
+  String get contacts_detailStatus => 'Status';
+
+  @override
+  String get contacts_detailActive => 'Active';
+
+  @override
+  String get contacts_detailInactive => 'Inactive';
+
+  @override
+  String get contacts_detailYes => 'Yes';
+
+  @override
+  String get contacts_detailNo => 'No';
+
+  @override
+  String get contacts_detailTelemetryNone => 'None';
+
+  @override
   String get notification_activityTitle => '메쉬코어 활동';
 
   @override
@@ -5175,6 +5281,23 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get snrIndicator_unknownRepeaterHint =>
       '이 리피터는 아직 연락처에 없습니다. 라디오가 어드버트를 수신하면 이름, 위치, 옵션이 표시됩니다.';
+
+  @override
+  String get snrIndicator_packets => '패킷';
+
+  @override
+  String get snrIndicator_snrOverTime => '시간에 따른 SNR';
+
+  @override
+  String snrIndicator_packetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '패킷 $count개',
+      one: '패킷 1개',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get contactsSettings_title => '연락처 설정';

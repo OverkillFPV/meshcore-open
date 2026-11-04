@@ -119,6 +119,18 @@ class AppSettingsService extends ChangeNotifier {
     await updateSettings(_settings.copyWith(mapShowGuessedLocations: value));
   }
 
+  Future<void> setMapShowLivePackets(bool value) async {
+    await updateSettings(_settings.copyWith(mapShowLivePackets: value));
+  }
+
+  Future<void> setMapShowPacketPaths(bool value) async {
+    await updateSettings(_settings.copyWith(mapShowPacketPaths: value));
+  }
+
+  Future<void> setPacketPathWindowHours(double value) async {
+    await updateSettings(_settings.copyWith(packetPathWindowHours: value));
+  }
+
   Future<void> setMapClusterNodes(bool value) async {
     await updateSettings(_settings.copyWith(mapClusterNodes: value));
   }
@@ -133,6 +145,10 @@ class AppSettingsService extends ChangeNotifier {
 
   Future<void> setShowMessageLatency(bool value) async {
     await updateSettings(_settings.copyWith(showMessageLatency: value));
+  }
+
+  Future<void> setShowMessageSignal(bool value) async {
+    await updateSettings(_settings.copyWith(showMessageSignal: value));
   }
 
   Future<void> setShowPathByteMode(bool value) async {

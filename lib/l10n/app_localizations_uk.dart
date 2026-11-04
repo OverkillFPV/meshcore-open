@@ -378,6 +378,9 @@ class AppLocalizationsUk extends AppLocalizations {
       'Партнерське посилання: кожна покупка підтримує MeshCore Open.';
 
   @override
+  String get scanner_getNodeDismiss => 'Більше не показувати';
+
+  @override
   String get scanner_bluetoothWebUnsupported =>
       'Bluetooth недоступний у браузері. Підключіться через USB.';
 
@@ -1127,6 +1130,17 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get companionCli_title => 'Companion CLI';
+
+  @override
+  String get companionCli_settingsSubtitle =>
+      'Run CLI commands on the connected radio';
+
+  @override
+  String get companionCli_noReply =>
+      'No reply (reboot and poweroff never answer)';
+
+  @override
   String get appSettings_channelMinHops =>
       'Повторно надсилати повідомлення каналу, доки вони не пройдуть достатньо далеко';
 
@@ -1188,6 +1202,13 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get appSettings_showMessageLatencySubtitle =>
       'Show how long a received channel message took to arrive, next to its hop count.';
+
+  @override
+  String get appSettings_showMessageSignal => 'Signal strength';
+
+  @override
+  String get appSettings_showMessageSignalSubtitle =>
+      'Show the RSSI and SNR the message was received with, coloured by quality.';
 
   @override
   String get appSettings_showPathByteMode => 'Path byte mode';
@@ -1456,6 +1477,37 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get appSettings_lastWeek => 'Минулий тиждень';
+
+  @override
+  String get appSettings_showLivePackets => 'Show Live Packets';
+
+  @override
+  String get appSettings_showLivePacketsSubtitle =>
+      'Animate packets travelling their paths on the map';
+
+  @override
+  String get appSettings_showPacketPaths => 'Show Packet Paths';
+
+  @override
+  String get appSettings_showPacketPathsSubtitle =>
+      'Draw lines between repeaters along paths packets were seen taking';
+
+  @override
+  String get appSettings_packetPathWindow => 'Packet Path Time Window';
+
+  @override
+  String appSettings_packetPathWindowShowLast(int hours) {
+    return 'Show packet paths from the last $hours hours';
+  }
+
+  @override
+  String get appSettings_last3Days => 'Last 3 days';
+
+  @override
+  String get appSettings_last2Weeks => 'Last 2 weeks';
+
+  @override
+  String get appSettings_last4Weeks => 'Last 4 weeks';
 
   @override
   String get appSettings_rasterTileSource => 'Джерело растрових тайлів';
@@ -2298,23 +2350,23 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String chat_latencySeconds(int count) {
-    return '${count}s';
-  }
-
-  @override
-  String chat_latencyMinutes(int count) {
-    return '${count}m';
-  }
-
-  @override
-  String chat_latencyHours(int count) {
-    return '${count}h';
+  String chat_latencyMilliseconds(int count) {
+    return '${count}ms';
   }
 
   @override
   String chat_hashWidthChip(int width) {
     return '${width}B';
+  }
+
+  @override
+  String chat_signalChip(int rssi, String snr) {
+    return '${rssi}dBm ${snr}dB';
+  }
+
+  @override
+  String chat_snrChip(String snr) {
+    return '${snr}dB';
   }
 
   @override
@@ -2581,6 +2633,33 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get map_noGps => 'Без GPS';
+
+  @override
+  String get map_mapStyle => 'Map style';
+
+  @override
+  String get map_mapStyleAuto => 'Auto';
+
+  @override
+  String get map_mapStyleAutoHint => 'Follows the app light or dark theme';
+
+  @override
+  String get map_mapStyleStreet => 'Street';
+
+  @override
+  String get map_mapStyleStreetHint => 'OpenStreetMap street map';
+
+  @override
+  String get map_mapStyleTopo => 'Topographic';
+
+  @override
+  String get map_mapStyleTopoHint => 'Terrain map with hill shading';
+
+  @override
+  String get map_mapStyleSatellite => 'Satellite';
+
+  @override
+  String get map_mapStyleSatelliteHint => 'Satellite imagery';
 
   @override
   String get map_noResults => 'Не знайдено відповідних вузлів';
@@ -4624,15 +4703,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get channelPath_timeLabel => 'Час';
 
   @override
-  String get channelPath_repeatsLabel => 'Повторення';
+  String get channelPath_uniquePathsLabel => 'Unique paths';
 
   @override
   String channelPath_pathLabel(int index) {
     return 'Шлях $index';
   }
-
-  @override
-  String get channelPath_observedLabel => 'Спостережено';
 
   @override
   String channelPath_observedPathTitle(int index, String hops) {
@@ -4662,14 +4738,8 @@ class AppLocalizationsUk extends AppLocalizations {
   String get channelPath_directPath => 'Напряму';
 
   @override
-  String channelPath_observedZeroOf(int total) {
-    return '0 з $total переходів';
-  }
-
-  @override
-  String channelPath_observedSomeOf(int observed, int total) {
-    return '$observed з $total переходів';
-  }
+  String get channelPath_shortestPathNote =>
+      'Overall shortest likely path shown.';
 
   @override
   String get channelPath_mapTitle => 'Карта шляху';
@@ -5251,6 +5321,42 @@ class AppLocalizationsUk extends AppLocalizations {
       'Копіювання оголошення в буфер обміну завершилось невдало';
 
   @override
+  String get contacts_showDetails => 'Show details';
+
+  @override
+  String get contacts_detailNodeHash => 'Node hash';
+
+  @override
+  String get contacts_detailPathBytes => 'Path bytes';
+
+  @override
+  String get contacts_detailLastMessage => 'Last message';
+
+  @override
+  String get contacts_detailLastModified => 'Last modified';
+
+  @override
+  String get contacts_detailFavorite => 'Favorite';
+
+  @override
+  String get contacts_detailStatus => 'Status';
+
+  @override
+  String get contacts_detailActive => 'Active';
+
+  @override
+  String get contacts_detailInactive => 'Inactive';
+
+  @override
+  String get contacts_detailYes => 'Yes';
+
+  @override
+  String get contacts_detailNo => 'No';
+
+  @override
+  String get contacts_detailTelemetryNone => 'None';
+
+  @override
   String get notification_activityTitle => 'Активність MeshCore';
 
   @override
@@ -5434,6 +5540,23 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get snrIndicator_unknownRepeaterHint =>
       'Цього ретранслятора ще немає у ваших контактах. Його назва, розташування й параметри з\'являться, коли ваше радіо отримає його advert.';
+
+  @override
+  String get snrIndicator_packets => 'Пакети';
+
+  @override
+  String get snrIndicator_snrOverTime => 'SNR з часом';
+
+  @override
+  String snrIndicator_packetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count пакетів',
+      one: '1 пакет',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get contactsSettings_title => 'Налаштування контактів';

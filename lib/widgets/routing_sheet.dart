@@ -458,8 +458,7 @@ class _RoutingSheetBodyState extends State<_RoutingSheetBody> {
     final l10n = context.l10n;
     final parts = <String>[
       l10n.routing_deliveryCounts(stats.successCount, stats.failureCount),
-      if (stats.lastTripTimeMs > 0)
-        '${(stats.lastTripTimeMs / 1000).toStringAsFixed(1)}s',
+      if (stats.lastTripTimeMs > 0) '${stats.lastTripTimeMs}ms',
       if (stats.lastUsed != null)
         l10n.routing_lastWorked(_relativeTime(context, stats.lastUsed!)),
     ];
@@ -570,8 +569,7 @@ class _RoutingSheetBodyState extends State<_RoutingSheetBody> {
       record.timestamp != null
           ? l10n.routing_lastWorked(_relativeTime(context, record.timestamp!))
           : l10n.routing_neverWorked,
-      if (record.tripTimeMs > 0)
-        '${(record.tripTimeMs / 1000).toStringAsFixed(1)}s',
+      if (record.tripTimeMs > 0) '${record.tripTimeMs}ms',
       l10n.routing_deliveryCounts(record.successCount, record.failureCount),
     ];
 

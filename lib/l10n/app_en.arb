@@ -183,6 +183,7 @@
   "scanner_getNodeBody": "Wallet-sized, runs MeshCore, dual-band GPS, waterproof, 5-day battery.",
   "scanner_getNodeAction": "Get one here",
   "scanner_getNodeDisclosure": "Affiliate link: each purchase supports MeshCore Open.",
+  "scanner_getNodeDismiss": "Don't show again",
   "scanner_bluetoothWebUnsupported": "Bluetooth isn't available in the browser. Connect over USB instead.",
   "device_quickSwitch": "Quick switch",
   "device_meshcore": "MeshCore",
@@ -502,6 +503,9 @@
       }
     }
   },
+  "companionCli_title": "Companion CLI",
+  "companionCli_settingsSubtitle": "Run CLI commands on the connected radio",
+  "companionCli_noReply": "No reply (reboot and poweroff never answer)",
   "appSettings_channelMinHops": "Resend channel messages until they travel far enough",
   "appSettings_channelMinHopsSubtitle": "If your message isn't heard coming back through enough repeaters, send it again. Uses more airtime.",
   "appSettings_channelMinHopsCount": "Required hops: {count}",
@@ -535,6 +539,8 @@
   "appSettings_regionOnHopsLineSubtitle": "Show a channel message's region on the same line as its hop count instead of below it.",
   "appSettings_showMessageLatency": "Message latency",
   "appSettings_showMessageLatencySubtitle": "Show how long a received channel message took to arrive, next to its hop count.",
+  "appSettings_showMessageSignal": "Signal strength",
+  "appSettings_showMessageSignalSubtitle": "Show the RSSI and SNR the message was received with, coloured by quality.",
   "appSettings_showPathByteMode": "Path byte mode",
   "appSettings_showPathByteModeSubtitle": "Show the routing hash byte width (1B/2B/3B) next to a channel message's hop count.",
   "appSettings_notifications": "Notifications",
@@ -625,6 +631,22 @@
   "appSettings_last6Hours": "Last 6 hours",
   "appSettings_last24Hours": "Last 24 hours",
   "appSettings_lastWeek": "Last week",
+  "appSettings_showLivePackets": "Show Live Packets",
+  "appSettings_showLivePacketsSubtitle": "Animate packets travelling their paths on the map",
+  "appSettings_showPacketPaths": "Show Packet Paths",
+  "appSettings_showPacketPathsSubtitle": "Draw lines between repeaters along paths packets were seen taking",
+  "appSettings_packetPathWindow": "Packet Path Time Window",
+  "appSettings_packetPathWindowShowLast": "Show packet paths from the last {hours} hours",
+  "@appSettings_packetPathWindowShowLast": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "appSettings_last3Days": "Last 3 days",
+  "appSettings_last2Weeks": "Last 2 weeks",
+  "appSettings_last4Weeks": "Last 4 weeks",
   "appSettings_rasterTileSource": "Raster Tile Source",
   "appSettings_stadiaEndpoint": "Stadia Endpoint",
   "appSettings_stadiaApiKey": "Stadia API Key",
@@ -1207,24 +1229,8 @@
       }
     }
   },
-  "chat_latencySeconds": "{count}s",
-  "@chat_latencySeconds": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "chat_latencyMinutes": "{count}m",
-  "@chat_latencyMinutes": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "chat_latencyHours": "{count}h",
-  "@chat_latencyHours": {
+  "chat_latencyMilliseconds": "{count}ms",
+  "@chat_latencyMilliseconds": {
     "placeholders": {
       "count": {
         "type": "int"
@@ -1236,6 +1242,25 @@
     "placeholders": {
       "width": {
         "type": "int"
+      }
+    }
+  },
+  "chat_signalChip": "{rssi}dBm {snr}dB",
+  "@chat_signalChip": {
+    "placeholders": {
+      "rssi": {
+        "type": "int"
+      },
+      "snr": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_snrChip": "{snr}dB",
+  "@chat_snrChip": {
+    "placeholders": {
+      "snr": {
+        "type": "String"
       }
     }
   },
@@ -1370,6 +1395,15 @@
   "map_centerOnMe": "Center on my location",
   "map_details": "Details",
   "map_noGps": "No GPS",
+  "map_mapStyle": "Map style",
+  "map_mapStyleAuto": "Auto",
+  "map_mapStyleAutoHint": "Follows the app light or dark theme",
+  "map_mapStyleStreet": "Street",
+  "map_mapStyleStreetHint": "OpenStreetMap street map",
+  "map_mapStyleTopo": "Topographic",
+  "map_mapStyleTopoHint": "Terrain map with hill shading",
+  "map_mapStyleSatellite": "Satellite",
+  "map_mapStyleSatelliteHint": "Satellite imagery",
   "map_noResults": "No matching nodes",
   "map_lineOfSight": "Line of Sight",
   "map_losScreenTitle": "Line of Sight",
@@ -2457,9 +2491,8 @@
   "channelPath_messageDetails": "Message Details",
   "channelPath_senderLabel": "Sender",
   "channelPath_timeLabel": "Time",
-  "channelPath_repeatsLabel": "Repeats",
+  "channelPath_uniquePathsLabel": "Unique paths",
   "channelPath_pathLabel": "Path {index}",
-  "channelPath_observedLabel": "Observed",
   "channelPath_observedPathTitle": "Observed path {index} • {hops}",
   "@channelPath_observedPathTitle": {
     "placeholders": {
@@ -2497,25 +2530,7 @@
   "channelPath_unknownPath": "Unknown",
   "channelPath_floodPath": "Flood",
   "channelPath_directPath": "Direct",
-  "channelPath_observedZeroOf": "0 of {total} hops",
-  "@channelPath_observedZeroOf": {
-    "placeholders": {
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "channelPath_observedSomeOf": "{observed} of {total} hops",
-  "@channelPath_observedSomeOf": {
-    "placeholders": {
-      "observed": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
+  "channelPath_shortestPathNote": "Overall shortest likely path shown.",
   "channelPath_mapTitle": "Path Map",
   "channelPath_noRepeaterLocations": "No repeater locations available for this path.",
   "channelPath_primaryPath": "Path {index} (Primary)",
@@ -2970,6 +2985,18 @@
   "contacts_zeroHopContactAdvertFailed": "Failed to send contact.",
   "contacts_contactAdvertCopied": "Advert copied to Clipboard.",
   "contacts_contactAdvertCopyFailed": "Copying advert to Clipboard failed.",
+  "contacts_showDetails": "Show details",
+  "contacts_detailNodeHash": "Node hash",
+  "contacts_detailPathBytes": "Path bytes",
+  "contacts_detailLastMessage": "Last message",
+  "contacts_detailLastModified": "Last modified",
+  "contacts_detailFavorite": "Favorite",
+  "contacts_detailStatus": "Status",
+  "contacts_detailActive": "Active",
+  "contacts_detailInactive": "Inactive",
+  "contacts_detailYes": "Yes",
+  "contacts_detailNo": "No",
+  "contacts_detailTelemetryNone": "None",
   "notification_activityTitle": "MeshCore Activity",
   "notification_lowBatteryTitle": "Low battery",
   "@notification_lowBatteryTitle": {
@@ -3070,6 +3097,12 @@
   "snrIndicator_nearByRepeatersDescription": "Repeaters your radio heard directly, most recently heard first.",
   "snrIndicator_unknownRepeater": "Unknown repeater",
   "snrIndicator_unknownRepeaterHint": "This repeater isn't in your contacts yet. Its name, location and options appear once your radio receives its advert.",
+  "snrIndicator_packets": "Packets",
+  "snrIndicator_snrOverTime": "SNR over time",
+  "snrIndicator_packetCount": "{count, plural, =1{1 packet} other{{count} packets}}",
+  "@snrIndicator_packetCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "contactsSettings_title": "Contacts settings",
   "contactsSettings_autoAddTitle": "Automatic Discovery",
   "contactsSettings_otherTitle": "Other contact related settings",

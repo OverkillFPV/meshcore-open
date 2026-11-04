@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Map feature is a full-featured node-location visualization and radio-planning tool built on OpenStreetMap tiles. It is one of the three primary views accessible from the QuickSwitchBar.
+The Map feature is a full-featured node-location visualization and radio-planning tool built on OpenStreetMap tiles (switchable to topographic, satellite, or street styles). It is one of the three primary views accessible from the QuickSwitchBar.
 
 The colors and markers below describe the standard theme. A custom, preset, or holiday theme recolors the map panels and accent, tints the tiles, and can replace the node and self-location markers; see [Themes](themes.md#map).
 
@@ -79,6 +79,9 @@ In a mesh network, every message hops through one or more repeaters on its way t
 
 ### Zoom and Pan
 Standard pinch-to-zoom (range 2–18). Initial camera position is calculated from the statistical spread of all plotted points.
+
+### Map Style (Layers Button)
+The layers button next to the search bar opens a style sheet to switch the base map: **Auto** (default, follows the app light/dark theme), **Street** (OpenStreetMap standard), **Topographic** (Stadia Maps Stamen Terrain), and **Satellite** (Esri World Imagery). The choice is saved and applies to the other map views too; Settings → Map Display → Raster Tile Source keeps the additional dark/high-contrast variants.
 
 ### Tap on a Node Marker
 Opens a card at the bottom of the map showing the node's status, type, last-seen time, path, node ID, and coordinates, with buttons to center on the node or close the card. Action buttons vary by type:

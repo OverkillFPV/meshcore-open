@@ -42,6 +42,7 @@ From the Contacts screen, tap any Chat-type contact to open the ChatScreen.
 - **Share my location**: Sends your radio's current position (from the radio, not the phone's GPS) as a location pin. You're asked for a label (default: your node name) before sending; the keyboard's Send key confirms. If the radio reports no usable position (none set, or 0,0), the item is hidden and a snackbar says "Your radio has no location set". Location shares follow the same send cooldown as typed messages and are never sent as a reply. In channel chat the menu also holds **Send low-res image over radio** when image messages are set up
 - **Translation button** (optional, between GIF and text field): Shown only when translation is enabled in App Settings. Tap to configure outgoing-message translation language and on/off toggle.
 - **Text field** (center): Auto-capitalization, enforces UTF-8 byte limit in real-time
+- **Mentions** (channel chat): Typing `@` opens a suggestion list above the field, filtered as you keep typing. Candidates are your contacts plus everyone who has posted in the channel, most recent group message first. Tapping a name replaces the `@query` at the cursor with the MeshCore mention format `@[name] `
 - **Send button** (right): Submits the message
 - On desktop: Enter/Numpad Enter also submits
 - When a GIF is selected, the text field shows an inline GIF preview with a dismiss button
@@ -73,7 +74,9 @@ When enabled in App Settings, additional metadata appears inside each bubble:
 - Timestamp (HH:MM)
 - Retry count (e.g., "Retry 2 of 4") — only shown for outgoing messages where at least one retry has occurred
 - Status icon (outgoing only)
-- Round-trip time in seconds (if delivered)
+- Round-trip time in milliseconds (if delivered)
+
+Received direct messages always show the last repeater prefix of the contact's known path (`XX`) and the SNR your radio measured for the message (coloured green/amber/red by quality), next to the timestamp; the SNR hides with **Signal strength** in App Settings → Messaging. RSSI is only reported for channel messages.
 
 ## Message Length Limits
 

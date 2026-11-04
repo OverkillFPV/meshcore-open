@@ -52,6 +52,14 @@ class Message {
   final int? tripTimeMs;
   final int? pathLength;
   final Uint8List pathBytes;
+
+  /// SNR (dB) our radio measured for this received message, when the firmware
+  /// reported it.
+  final double? snrDb;
+
+  /// RSSI (dBm) our radio measured for this received message, when reported.
+  final int? rssiDbm;
+
   final Map<String, List<String?>> reactions;
   final Map<String, MessageStatus> reactionStatuses;
   final Uint8List fourByteRoomContactKey;
@@ -78,6 +86,8 @@ class Message {
     this.tripTimeMs,
     this.pathLength,
     Uint8List? pathBytes,
+    this.snrDb,
+    this.rssiDbm,
     Uint8List? fourByteRoomContactKey,
     Map<String, List<String?>>? reactions,
     Map<String, MessageStatus>? reactionStatuses,
@@ -107,6 +117,8 @@ class Message {
     int? tripTimeMs,
     int? pathLength,
     Uint8List? pathBytes,
+    double? snrDb,
+    int? rssiDbm,
     bool? isCli,
     Object? originalText = _unset,
     Object? translatedText = _unset,
@@ -147,6 +159,8 @@ class Message {
       tripTimeMs: tripTimeMs ?? this.tripTimeMs,
       pathLength: pathLength ?? this.pathLength,
       pathBytes: pathBytes ?? this.pathBytes,
+      snrDb: snrDb ?? this.snrDb,
+      rssiDbm: rssiDbm ?? this.rssiDbm,
       reactions: reactions ?? this.reactions,
       reactionStatuses: reactionStatuses ?? this.reactionStatuses,
       fourByteRoomContactKey:

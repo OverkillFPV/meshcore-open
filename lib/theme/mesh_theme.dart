@@ -775,4 +775,30 @@ class MeshTheme {
     if (snr > -12) return MeshPalette.warn;
     return MeshPalette.alert;
   }
+
+  /// Colour-code a received signal from its SNR and/or RSSI, using the worse
+  /// of the two so a strong SNR cannot hide a weak RSSI.
+  static Color signalColor({double? snrDb, int? rssiDbm}) {
+    if (snrDb == null && rssiDbm == null) return MeshPalette.ink3;
+    var severity = 0;
+    if (snrDb != null) {
+      if (snrDb <= -12) {
+        severity = 2;
+      } else if (snrDb <= -5) {
+        severity = 1;
+      }
+    }
+    if (rssiDbm != null) {
+      if (rssiDbm <= -115) {
+        severity = 2;
+      } else if (rssiDbm <= -100 && severity < 1) {
+        severity = 1;
+      }
+    }
+    return switch (severity) {
+      2 => MeshPalette.alert,
+      1 => MeshPalette.warn,
+      _ => MeshPalette.signal,
+    };
+  }
 }

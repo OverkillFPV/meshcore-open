@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:meshcore_open/screens/path_trace_map.dart';
 import 'package:meshcore_open/services/notification_service.dart';
 import 'package:meshcore_open/utils/app_logger.dart';
@@ -25,6 +26,7 @@ import '../utils/disconnect_navigation_mixin.dart';
 import '../utils/emoji_utils.dart';
 import '../utils/route_transitions.dart';
 import '../widgets/contact_visuals.dart';
+import '../widgets/node_info_sheet.dart';
 import '../widgets/list_filter_widget.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/mesh_ui.dart';
@@ -1146,9 +1148,9 @@ class _ContactsScreenState extends State<ContactsScreen>
     ], () => _computeFilteredContacts(contacts, connector, viewState));
   }
 
-  DateTime _lastMessageTime(MeshCoreConnector connector, Contact contact) {
+  DateTime? _lastMessageTime(MeshCoreConnector connector, Contact contact) {
     final messages = connector.getMessages(contact);
-    return messages.isEmpty ? DateTime(1970) : messages.last.timestamp;
+    return messages.isEmpty ? null : messages.last.timestamp;
   }
 
   List<Contact> _computeFilteredContacts(
@@ -1205,7 +1207,17 @@ class _ContactsScreenState extends State<ContactsScreen>
         final lastMessageAt = {
           for (final c in filtered) c: _lastMessageTime(connector, c),
         };
-        filtered.sort((a, b) => lastMessageAt[b]!.compareTo(lastMessageAt[a]!));
+        filtered.sort((a, b) {
+          final at = lastMessageAt[a];
+          final bt = lastMessageAt[b];
+          if (at == null || bt == null) {
+            // Contacts without messages sort after those with messages,
+            // among themselves by most recently heard.
+            if (at != bt) return at == null ? 1 : -1;
+            return b.lastHeard.compareTo(a.lastHeard);
+          }
+          return bt.compareTo(at);
+        });
         break;
       case ContactSortOption.name:
         filtered.sort(
@@ -1582,6 +1594,14 @@ class _ContactsScreenState extends State<ContactsScreen>
                 title: contact.name,
                 subtitle: contact.typeLabel(context.l10n),
               ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: Text(context.l10n.contacts_showDetails),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showContactDetails(context, connector, contact);
+                },
+              ),
               if (isRepeater) ...[
                 ListTile(
                   leading: Icon(Icons.radar, color: MeshPalette.signal),
@@ -1745,6 +1765,110 @@ class _ContactsScreenState extends State<ContactsScreen>
           ),
         ),
       ),
+    );
+  }
+
+  void _showContactDetails(
+    BuildContext context,
+    MeshCoreConnector connector,
+    Contact contact,
+  ) {
+    showMeshSheet(
+      context,
+      builder: (sheetContext) {
+        final l10n = sheetContext.l10n;
+        final locale = Localizations.localeOf(sheetContext).toLanguageTag();
+        String formatDate(DateTime dateTime) =>
+            DateFormat.yMd(locale).add_Hm().format(dateTime.toLocal());
+
+        final hashWidth = connector.pathHashByteWidth.clamp(1, 3);
+        final pathBytes = contact.pathFormattedIdList(hashWidth);
+        final telemetry = <String>[];
+        if (contact.teleBaseEnabled) telemetry.add(l10n.contact_teleBase);
+        if (contact.teleLocEnabled) telemetry.add(l10n.contact_teleLoc);
+        if (contact.teleEnvEnabled) telemetry.add(l10n.contact_teleEnv);
+
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BottomSheetHeader(
+                  title: contact.name,
+                  subtitle: contact.typeLabel(l10n),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      NodeInfoRow(
+                        label: l10n.map_publicKey,
+                        value: contact.publicKeyHex,
+                      ),
+                      NodeInfoRow(
+                        label: l10n.contacts_detailNodeHash,
+                        value: contact.publicKeyPrefixHex(hashWidth),
+                      ),
+                      NodeInfoRow(
+                        label: l10n.map_path,
+                        value: contact.pathLabel(
+                          l10n,
+                          pathHashByteWidth: connector.pathHashByteWidth,
+                        ),
+                      ),
+                      if (pathBytes.isNotEmpty)
+                        NodeInfoRow(
+                          label: l10n.contacts_detailPathBytes,
+                          value: pathBytes,
+                        ),
+                      if (contact.hasLocation)
+                        NodeInfoRow(
+                          label: l10n.map_location,
+                          value:
+                              '${contact.latitude!.toStringAsFixed(6)}, ${contact.longitude!.toStringAsFixed(6)}',
+                        ),
+                      NodeInfoRow(
+                        label: l10n.map_lastSeen,
+                        value: formatDate(contact.lastHeard),
+                      ),
+                      if (contact.type == advTypeChat)
+                        NodeInfoRow(
+                          label: l10n.contacts_detailLastMessage,
+                          value: formatDate(contact.lastMessageAt),
+                        ),
+                      if (contact.lastModified != null)
+                        NodeInfoRow(
+                          label: l10n.contacts_detailLastModified,
+                          value: formatDate(contact.lastModified!),
+                        ),
+                      NodeInfoRow(
+                        label: l10n.contacts_detailFavorite,
+                        value: contact.isFavorite
+                            ? l10n.contacts_detailYes
+                            : l10n.contacts_detailNo,
+                      ),
+                      NodeInfoRow(
+                        label: l10n.contact_telemetry,
+                        value: telemetry.isEmpty
+                            ? l10n.contacts_detailTelemetryNone
+                            : telemetry.join(', '),
+                      ),
+                      NodeInfoRow(
+                        label: l10n.contacts_detailStatus,
+                        value: contact.isActive
+                            ? l10n.contacts_detailActive
+                            : l10n.contacts_detailInactive,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

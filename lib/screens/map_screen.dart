@@ -21,6 +21,7 @@ import '../models/contact.dart';
 import '../models/path_history.dart';
 import '../l10n/contact_localization.dart';
 import '../services/app_settings_service.dart';
+import '../services/packet_path_service.dart';
 import '../services/path_history_service.dart';
 import '../services/map_marker_service.dart';
 import '../services/map_tile_cache_service.dart';
@@ -34,6 +35,7 @@ import '../utils/battery_utils.dart';
 import '../utils/route_transitions.dart';
 import '../widgets/map_poi_cluster.dart';
 import '../widgets/marker_label_dialog.dart';
+import '../widgets/live_packet_layer.dart';
 import '../widgets/network_map_online_layer.dart';
 import '../widgets/quick_switch_bar.dart';
 import '../widgets/sync_progress_overlay.dart';
@@ -47,6 +49,7 @@ import '../widgets/node_info_sheet.dart';
 import '../widgets/set_my_location_dialog.dart';
 import '../helpers/guessed_location_estimator.dart';
 import '../helpers/marker_message.dart';
+import '../helpers/path_hop_resolver.dart';
 import '../helpers/snack_bar_builder.dart';
 import '../helpers/utf8_length_limiter.dart';
 import 'settings_screen.dart';
@@ -123,6 +126,11 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
   int? _sharedMarkersCacheSignature;
   Locale? _sharedMarkersCacheLocale;
   List<_SharedMarker> _cachedSharedMarkers = const [];
+  // Packet-path lines and live animations are resolved lazily and cached
+  // until the packet store, contacts, or self position change.
+  int? _packetLayerCacheKey;
+  List<Polyline> _cachedPacketPathPolylines = const [];
+  List<LivePacketRoute> _cachedLiveRoutes = const [];
   _NodeMarkersCacheKey? _nodeMarkersCacheKey;
   List<Marker> _cachedNodeMarkers = const [];
   // Online/recent status is derived from DateTime.now(); rebuild periodically
@@ -159,6 +167,79 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
         camera.zoom.toString(),
       ]);
     } catch (_) {}
+  }
+
+  static const Duration _livePacketWindow = Duration(seconds: 45);
+
+  /// Resolves stored packet paths against the current contacts and caches
+  /// the resulting line polylines and live animation routes.
+  void _rebuildPacketLayers(
+    PacketPathService packetPaths,
+    AppSettings settings,
+    List<Contact> contacts,
+    double? selfLat,
+    double? selfLon,
+    Color lineColor,
+  ) {
+    _cachedPacketPathPolylines = const [];
+    _cachedLiveRoutes = const [];
+    if (!settings.mapShowPacketPaths && !settings.mapShowLivePackets) return;
+
+    final windowMinutes = (settings.packetPathWindowHours.clamp(1, 720) * 60)
+        .round();
+    final observed = packetPaths.pathsWithin(Duration(minutes: windowMinutes));
+    if (observed.isEmpty) return;
+
+    final endpoint =
+        selfLat != null &&
+            selfLon != null &&
+            isPlausibleLocation(selfLat, selfLon)
+        ? LatLng(selfLat, selfLon)
+        : null;
+
+    final routesByShape = <String, List<LatLng>>{};
+    final live = <LivePacketRoute>[];
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    for (final path in observed) {
+      final hops = PathHopResolver.resolve(
+        pathBytes: path.pathBytes,
+        contacts: contacts,
+        endpoint: endpoint,
+        resolveFromEnd: true,
+        pathHashByteWidth: path.hashWidth,
+      );
+      final positions = <LatLng>[];
+      for (final hop in hops) {
+        if (hop == null || !hop.hasLocation) continue;
+        final point = LatLng(hop.latitude!, hop.longitude!);
+        if (positions.isEmpty || positions.last != point) positions.add(point);
+      }
+      if (positions.length < 2) continue;
+      final shape = positions
+          .map(
+            (p) =>
+                '${p.latitude.toStringAsFixed(5)},${p.longitude.toStringAsFixed(5)}',
+          )
+          .join('|');
+      routesByShape.putIfAbsent(shape, () => positions);
+      if (settings.mapShowLivePackets &&
+          nowMs - path.lastSeenMs <= _livePacketWindow.inMilliseconds) {
+        live.add(LivePacketRoute(points: positions, seenAtMs: path.lastSeenMs));
+      }
+    }
+
+    if (settings.mapShowPacketPaths) {
+      _cachedPacketPathPolylines = [
+        for (final positions in routesByShape.values)
+          Polyline(
+            points: positions,
+            color: lineColor.withValues(alpha: 0.85),
+            strokeWidth: 3,
+            strokeCap: StrokeCap.round,
+          ),
+      ];
+    }
+    _cachedLiveRoutes = live;
   }
 
   @override
@@ -515,6 +596,9 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
         final pathHistoryVersion = context.select<PathHistoryService, int>(
           (service) => service.version,
         );
+        final packetPathVersion = context.select<PacketPathService, int>(
+          (service) => service.version,
+        );
         final mapSource = context.select<UiViewStateService, MapSourceOption>(
           (service) => service.mapSource,
         );
@@ -522,6 +606,7 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
         final showOnline = _showsOnline(mapSource);
         final settingsService = context.read<AppSettingsService>();
         final pathHistory = context.read<PathHistoryService>();
+        final packetPaths = context.read<PacketPathService>();
         final tileCache = context.read<MapTileCacheService>();
         final scheme = Theme.of(context).colorScheme;
         final isDesktop = _isDesktopPlatform(defaultTargetPlatform);
@@ -667,6 +752,27 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
               ),
             );
           }
+        }
+
+        final packetLayerCacheKey = Object.hash(
+          packetPathVersion,
+          settings.packetPathWindowHours,
+          connectorSnapshot.contactsSignature,
+          connector.selfLatitude,
+          connector.selfLongitude,
+          settings.mapShowPacketPaths,
+          settings.mapShowLivePackets,
+        );
+        if (packetLayerCacheKey != _packetLayerCacheKey) {
+          _packetLayerCacheKey = packetLayerCacheKey;
+          _rebuildPacketLayers(
+            packetPaths,
+            settings,
+            allContacts,
+            connector.selfLatitude,
+            connector.selfLongitude,
+            MeshMapTheme.of(context).accent,
+          );
         }
 
         // Only the first frame's camera matters; afterwards reuse it instead
@@ -1028,6 +1134,13 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
                           ),
                       ],
                     ),
+                    if (_cachedPacketPathPolylines.isNotEmpty)
+                      PolylineLayer(polylines: _cachedPacketPathPolylines),
+                    if (_cachedLiveRoutes.isNotEmpty)
+                      LivePacketLayer(
+                        routes: _cachedLiveRoutes,
+                        color: MeshMapTheme.of(context).accent,
+                      ),
                   ],
                 ),
                 if (selectedContact == null)
@@ -2039,6 +2152,30 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
                     onChanged: (value) {
                       setState(() => _searchQuery = value);
                     },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Tooltip(
+                message: context.l10n.map_mapStyle,
+                child: Material(
+                  color: _overlayPanelColor,
+                  shape: StadiumBorder(
+                    side: BorderSide(color: _overlayBorderColor),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => _showTileStyleSheet(context, settingsService),
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 46),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Icon(
+                        Icons.layers,
+                        size: 20,
+                        color: _overlayPrimaryTextColor,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -3558,6 +3695,73 @@ class _MapScreenState extends State<MapScreen> with DisconnectNavigationMixin {
       ),
     );
     return result ?? false;
+  }
+
+  void _showTileStyleSheet(
+    BuildContext context,
+    AppSettingsService settingsService,
+  ) {
+    final l10n = context.l10n;
+    final options = <(String, IconData, String, String)>[
+      (
+        'osm_auto',
+        Icons.brightness_auto,
+        l10n.map_mapStyleAuto,
+        l10n.map_mapStyleAutoHint,
+      ),
+      (
+        'osm_standard',
+        Icons.map_outlined,
+        l10n.map_mapStyleStreet,
+        l10n.map_mapStyleStreetHint,
+      ),
+      (
+        'stamen_terrain',
+        Icons.terrain_outlined,
+        l10n.map_mapStyleTopo,
+        l10n.map_mapStyleTopoHint,
+      ),
+      (
+        'satellite',
+        Icons.satellite_alt,
+        l10n.map_mapStyleSatellite,
+        l10n.map_mapStyleSatelliteHint,
+      ),
+    ];
+    showMeshSheet(
+      context,
+      builder: (sheetContext) => Consumer<AppSettingsService>(
+        builder: (consumerContext, service, child) {
+          final selectedId = service.settings.mapRasterSourceId;
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BottomSheetHeader(title: sheetContext.l10n.map_mapStyle),
+                for (final (id, icon, label, hint) in options)
+                  ListTile(
+                    leading: Icon(icon),
+                    title: Text(label),
+                    subtitle: Text(hint),
+                    trailing: selectedId == id
+                        ? Icon(
+                            Icons.check,
+                            color: MeshMapTheme.of(sheetContext).accent,
+                          )
+                        : null,
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      service.setMapRasterSourceId(id);
+                      Navigator.pop(sheetContext);
+                    },
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _showFilterSheet(

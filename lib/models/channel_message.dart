@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import '../connector/meshcore_protocol.dart';
 import '../helpers/reaction_helper.dart';
@@ -7,6 +8,18 @@ import 'translation_support.dart';
 import '../utils/app_logger.dart';
 
 enum ChannelMessageStatus { pending, sent, failed }
+
+/// Signal our radio reported when it heard one copy of a packet. The final
+/// repeater in the path (or the sender when there is none) transmitted the
+/// copy we received, so these measurements describe that last leg.
+class PathSignal {
+  final double? snrDb;
+  final int? rssiDbm;
+
+  const PathSignal({this.snrDb, this.rssiDbm});
+
+  bool get isEmpty => snrDb == null && rssiDbm == null;
+}
 
 class Repeat {
   final Uint8List? repeaterKey;
@@ -50,6 +63,17 @@ class ChannelMessage {
   final int? pathHashWidth;
   final Uint8List pathBytes;
   final List<Uint8List> pathVariants;
+
+  /// SNR (dB) our radio measured for the copy carried by [pathBytes].
+  final double? snrDb;
+
+  /// RSSI (dBm) our radio measured for the copy carried by [pathBytes].
+  final int? rssiDbm;
+
+  /// Signals keyed by base64 of each observed path's bytes, so every variant
+  /// can show the signal its own copy arrived with.
+  final Map<String, PathSignal> pathSignals;
+
   final int? channelIndex;
   final String? region;
   final String messageId;
@@ -78,6 +102,9 @@ class ChannelMessage {
     this.pathHashWidth,
     Uint8List? pathBytes,
     List<Uint8List>? pathVariants,
+    this.snrDb,
+    this.rssiDbm,
+    Map<String, PathSignal>? pathSignals,
     this.channelIndex,
     this.region,
     String? messageId,
@@ -95,10 +122,20 @@ class ChannelMessage {
        pathVariants = _mergePathVariants(
          pathBytes ?? Uint8List(0),
          pathVariants,
+       ),
+       pathSignals = _withPrimarySignal(
+         pathBytes ?? Uint8List(0),
+         snrDb,
+         rssiDbm,
+         pathSignals,
        );
 
   String? get senderKeyHex =>
       senderKey != null ? pubKeyToHex(senderKey!) : null;
+
+  static String pathKey(List<int> pathBytes) => base64Encode(pathBytes);
+
+  PathSignal? signalFor(List<int> pathBytes) => pathSignals[pathKey(pathBytes)];
 
   /// True when the sender's clock put [timestamp] clearly ahead of the time
   /// this device received the message.
@@ -113,6 +150,9 @@ class ChannelMessage {
     int? pathHashWidth,
     Uint8List? pathBytes,
     List<Uint8List>? pathVariants,
+    double? snrDb,
+    int? rssiDbm,
+    Map<String, PathSignal>? pathSignals,
     Object? region = _unset,
     String? packetHash,
     String? replyToMessageId,
@@ -153,6 +193,9 @@ class ChannelMessage {
       pathHashWidth: pathHashWidth ?? this.pathHashWidth,
       pathBytes: pathBytes ?? this.pathBytes,
       pathVariants: pathVariants ?? this.pathVariants,
+      snrDb: snrDb ?? this.snrDb,
+      rssiDbm: rssiDbm ?? this.rssiDbm,
+      pathSignals: pathSignals ?? this.pathSignals,
       channelIndex: channelIndex ?? this.channelIndex,
       region: region == _unset ? this.region : region as String?,
       messageId: messageId,
@@ -179,10 +222,11 @@ class ChannelMessage {
       int? pathLen;
       int txtType;
       int? packetPathHashWidth;
+      double? packetSnrDb;
       Uint8List pathBytes = Uint8List(0);
       int channelIdx;
       if (code == respCodeChannelMsgRecvV3) {
-        reader.skipBytes(1); // Skip SNR
+        packetSnrDb = reader.readInt8() / 4.0;
         final flags = reader.readByte();
         final hasPath = (flags & 0x01) != 0;
         reader.skipBytes(1); // Skip reserved byte
@@ -246,6 +290,7 @@ class ChannelMessage {
         pathLength: pathLen,
         pathHashWidth: packetPathHashWidth,
         pathBytes: pathBytes,
+        snrDb: packetSnrDb,
         channelIndex: channelIdx,
       );
     } catch (e) {
@@ -284,6 +329,23 @@ class ChannelMessage {
       channelIndex: channelIndex,
       region: region,
     );
+  }
+
+  static Map<String, PathSignal> _withPrimarySignal(
+    Uint8List pathBytes,
+    double? snrDb,
+    int? rssiDbm,
+    Map<String, PathSignal>? pathSignals,
+  ) {
+    if (pathBytes.isEmpty || (snrDb == null && rssiDbm == null)) {
+      return pathSignals ?? const {};
+    }
+    final merged = Map<String, PathSignal>.from(pathSignals ?? const {});
+    merged.putIfAbsent(
+      pathKey(pathBytes),
+      () => PathSignal(snrDb: snrDb, rssiDbm: rssiDbm),
+    );
+    return merged;
   }
 
   static List<Uint8List> _mergePathVariants(

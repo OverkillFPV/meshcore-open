@@ -21,6 +21,7 @@ import '../widgets/radio_settings_dialog.dart';
 import 'app_settings_screen.dart';
 import 'app_debug_log_screen.dart';
 import 'ble_debug_log_screen.dart';
+import 'companion_cli_screen.dart';
 import '../widgets/radio_stats_entry.dart';
 import 'telemetry_screen.dart';
 import '../widgets/sync_progress_overlay.dart';
@@ -570,6 +571,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               : _pathHashModeSubtitle(context, connector.pathHashByteWidth),
           onTap: connector.isConnected && connector.supportsPathHashMode
               ? () => _editPathHashMode(context, connector)
+              : null,
+        ),
+        const Divider(height: 1, indent: 16),
+        MeshNavTile(
+          icon: Icons.terminal_outlined,
+          title: l10n.companionCli_title,
+          subtitle: !connected
+              ? offline
+              : !connector.supportsCompanionCli
+              ? l10n.settings_requiresFirmware('v1.18')
+              : l10n.companionCli_settingsSubtitle,
+          onTap: connector.isConnected && connector.supportsCompanionCli
+              ? () => pushCompanionCliScreen(context)
               : null,
         ),
       ],

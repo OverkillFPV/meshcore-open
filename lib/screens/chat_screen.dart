@@ -1324,6 +1324,23 @@ class _MessageBubble extends StatelessWidget {
         ? message.originalText
         : (translatedDisplayText != messageText ? messageText : null);
 
+    // Stored contact paths are reversed for sending, so the first chunk is
+    // the last repeater a received message came through.
+    final lastHopHex = isOutgoing || message.pathBytes.isEmpty
+        ? null
+        : PathHelper.formatHopHex(
+            PathHelper.splitPathBytes(
+              message.pathBytes,
+              context.read<MeshCoreConnector>().pathHashByteWidth,
+            ).first,
+          );
+    final snrLabel =
+        (isOutgoing ||
+            message.snrDb == null ||
+            !settingsService.settings.showMessageSignal)
+        ? null
+        : context.l10n.chat_snrChip(message.snrDb!.toStringAsFixed(1));
+
     Widget buildTextContent() {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -1574,7 +1591,7 @@ class _MessageBubble extends StatelessWidget {
                                         : scheme.tertiary,
                                   ),
                                   Text(
-                                    '${(message.tripTimeMs! / 1000).toStringAsFixed(1)}s',
+                                    '${message.tripTimeMs!}ms',
                                     style: MeshTheme.mono(
                                       fontSize: 12 * textScale,
                                       color: isOutgoing
@@ -1582,6 +1599,32 @@ class _MessageBubble extends StatelessWidget {
                                           : scheme.tertiary,
                                     ),
                                   ),
+                                ],
+                                if (!isOutgoing &&
+                                    (lastHopHex != null ||
+                                        snrLabel != null)) ...[
+                                  const SizedBox(width: 4),
+                                  if (lastHopHex != null)
+                                    Text(
+                                      lastHopHex,
+                                      style: MeshTheme.mono(
+                                        fontSize: 12 * textScale,
+                                        color: scheme.tertiary,
+                                      ),
+                                    ),
+                                  if (snrLabel != null) ...[
+                                    if (lastHopHex != null)
+                                      const SizedBox(width: 6),
+                                    Text(
+                                      snrLabel,
+                                      style: MeshTheme.mono(
+                                        fontSize: 12 * textScale,
+                                        color: MeshTheme.signalColor(
+                                          snrDb: message.snrDb,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ],
                             ),

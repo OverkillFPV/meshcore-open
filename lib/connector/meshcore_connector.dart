@@ -38,6 +38,7 @@ import '../services/image_codec_service.dart';
 import '../services/received_image_store.dart';
 import '../services/message_retry_service.dart';
 import '../services/path_history_service.dart';
+import '../services/packet_path_service.dart';
 import '../services/app_settings_service.dart'
     show AppSettingsService, ChannelNotificationMode;
 import '../services/background_service.dart';
@@ -69,13 +70,23 @@ import 'pending_command_replies.dart';
 import 'raw_packet.dart';
 import '../utils/coalesced_writes.dart';
 
+class RepeaterPacketEvent {
+  final DateTime at;
+  final double snr;
+
+  const RepeaterPacketEvent({required this.at, required this.snr});
+}
+
 class DirectRepeater {
   static const int maxAgeMinutes = 30; // Max age for direct repeater info
+  static const int packetWindowMinutes = 60;
+  static const int maxPacketSamples = 600;
   List<int> pubkeyPrefix;
   int pathHashWidth;
   String? contactKeyHex;
   double snr;
   DateTime lastUpdated;
+  final List<RepeaterPacketEvent> _packetEvents;
 
   DirectRepeater({
     required List<int> pubkeyPrefix,
@@ -83,8 +94,10 @@ class DirectRepeater {
     this.contactKeyHex,
     required this.snr,
     DateTime? lastUpdated,
+    Iterable<RepeaterPacketEvent> packetEvents = const [],
   }) : pubkeyPrefix = List.unmodifiable(pubkeyPrefix),
-       lastUpdated = lastUpdated ?? DateTime.now();
+       lastUpdated = lastUpdated ?? DateTime.now(),
+       _packetEvents = List.of(packetEvents);
 
   String get pubkeyPrefixHex => pubkeyPrefix
       .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
@@ -101,6 +114,34 @@ class DirectRepeater {
       return false;
     }
     return listEquals(pubkeyPrefix, pathBytes.sublist(0, width));
+  }
+
+  int get packetCount => _packetEvents.length;
+
+  void recordPacket(double snr, {DateTime? at}) {
+    final when = at ?? DateTime.now();
+    _packetEvents.add(RepeaterPacketEvent(at: when, snr: snr));
+    var latest = when;
+    for (final event in _packetEvents) {
+      if (event.at.isAfter(latest)) latest = event.at;
+    }
+    final cutoff = latest.subtract(
+      const Duration(minutes: packetWindowMinutes),
+    );
+    _packetEvents.removeWhere((e) => e.at.isBefore(cutoff));
+    if (_packetEvents.length > maxPacketSamples) {
+      _packetEvents.removeRange(0, _packetEvents.length - maxPacketSamples);
+    }
+  }
+
+  /// Packet events heard within the last [packetWindowMinutes] minutes,
+  /// oldest first, for plotting SNR against time.
+  List<RepeaterPacketEvent> recentEvents({DateTime? now}) {
+    final end = now ?? DateTime.now();
+    final cutoff = end.subtract(const Duration(minutes: packetWindowMinutes));
+    final events = _packetEvents.where((e) => !e.at.isBefore(cutoff)).toList()
+      ..sort((a, b) => a.at.compareTo(b.at));
+    return events;
   }
 
   void update(
@@ -426,9 +467,11 @@ class MeshCoreConnector extends ChangeNotifier {
   Map<String, String>? _currentCustomVars;
 
   /// Maps repeater pubkey-prefix hex (12 hex chars = first 6 bytes) → the
-  /// repeater's RTC clock at the moment of the most recent successful login.
+  /// repeater's RTC clock at the moment of the most recent successful login,
+  /// plus the phone's wall-clock time when that login frame was received.
   /// Reported by firmware in the login-success push frame at byte offset 8.
-  final Map<String, DateTime> _repeaterLoginClocks = {};
+  final Map<String, ({DateTime repeaterClock, DateTime phoneTime})>
+  _repeaterLoginClocks = {};
 
   // Channel syncing state (sequential pattern)
   bool _isSyncingChannels = false;
@@ -465,6 +508,7 @@ class MeshCoreConnector extends ChangeNotifier {
   // Services
   MessageRetryService? _retryService;
   PathHistoryService? _pathHistoryService;
+  PacketPathService? _packetPathService;
   AppSettingsService? _appSettingsService;
 
   double get _initialRouteWeight =>
@@ -712,6 +756,10 @@ class MeshCoreConnector extends ChangeNotifier {
   /// CMD_GET/SET_DEFAULT_FLOOD_SCOPE exist from ver code 11 (v1.15.0).
   bool get supportsDefaultFloodScope => (_firmwareVerCode ?? 0) >= 11;
 
+  /// CMD_RUN_CLI_COMMAND (local companion CLI) exists from ver code 14
+  /// (v1.18.0).
+  bool get supportsCompanionCli => (_firmwareVerCode ?? 0) >= 14;
+
   /// CMD_SET_FLOOD_SCOPE `[54,1]` (send unscoped, overriding the radio's
   /// default scope) exists from ver code 12.
   bool get supportsExplicitUnscopedFlood => (_firmwareVerCode ?? 0) >= 12;
@@ -745,7 +793,18 @@ class MeshCoreConnector extends ChangeNotifier {
   DateTime? repeaterClockAtLogin(Uint8List publicKey) {
     if (publicKey.length < 6) return null;
     final prefix = pubKeyToHex(publicKey.sublist(0, 6));
-    return _repeaterLoginClocks[prefix];
+    return _repeaterLoginClocks[prefix]?.repeaterClock;
+  }
+
+  /// Returns how far the repeater's RTC clock was from the phone's clock when
+  /// the login-success frame was received (repeater minus phone), or null if
+  /// no login response has been observed for this repeater since connection.
+  Duration? repeaterClockOffsetAtLogin(Uint8List publicKey) {
+    if (publicKey.length < 6) return null;
+    final prefix = pubKeyToHex(publicKey.sublist(0, 6));
+    final entry = _repeaterLoginClocks[prefix];
+    if (entry == null) return null;
+    return entry.repeaterClock.difference(entry.phoneTime);
   }
 
   void rememberNonRepeatRadioState(MeshCoreRadioStateSnapshot snapshot) {
@@ -1729,6 +1788,7 @@ class MeshCoreConnector extends ChangeNotifier {
   void initialize({
     required MessageRetryService retryService,
     required PathHistoryService pathHistoryService,
+    PacketPathService? packetPathService,
     AppSettingsService? appSettingsService,
     TranslationService? translationService,
     BleDebugLogService? bleDebugLogService,
@@ -1743,6 +1803,7 @@ class MeshCoreConnector extends ChangeNotifier {
   }) {
     _retryService = retryService;
     _pathHistoryService = pathHistoryService;
+    _packetPathService = packetPathService;
     _appSettingsService = appSettingsService;
     _lastShowLinkImagesByDefault = _showLinkImagesByDefault;
     appSettingsService?.addListener(_onAppSettingsChanged);
@@ -4109,6 +4170,28 @@ class MeshCoreConnector extends ChangeNotifier {
     }
   }
 
+  /// Runs a local CLI command on the companion (CMD_RUN_CLI_COMMAND, v14+)
+  /// and returns the firmware's reply text. Throws when the firmware does
+  /// not have the command, answers with ERR, or never answers (eg. `reboot`
+  /// resets before it can reply).
+  Future<String> runCliCommand(String command) async {
+    if (!isConnected) {
+      throw Exception('Not connected to a MeshCore device');
+    }
+    if (!supportsCompanionCli) {
+      throw UnsupportedError('Firmware does not support the companion CLI');
+    }
+    // Subscribe before sending so the reply frame cannot be missed; the
+    // catch keeps the future handled when sendFrame fails first.
+    final replyFrame = receivedFrames
+        .firstWhere((f) => f.isNotEmpty && f[0] == respCodeCliReply)
+        .timeout(const Duration(seconds: 5))
+        .catchError((_) => Uint8List(0));
+    await sendFrame(buildRunCliCommandFrame(command), waitForGenericAck: true);
+    final frame = await replyFrame;
+    return parseCliReplyFrame(frame) ?? '';
+  }
+
   bool _isPathLenValidForCurrentMode(int pathLen, List<int> pathBytes) {
     return _isPathLenValidForMode(pathLen, pathBytes, _pathHashByteWidth);
   }
@@ -6156,6 +6239,10 @@ class MeshCoreConnector extends ChangeNotifier {
         _defaultFloodScopeKey = scope?.key;
         notifyListeners();
         break;
+      // RESP_CODE_CLI_REPLY completes the pending CMD_RUN_CLI_COMMAND in
+      // _pendingGenericAckQueue; callers read the text from receivedFrames.
+      case respCodeCliReply:
+        break;
       case respCodeEndOfContacts:
         debugPrint('Got END_OF_CONTACTS');
         _isLoadingContacts = false;
@@ -6458,6 +6545,7 @@ class MeshCoreConnector extends ChangeNotifier {
     _unreadStore.setPublicKeyHex = selfPublicKeyHex;
     _discoveryContactStore.setPublicKeyHex = selfPublicKeyHex;
     _pathHistoryService?.setDevicePublicKey(selfPublicKeyHex);
+    _packetPathService?.setDevicePublicKey(selfPublicKeyHex);
 
     // Now that we have self info, we can load all the persisted data for this node
     loadContactCache();
@@ -7333,11 +7421,10 @@ class MeshCoreConnector extends ChangeNotifier {
 
       // Companion radio layout:
       // [code][snr?][res?][res?][prefix x6][path_len][txt_type][timestamp x4][extra?][text...]
-      // double snr = 0;
+      double? snrDb;
       if (code == respCodeContactMsgRecvV3) {
-        // Older firmware layout with SNR as a signed byte after the code
-        // snr = reader.readInt8().toDouble() * 4; // SNR in dB, scaled by 4
-        reader.skipBytes(1); // Skip SNR byte
+        // SNR travels as a signed byte scaled by 4.
+        snrDb = reader.readInt8() / 4.0;
         reader.skipBytes(2); // Skip reserved bytes
       }
 
@@ -7403,6 +7490,7 @@ class MeshCoreConnector extends ChangeNotifier {
         status: MessageStatus.delivered,
         pathLength: pathLength == 0xFF ? null : (pathLength & 0x3F),
         pathBytes: Uint8List(0),
+        snrDb: snrDb,
         fourByteRoomContactKey: roomAuthorPrefix,
       );
     } catch (e) {
@@ -7714,7 +7802,10 @@ class MeshCoreConnector extends ChangeNotifier {
     if (frame.length < 4) return;
     try {
       final reader = BufferReader(frame);
-      reader.skipBytes(3); // Skip header
+      reader.skipBytes(1); // Skip push code
+      // Push header: [code][snr x int8 scaled by 4][rssi int8][raw packet...]
+      final snrDb = reader.readInt8() / 4.0;
+      final rssiDbm = reader.readInt8();
 
       final raw = reader.readRemainingBytes();
       final packet = _parseRawPacket(raw);
@@ -7780,6 +7871,8 @@ class MeshCoreConnector extends ChangeNotifier {
             pathLength: packet.isFlood ? packet.hopCount : 0,
             pathHashWidth: packet.pathHashWidth,
             pathBytes: packet.pathBytes,
+            snrDb: snrDb,
+            rssiDbm: rssiDbm,
             channelIndex: slot,
             region: _resolveTransportRegion(packet),
             packetHash: pktHash,
@@ -8575,6 +8668,9 @@ class MeshCoreConnector extends ChangeNotifier {
           pathHashWidth: message.pathHashWidth,
           pathBytes: message.pathBytes,
           pathVariants: message.pathVariants,
+          snrDb: message.snrDb,
+          rssiDbm: message.rssiDbm,
+          pathSignals: message.pathSignals,
           channelIndex: message.channelIndex,
           region: message.region,
           messageId: message.messageId,
@@ -8600,6 +8696,18 @@ class MeshCoreConnector extends ChangeNotifier {
         existing.pathVariants,
         processedMessage.pathVariants,
       );
+      final mergedPathSignals = <String, PathSignal>{
+        ...existing.pathSignals,
+        ...processedMessage.pathSignals,
+      };
+      final mergedSignal =
+          mergedPathSignals[ChannelMessage.pathKey(mergedPathBytes)] ??
+          (listEquals(mergedPathBytes, existing.pathBytes)
+              ? PathSignal(snrDb: existing.snrDb, rssiDbm: existing.rssiDbm)
+              : PathSignal(
+                  snrDb: processedMessage.snrDb,
+                  rssiDbm: processedMessage.rssiDbm,
+                ));
       final hashWidth =
           (existing.pathHashWidth ?? processedMessage.pathHashWidth ?? 1)
               .clamp(1, 3)
@@ -8619,6 +8727,9 @@ class MeshCoreConnector extends ChangeNotifier {
         pathHashWidth: existing.pathHashWidth ?? processedMessage.pathHashWidth,
         pathBytes: mergedPathBytes,
         pathVariants: mergedPathVariants,
+        snrDb: mergedSignal.snrDb,
+        rssiDbm: mergedSignal.rssiDbm,
+        pathSignals: mergedPathSignals,
         region: existing.region ?? processedMessage.region,
         packetHash: existing.packetHash ?? processedMessage.packetHash,
         // Mark as sent when first repeat is heard
@@ -8938,9 +9049,12 @@ class MeshCoreConnector extends ChangeNotifier {
     final prefix = pubKeyToHex(frame.sublist(2, 8));
     final ts = ByteData.sublistView(frame, 8, 12).getUint32(0, Endian.little);
     if (ts == 0) return;
-    _repeaterLoginClocks[prefix] = DateTime.fromMillisecondsSinceEpoch(
-      ts * 1000,
-      isUtc: true,
+    _repeaterLoginClocks[prefix] = (
+      repeaterClock: DateTime.fromMillisecondsSinceEpoch(
+        ts * 1000,
+        isUtc: true,
+      ),
+      phoneTime: DateTime.now(),
     );
     notifyListeners();
   }
@@ -9062,6 +9176,8 @@ class MeshCoreConnector extends ChangeNotifier {
       final pathBytes = packet.readBytes(pathByteLen);
       final payload = packet.readBytes(packet.remaining);
 
+      _packetPathService?.record(pathBytes, pathHashWidth);
+
       final rawPacket = frame.sublist(3);
       switch (payloadType) {
         case payloadTypeADVERT:
@@ -9075,6 +9191,7 @@ class MeshCoreConnector extends ChangeNotifier {
           );
           break;
         default:
+          _recordDirectRepeaterPackets(pathBytes, pathHashWidth, snr);
       }
     } catch (e) {
       appLogger.warn('Malformed RX frame: $e', tag: 'Connector');
@@ -9411,6 +9528,7 @@ class MeshCoreConnector extends ChangeNotifier {
         pathHashWidth: hashWidth,
         contactKeyHex: effectiveContactKeyHex,
       );
+      repeater.recordPacket(snr);
       if (effectiveContactKeyHex != null) {
         _directRepeaters.removeWhere(
           (r) =>
@@ -9424,16 +9542,39 @@ class MeshCoreConnector extends ChangeNotifier {
         );
       }
     } else if (_directRepeaters.length < 5) {
-      _directRepeaters.add(
-        DirectRepeater(
-          pubkeyPrefix: pubkeyPrefix,
-          pathHashWidth: hashWidth,
-          contactKeyHex: effectiveContactKeyHex,
-          snr: snr,
-        ),
+      final repeater = DirectRepeater(
+        pubkeyPrefix: pubkeyPrefix,
+        pathHashWidth: hashWidth,
+        contactKeyHex: effectiveContactKeyHex,
+        snr: snr,
       );
+      repeater.recordPacket(snr);
+      _directRepeaters.add(repeater);
     }
     notifyListeners();
+  }
+
+  /// Counts a non-advert packet against the tracked direct repeaters whose
+  /// prefix matches the last hop of the received path.
+  void _recordDirectRepeaterPackets(
+    Uint8List pathBytes,
+    int pathHashWidth,
+    double snr,
+  ) {
+    if (pathBytes.isEmpty) return;
+    final width = pathHashWidth.clamp(1, 4).toInt();
+    if (pathBytes.length < width) return;
+    final tail = pathBytes.sublist(pathBytes.length - width);
+    var recorded = false;
+    for (final repeater in _directRepeaters) {
+      if (tail.length > repeater.pubkeyPrefix.length) continue;
+      if (!listEquals(repeater.pubkeyPrefix.sublist(0, tail.length), tail)) {
+        continue;
+      }
+      repeater.recordPacket(snr);
+      recorded = true;
+    }
+    if (recorded) notifyListeners();
   }
 
   String? _resolveDirectRepeaterContactKeyHex(

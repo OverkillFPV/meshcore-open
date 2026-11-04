@@ -15,6 +15,7 @@ enum MapRasterSourcePreset {
   osmDark('osm_dark'),
   osmDarkHC('osm_darkHC'),
   stamenTerrain('stamen_terrain'),
+  satellite('satellite'),
   alidadeSmoothDark('alidade_smooth_dark'),
   outdoors('outdoors'),
   osmBright('osm_bright'),
@@ -119,6 +120,11 @@ class MapRasterSourceCatalog {
         isStadia: true,
         allowsBulkDownload: true,
       );
+  static const MapRasterSourceDefinition satellite = MapRasterSourceDefinition(
+    id: 'satellite',
+    label: 'Satellite',
+    description: 'Esri World Imagery satellite tiles',
+  );
   static const MapRasterSourceDefinition alidadeSmoothDark =
       MapRasterSourceDefinition(
         id: 'alidade_smooth_dark',
@@ -200,6 +206,8 @@ class MapRasterSourceCatalog {
         return osmBrightDarkHC;
       case MapRasterSourcePreset.stamenTerrain:
         return stamenTerrain;
+      case MapRasterSourcePreset.satellite:
+        return satellite;
     }
   }
 
@@ -406,6 +414,7 @@ class MapTileCacheService extends ChangeNotifier {
         return brightness == Brightness.dark;
       case MapRasterSourcePreset.osmStandard:
       case MapRasterSourcePreset.stamenTerrain:
+      case MapRasterSourcePreset.satellite:
       case MapRasterSourcePreset.alidadeSmoothDark:
       case MapRasterSourcePreset.outdoors:
       case MapRasterSourcePreset.osmBright:
@@ -423,6 +432,7 @@ class MapTileCacheService extends ChangeNotifier {
       case MapRasterSourcePreset.osmStandard:
       case MapRasterSourcePreset.osmDark:
       case MapRasterSourcePreset.stamenTerrain:
+      case MapRasterSourcePreset.satellite:
       case MapRasterSourcePreset.alidadeSmoothDark:
       case MapRasterSourcePreset.outdoors:
       case MapRasterSourcePreset.outdoorsDark:
@@ -767,7 +777,11 @@ class MapTileCacheService extends ChangeNotifier {
   }
 
   String _buildUrlTemplate(AppSettings settings) {
-    final source = MapRasterSourceCatalog.fromSettings(settings);
+    final preset = MapRasterSourcePreset.fromId(settings.mapRasterSourceId);
+    final source = MapRasterSourceCatalog.fromPreset(preset);
+    if (preset == MapRasterSourcePreset.satellite) {
+      return 'https://server.arcgis.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    }
     if (!source.isStadia) {
       return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
     }

@@ -105,9 +105,9 @@ A live QR scanner view with instruction text overlay.
 In a channel chat, long-press a message (or right-click on desktop) and choose Path.
 
 ### What the User Sees
-- Summary card: sender, time, repeat count, path type, observed hops, and region when known (see [Regions](regions.md))
-- "Other Observed Paths" section (if multiple paths detected)
-- "Repeater Hops" section listing each hop with hex prefix, resolved name, and GPS coordinates
+- Summary card: sender, time, unique path count (when more than one), path type, hash width, and region when known (see [Regions](regions.md))
+- "Other Observed Paths" section (if multiple paths detected); each path's last repeater is annotated with the RSSI/SNR its own copy arrived with.
+- "Repeater Hops" section listing each hop with hex prefix, resolved name, and GPS coordinates. For received messages the last hop also shows the RSSI/SNR your radio measured on that final leg. When a hop prefix matches more than one repeater, a note states that the overall shortest likely path is shown; tap an ambiguous hop to pick the intended repeater.
 
 ### Actions
 - **Radar icon**: Opens path trace map for live trace

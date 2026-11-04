@@ -772,6 +772,12 @@ abstract class AppLocalizations {
   /// **'Affiliate link: each purchase supports MeshCore Open.'**
   String get scanner_getNodeDisclosure;
 
+  /// No description provided for @scanner_getNodeDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t show again'**
+  String get scanner_getNodeDismiss;
+
   /// No description provided for @scanner_bluetoothWebUnsupported.
   ///
   /// In en, this message translates to:
@@ -2122,6 +2128,24 @@ abstract class AppLocalizations {
   /// **'Requires firmware {version} or newer'**
   String settings_requiresFirmware(String version);
 
+  /// No description provided for @companionCli_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Companion CLI'**
+  String get companionCli_title;
+
+  /// No description provided for @companionCli_settingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run CLI commands on the connected radio'**
+  String get companionCli_settingsSubtitle;
+
+  /// No description provided for @companionCli_noReply.
+  ///
+  /// In en, this message translates to:
+  /// **'No reply (reboot and poweroff never answer)'**
+  String get companionCli_noReply;
+
   /// No description provided for @appSettings_channelMinHops.
   ///
   /// In en, this message translates to:
@@ -2193,6 +2217,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show how long a received channel message took to arrive, next to its hop count.'**
   String get appSettings_showMessageLatencySubtitle;
+
+  /// No description provided for @appSettings_showMessageSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal strength'**
+  String get appSettings_showMessageSignal;
+
+  /// No description provided for @appSettings_showMessageSignalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the RSSI and SNR the message was received with, coloured by quality.'**
+  String get appSettings_showMessageSignalSubtitle;
 
   /// No description provided for @appSettings_showPathByteMode.
   ///
@@ -2649,6 +2685,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last week'**
   String get appSettings_lastWeek;
+
+  /// No description provided for @appSettings_showLivePackets.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Live Packets'**
+  String get appSettings_showLivePackets;
+
+  /// No description provided for @appSettings_showLivePacketsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animate packets travelling their paths on the map'**
+  String get appSettings_showLivePacketsSubtitle;
+
+  /// No description provided for @appSettings_showPacketPaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Packet Paths'**
+  String get appSettings_showPacketPaths;
+
+  /// No description provided for @appSettings_showPacketPathsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw lines between repeaters along paths packets were seen taking'**
+  String get appSettings_showPacketPathsSubtitle;
+
+  /// No description provided for @appSettings_packetPathWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Packet Path Time Window'**
+  String get appSettings_packetPathWindow;
+
+  /// No description provided for @appSettings_packetPathWindowShowLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Show packet paths from the last {hours} hours'**
+  String appSettings_packetPathWindowShowLast(int hours);
+
+  /// No description provided for @appSettings_last3Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 3 days'**
+  String get appSettings_last3Days;
+
+  /// No description provided for @appSettings_last2Weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 2 weeks'**
+  String get appSettings_last2Weeks;
+
+  /// No description provided for @appSettings_last4Weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 4 weeks'**
+  String get appSettings_last4Weeks;
 
   /// No description provided for @appSettings_rasterTileSource.
   ///
@@ -4066,29 +4156,29 @@ abstract class AppLocalizations {
   /// **'{count} {count, plural, =1{hop} other{hops}}'**
   String chat_hopsCount(int count);
 
-  /// No description provided for @chat_latencySeconds.
+  /// No description provided for @chat_latencyMilliseconds.
   ///
   /// In en, this message translates to:
-  /// **'{count}s'**
-  String chat_latencySeconds(int count);
-
-  /// No description provided for @chat_latencyMinutes.
-  ///
-  /// In en, this message translates to:
-  /// **'{count}m'**
-  String chat_latencyMinutes(int count);
-
-  /// No description provided for @chat_latencyHours.
-  ///
-  /// In en, this message translates to:
-  /// **'{count}h'**
-  String chat_latencyHours(int count);
+  /// **'{count}ms'**
+  String chat_latencyMilliseconds(int count);
 
   /// No description provided for @chat_hashWidthChip.
   ///
   /// In en, this message translates to:
   /// **'{width}B'**
   String chat_hashWidthChip(int width);
+
+  /// No description provided for @chat_signalChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{rssi}dBm {snr}dB'**
+  String chat_signalChip(int rssi, String snr);
+
+  /// No description provided for @chat_snrChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{snr}dB'**
+  String chat_snrChip(String snr);
 
   /// No description provided for @chat_removePath.
   ///
@@ -4563,6 +4653,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No GPS'**
   String get map_noGps;
+
+  /// No description provided for @map_mapStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map style'**
+  String get map_mapStyle;
+
+  /// No description provided for @map_mapStyleAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get map_mapStyleAuto;
+
+  /// No description provided for @map_mapStyleAutoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows the app light or dark theme'**
+  String get map_mapStyleAutoHint;
+
+  /// No description provided for @map_mapStyleStreet.
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get map_mapStyleStreet;
+
+  /// No description provided for @map_mapStyleStreetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenStreetMap street map'**
+  String get map_mapStyleStreetHint;
+
+  /// No description provided for @map_mapStyleTopo.
+  ///
+  /// In en, this message translates to:
+  /// **'Topographic'**
+  String get map_mapStyleTopo;
+
+  /// No description provided for @map_mapStyleTopoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Terrain map with hill shading'**
+  String get map_mapStyleTopoHint;
+
+  /// No description provided for @map_mapStyleSatellite.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite'**
+  String get map_mapStyleSatellite;
+
+  /// No description provided for @map_mapStyleSatelliteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Satellite imagery'**
+  String get map_mapStyleSatelliteHint;
 
   /// No description provided for @map_noResults.
   ///
@@ -7964,23 +8108,17 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get channelPath_timeLabel;
 
-  /// No description provided for @channelPath_repeatsLabel.
+  /// No description provided for @channelPath_uniquePathsLabel.
   ///
   /// In en, this message translates to:
-  /// **'Repeats'**
-  String get channelPath_repeatsLabel;
+  /// **'Unique paths'**
+  String get channelPath_uniquePathsLabel;
 
   /// No description provided for @channelPath_pathLabel.
   ///
   /// In en, this message translates to:
   /// **'Path {index}'**
   String channelPath_pathLabel(int index);
-
-  /// No description provided for @channelPath_observedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Observed'**
-  String get channelPath_observedLabel;
 
   /// No description provided for @channelPath_observedPathTitle.
   ///
@@ -8024,17 +8162,11 @@ abstract class AppLocalizations {
   /// **'Direct'**
   String get channelPath_directPath;
 
-  /// No description provided for @channelPath_observedZeroOf.
+  /// No description provided for @channelPath_shortestPathNote.
   ///
   /// In en, this message translates to:
-  /// **'0 of {total} hops'**
-  String channelPath_observedZeroOf(int total);
-
-  /// No description provided for @channelPath_observedSomeOf.
-  ///
-  /// In en, this message translates to:
-  /// **'{observed} of {total} hops'**
-  String channelPath_observedSomeOf(int observed, int total);
+  /// **'Overall shortest likely path shown.'**
+  String get channelPath_shortestPathNote;
 
   /// No description provided for @channelPath_mapTitle.
   ///
@@ -8966,6 +9098,78 @@ abstract class AppLocalizations {
   /// **'Copying advert to Clipboard failed.'**
   String get contacts_contactAdvertCopyFailed;
 
+  /// No description provided for @contacts_showDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Show details'**
+  String get contacts_showDetails;
+
+  /// No description provided for @contacts_detailNodeHash.
+  ///
+  /// In en, this message translates to:
+  /// **'Node hash'**
+  String get contacts_detailNodeHash;
+
+  /// No description provided for @contacts_detailPathBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'Path bytes'**
+  String get contacts_detailPathBytes;
+
+  /// No description provided for @contacts_detailLastMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Last message'**
+  String get contacts_detailLastMessage;
+
+  /// No description provided for @contacts_detailLastModified.
+  ///
+  /// In en, this message translates to:
+  /// **'Last modified'**
+  String get contacts_detailLastModified;
+
+  /// No description provided for @contacts_detailFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get contacts_detailFavorite;
+
+  /// No description provided for @contacts_detailStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get contacts_detailStatus;
+
+  /// No description provided for @contacts_detailActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get contacts_detailActive;
+
+  /// No description provided for @contacts_detailInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get contacts_detailInactive;
+
+  /// No description provided for @contacts_detailYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get contacts_detailYes;
+
+  /// No description provided for @contacts_detailNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get contacts_detailNo;
+
+  /// No description provided for @contacts_detailTelemetryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get contacts_detailTelemetryNone;
+
   /// No description provided for @notification_activityTitle.
   ///
   /// In en, this message translates to:
@@ -9229,6 +9433,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This repeater isn\'t in your contacts yet. Its name, location and options appear once your radio receives its advert.'**
   String get snrIndicator_unknownRepeaterHint;
+
+  /// No description provided for @snrIndicator_packets.
+  ///
+  /// In en, this message translates to:
+  /// **'Packets'**
+  String get snrIndicator_packets;
+
+  /// No description provided for @snrIndicator_snrOverTime.
+  ///
+  /// In en, this message translates to:
+  /// **'SNR over time'**
+  String get snrIndicator_snrOverTime;
+
+  /// No description provided for @snrIndicator_packetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 packet} other{{count} packets}}'**
+  String snrIndicator_packetCount(int count);
 
   /// No description provided for @contactsSettings_title.
   ///

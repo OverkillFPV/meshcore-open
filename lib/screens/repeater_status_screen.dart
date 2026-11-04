@@ -364,7 +364,23 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
     final dt = connector.repeaterClockAtLogin(widget.repeater.publicKey);
     if (dt == null) return '—';
     final locale = Localizations.localeOf(context).toLanguageTag();
-    return DateFormat.yMd(locale).add_Hm().format(dt.toLocal());
+    final base = DateFormat.yMd(locale).add_Hm().format(dt.toLocal());
+    final offset = connector.repeaterClockOffsetAtLogin(
+      widget.repeater.publicKey,
+    );
+    if (offset == null) return base;
+    return '$base (${_clockOffsetText(offset)})';
+  }
+
+  String _clockOffsetText(Duration offset) {
+    final abs = offset.abs();
+    final sign = offset.isNegative ? '-' : '+';
+    final hours = abs.inHours;
+    final minutes = abs.inMinutes % 60;
+    final secs = abs.inSeconds % 60;
+    if (hours > 0) return '$sign${hours}h ${minutes}m ${secs}s';
+    if (minutes > 0) return '$sign${minutes}m ${secs}s';
+    return '$sign${secs}s';
   }
 
   String _formatDuration(int? seconds) {

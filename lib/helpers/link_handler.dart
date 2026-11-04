@@ -6,6 +6,50 @@ import '../l10n/l10n.dart';
 import '../utils/platform_info.dart';
 import '../helpers/snack_bar_builder.dart';
 
+/// Matches a `@[name]` mention and captures just the name.
+final RegExp mentionRegExp = RegExp(r'@\[([^\]]+)\]');
+
+/// A `@[name]` mention, shown as the bare name in the mention style.
+class MentionElement extends LinkifyElement {
+  MentionElement(super.name);
+
+  @override
+  bool equals(other) => other is MentionElement && super.equals(other);
+}
+
+/// Splits `@[name]` mentions out of text elements.
+class MentionLinkifier extends Linkifier {
+  const MentionLinkifier();
+
+  @override
+  List<LinkifyElement> parse(
+    List<LinkifyElement> elements,
+    LinkifyOptions options,
+  ) {
+    final list = <LinkifyElement>[];
+    for (final element in elements) {
+      if (element is TextElement) {
+        var lastEnd = 0;
+        for (final match in mentionRegExp.allMatches(element.text)) {
+          if (match.start > lastEnd) {
+            list.add(TextElement(element.text.substring(lastEnd, match.start)));
+          }
+          list.add(MentionElement(match.group(1)!));
+          lastEnd = match.end;
+        }
+        if (lastEnd == 0) {
+          list.add(element);
+        } else if (lastEnd < element.text.length) {
+          list.add(TextElement(element.text.substring(lastEnd)));
+        }
+      } else {
+        list.add(element);
+      }
+    }
+    return list;
+  }
+}
+
 class LinkHandler {
   static TextStyle defaultLinkStyle(BuildContext context, TextStyle base) {
     final brightness = Theme.of(context).brightness;
@@ -15,20 +59,23 @@ class LinkHandler {
     return base.copyWith(color: orange, decoration: TextDecoration.underline);
   }
 
-  /// The system text scale as a linear factor for [style]'s size.
-  ///
-  /// flutter_linkify only takes a `textScaleFactor` (default 1.0, which
-  /// ignores the system font size), so the ambient [TextScaler] is sampled
-  /// at the style's font size to keep Android's nonlinear scaling. The
-  /// in-app chat text scale is already part of `style.fontSize`.
-  static double systemTextScaleFactor(BuildContext context, TextStyle style) {
-    final fontSize =
-        style.fontSize ?? DefaultTextStyle.of(context).style.fontSize ?? 14;
-    if (fontSize <= 0) return 1.0;
-    return MediaQuery.textScalerOf(context).scale(fontSize) / fontSize;
+  static TextStyle mentionStyle(BuildContext context, TextStyle base) {
+    return base.copyWith(
+      fontWeight: FontWeight.bold,
+      color: Theme.of(context).colorScheme.primary,
+      backgroundColor: mentionBackground(context),
+    );
   }
 
-  /// Returns a [SelectableLinkify] on desktop or a [Linkify] on mobile.
+  /// Background drawn behind a mention to make it stand out.
+  static Color mentionBackground(BuildContext context) {
+    return Theme.of(context).colorScheme.primary.withValues(alpha: 0.3);
+  }
+
+  /// Returns a [SelectableText.rich] on desktop or a [Text.rich] on mobile,
+  /// with URLs and emails linkified and `@[name]` mentions rendered as the
+  /// bare name in the mention style on a coloured background. The ambient
+  /// [TextScaler] applies automatically.
   static Widget buildLinkifyText({
     required BuildContext context,
     required String text,
@@ -37,39 +84,44 @@ class LinkHandler {
     VoidCallback? onSecondaryTap,
   }) {
     final effectiveLinkStyle = linkStyle ?? defaultLinkStyle(context, style);
+    final effectiveMentionStyle = mentionStyle(context, style);
     const options = LinkifyOptions(humanize: false, defaultToHttps: false);
-    const linkifiers = [UrlLinkifier(), EmailLinkifier()];
+    const linkifiers = [MentionLinkifier(), UrlLinkifier(), EmailLinkifier()];
     void onOpen(LinkableElement link) => handleLinkTap(context, link.url);
-    final textScaleFactor = systemTextScaleFactor(context, style);
+
+    var elements = <LinkifyElement>[TextElement(text)];
+    for (final linkifier in linkifiers) {
+      elements = linkifier.parse(elements, options);
+    }
+
+    final children = <InlineSpan>[
+      for (final element in elements)
+        if (element is MentionElement)
+          TextSpan(text: element.text, style: effectiveMentionStyle)
+        else if (element is LinkableElement)
+          TextSpan(
+            text: element.text,
+            style: effectiveLinkStyle,
+            recognizer: TapGestureRecognizer()..onTap = () => onOpen(element),
+            mouseCursor: SystemMouseCursors.click,
+          )
+        else
+          TextSpan(text: element.text, style: style),
+    ];
+    final span = TextSpan(children: children);
 
     if (PlatformInfo.isDesktop) {
-      final linkify = SelectableLinkify(
-        text: text,
-        style: style,
-        linkStyle: effectiveLinkStyle,
-        options: options,
-        linkifiers: linkifiers,
-        onOpen: onOpen,
-        textScaleFactor: textScaleFactor,
-      );
-      if (onSecondaryTap == null) return linkify;
+      final selectable = SelectableText.rich(span);
+      if (onSecondaryTap == null) return selectable;
       return Listener(
         onPointerDown: (event) {
           if (event.buttons & kSecondaryMouseButton != 0) onSecondaryTap();
         },
         behavior: HitTestBehavior.translucent,
-        child: linkify,
+        child: selectable,
       );
     }
-    return Linkify(
-      text: text,
-      style: style,
-      linkStyle: effectiveLinkStyle,
-      options: options,
-      linkifiers: linkifiers,
-      onOpen: onOpen,
-      textScaleFactor: textScaleFactor,
-    );
+    return Text.rich(span);
   }
 
   static Future<void> handleLinkTap(BuildContext context, String url) async {

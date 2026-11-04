@@ -69,6 +69,9 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
           hashByteWidth,
           reverse: !widget.channelMessage && !widget.message.isOutgoing,
         );
+        final lastHopSignal = widget.message.isOutgoing
+            ? null
+            : widget.message.signalFor(primaryPathTmp);
         final selfPoint = plausibleSelfPoint(connector);
         final hops = _buildPathHops(
           primaryPath,
@@ -97,15 +100,12 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             ? observedHopCount
             : reportedHopCount;
 
-        final observedLabel = _formatObservedHops(
-          observedHopCount,
-          effectiveHopCount,
-          l10n,
-        );
         final extraPaths = _otherPaths(
           primaryPath,
           widget.message.pathVariants,
         );
+        final uniquePathCount =
+            extraPaths.length + (primaryPath.isEmpty ? 0 : 1);
         return Scaffold(
           appBar: AppBar(
             title: AdaptiveAppBarTitle(l10n.channelPath_title),
@@ -147,8 +147,8 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
               children: [
                 _buildSummaryCard(
                   context,
-                  observedLabel: observedLabel,
                   effectiveHopCount: effectiveHopCount,
+                  uniquePathCount: uniquePathCount,
                   hashByteWidth: hashByteWidth,
                   hops: hops,
                   selfPoint: selfPoint,
@@ -169,8 +169,11 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                 ),
                 if (!hasHopDetails)
                   _buildNoHopCard(context, l10n)
-                else
-                  _buildHopTimeline(context, hops, l10n),
+                else ...[
+                  if (hops.any((hop) => hop.ambiguous))
+                    _buildShortestPathNote(context, l10n),
+                  _buildHopTimeline(context, hops, l10n, signal: lastHopSignal),
+                ],
                 const SizedBox(height: 16),
               ],
             ),
@@ -182,8 +185,8 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
 
   Widget _buildSummaryCard(
     BuildContext context, {
-    String? observedLabel,
     required int? effectiveHopCount,
+    required int uniquePathCount,
     required int hashByteWidth,
     required List<_PathHop> hops,
     required LatLng? selfPoint,
@@ -243,11 +246,11 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
               _formatTravelTime(travelTime, l10n),
               scheme: scheme,
             ),
-          if (widget.message.repeatCount > 0)
+          if (uniquePathCount > 1)
             _buildDetailRow(
               context,
-              l10n.channelPath_repeatsLabel,
-              widget.message.repeatCount.toString(),
+              l10n.channelPath_uniquePathsLabel,
+              uniquePathCount.toString(),
               scheme: scheme,
             ),
           _buildDetailRow(
@@ -273,13 +276,6 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             _formatPathLabel(effectiveHopCount, l10n),
             scheme: scheme,
           ),
-          if (observedLabel != null)
-            _buildDetailRow(
-              context,
-              l10n.channelPath_observedLabel,
-              observedLabel,
-              scheme: scheme,
-            ),
           if (widget.message.region?.isNotEmpty ?? false)
             _buildDetailRow(
               context,
@@ -398,7 +394,11 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        _formatPathPrefixes(variants[i], hashByteWidth),
+                        [
+                          _formatPathPrefixes(variants[i], hashByteWidth),
+                          if (!widget.message.isOutgoing)
+                            _formatSignalFor(variants[i]),
+                        ].nonNulls.join(' \u2022 '),
                         style: MeshTheme.mono(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -418,6 +418,12 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
           ),
       ],
     );
+  }
+
+  String? _formatSignalFor(Uint8List pathBytes) {
+    final signal = widget.message.signalFor(pathBytes);
+    if (signal == null) return null;
+    return _formatSignal(signal.snrDb, signal.rssiDbm, context.l10n);
   }
 
   Widget _buildNoHopCard(BuildContext context, AppLocalizations l10n) {
@@ -443,8 +449,9 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
   Widget _buildHopTimeline(
     BuildContext context,
     List<_PathHop> hops,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    PathSignal? signal,
+  }) {
     if (hops.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -458,6 +465,11 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                 hops[i],
                 l10n,
                 isLast: i == hops.length - 1,
+                signal: i == hops.length - 1 ? signal : null,
+                inboundDistanceMeters: i == 0 ? hops[i].distanceMeters : null,
+                connectorDistanceMeters: i == hops.length - 1
+                    ? null
+                    : hops[i + 1].distanceMeters,
               ),
             ),
         ],
@@ -470,6 +482,9 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     _PathHop hop,
     AppLocalizations l10n, {
     required bool isLast,
+    PathSignal? signal,
+    double? inboundDistanceMeters,
+    double? connectorDistanceMeters,
   }) {
     final scheme = Theme.of(context).colorScheme;
     final hexPrefix = _formatPrefix(hop.prefix);
@@ -489,6 +504,30 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             width: 48,
             child: Column(
               children: [
+                if (inboundDistanceMeters != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        formatDistanceLabel(
+                          inboundDistanceMeters,
+                          isImperial: isImperial,
+                          l10n: l10n,
+                        ),
+                        style: MeshTheme.mono(
+                          fontSize: 10,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 2,
+                    height: 6,
+                    child: ColoredBox(color: MeshPalette.blueLine),
+                  ),
+                ],
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -525,10 +564,45 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                 ),
                 if (!isLast)
                   Expanded(
-                    child: Container(
-                      width: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: MeshPalette.blueLine,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: connectorDistanceMeters == null
+                          ? Container(width: 2, color: MeshPalette.blueLine)
+                          : Column(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: 2,
+                                    color: MeshPalette.blueLine,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      formatDistanceLabel(
+                                        connectorDistanceMeters,
+                                        isImperial: isImperial,
+                                        l10n: l10n,
+                                      ),
+                                      style: MeshTheme.mono(
+                                        fontSize: 10,
+                                        color: scheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    width: 2,
+                                    color: MeshPalette.blueLine,
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   )
                 else
@@ -583,20 +657,22 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      [
-                        locationText,
-                        if (hop.distanceMeters != null)
-                          formatDistance(
-                            hop.distanceMeters!,
-                            isImperial: isImperial,
-                            l10n: l10n,
-                          ),
-                      ].join(' · '),
+                      locationText,
                       style: MeshTheme.mono(
                         fontSize: 12,
                         color: scheme.onSurfaceVariant,
                       ),
                     ),
+                    if (signal != null && !signal.isEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        _formatSignal(signal.snrDb, signal.rssiDbm, l10n) ?? '',
+                        style: MeshTheme.mono(
+                          fontSize: 12,
+                          color: MeshPalette.blue,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -630,24 +706,24 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     return l10n.chat_hopsCount(hopCount);
   }
 
-  String? _formatObservedHops(
-    int observedCount,
-    int? targetHopCount,
-    AppLocalizations l10n,
-  ) {
-    if (observedCount <= 0 && (targetHopCount == null || targetHopCount <= 0)) {
-      return null;
-    }
-    if (targetHopCount == null || targetHopCount < 0) {
-      return observedCount > 0 ? l10n.chat_hopsCount(observedCount) : null;
-    }
-    if (observedCount == 0) {
-      return l10n.channelPath_observedZeroOf(targetHopCount);
-    }
-    if (observedCount == targetHopCount) {
-      return l10n.chat_hopsCount(observedCount);
-    }
-    return l10n.channelPath_observedSomeOf(observedCount, targetHopCount);
+  Widget _buildShortestPathNote(BuildContext context, AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline, size: 16, color: scheme.onSurfaceVariant),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.channelPath_shortestPathNote,
+              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildDetailRow(
@@ -2080,9 +2156,7 @@ String _formatHopCount(
 }
 
 String _formatTravelTime(Duration travel, AppLocalizations l10n) {
-  if (travel.inHours > 0) return l10n.chat_latencyHours(travel.inHours);
-  if (travel.inMinutes > 0) return l10n.chat_latencyMinutes(travel.inMinutes);
-  return l10n.chat_latencySeconds(travel.inSeconds);
+  return l10n.chat_latencyMilliseconds(travel.inMilliseconds);
 }
 
 String _resolveName(Contact? contact, AppLocalizations l10n) {
@@ -2205,6 +2279,15 @@ String _candidateSubtitle(
   if (position == null) return l10n.channelPath_noLocationData;
   return '${position.latitude.toStringAsFixed(4)}, '
       '${position.longitude.toStringAsFixed(4)}';
+}
+
+/// Signal our radio measured for one received copy, e.g. `-103dBm 7.2dB`.
+String? _formatSignal(double? snrDb, int? rssiDbm, AppLocalizations l10n) {
+  if (snrDb == null && rssiDbm == null) return null;
+  if (snrDb != null && rssiDbm != null) {
+    return l10n.chat_signalChip(rssiDbm, snrDb.toStringAsFixed(1));
+  }
+  return l10n.chat_snrChip(snrDb!.toStringAsFixed(1));
 }
 
 Uint8List _selectPrimaryPath(Uint8List pathBytes, List<Uint8List> variants) {
