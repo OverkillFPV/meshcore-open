@@ -132,6 +132,19 @@ Structured log entries with level (Info/Warning/Error), tag, message, and timest
 
 Both logs support copy-all and clear operations.
 
+### RX Log
+**Access**: ⋮ menu → RX log (channel list, contact chat, or channel chat)
+
+Every LoRa packet the radio has seen, newest first: decoded payload type, route
+type, path hashes (resolved to contact names in the detail view), payload
+summary, SNR/RSSI with LoRa-limit colouring, timestamp, and full raw hex. Tap a
+packet for the detail view with copy and clear actions.
+
+### LoRa Signal Colouring
+SNR and RSSI values across the app are coloured by where they sit in the LoRa
+operating range (SNR −20…+10 dB, RSSI −120…−20 dBm): green in the top third,
+amber in the middle, red near the sensitivity floor.
+
 ---
 
 ## Chrome Required Screen

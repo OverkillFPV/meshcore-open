@@ -2186,7 +2186,8 @@ Widget _tagChipWidget(String label, Color color) {
 
 /// Bottom sheet listing every repeater that could own an ambiguous hop
 /// prefix — local contacts plus network-map matches — and letting the user
-/// pin one.
+/// pin one. Active repeaters are listed first in their own section so the
+/// likelier owner is at the top of a scrollable list.
 void _showHopCandidatesPicker(
   BuildContext context, {
   required _PathHop hop,
@@ -2194,72 +2195,107 @@ void _showHopCandidatesPicker(
 }) {
   final l10n = context.l10n;
   final distance = Distance();
+  final maxHeight = MediaQuery.of(context).size.height * 0.85;
+  final active = hop.candidates.where((c) => c.isActive).toList();
+  final inactive = hop.candidates.where((c) => !c.isActive).toList();
+
+  Widget sectionHeader(String label) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+      child: Text(
+        label,
+        style: MeshTheme.accentLabel(fontSize: 11, color: MeshPalette.ink3),
+      ),
+    );
+  }
+
+  Widget candidateTile(BuildContext sheetContext, Contact candidate) {
+    return ListTile(
+      dense: true,
+      leading: AvatarCircle(name: candidate.name, size: 32),
+      title: Text(candidate.name),
+      subtitle: Text(
+        _candidateSubtitle(candidate, hop, distance, l10n),
+        style: MeshTheme.mono(fontSize: 12),
+      ),
+      trailing: hop.contact?.publicKeyHex == candidate.publicKeyHex
+          ? const Icon(Icons.check, color: MeshPalette.blue)
+          : null,
+      onTap: () {
+        Navigator.pop(sheetContext);
+        onSelect(hop.hopHex, candidate.publicKeyHex);
+      },
+    );
+  }
+
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     builder: (sheetContext) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(
-              l10n.channelPath_hopCandidatesTitle(hop.index),
-              style: MeshTheme.mono(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: MeshPalette.ink,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: Text(
+                  l10n.channelPath_hopCandidatesTitle(hop.index),
+                  style: MeshTheme.mono(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: MeshPalette.ink,
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  hop.hopHex,
+                  style: MeshTheme.mono(fontSize: 12, color: MeshPalette.ink3),
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (active.isNotEmpty) ...[
+                sectionHeader(l10n.contacts_detailActive),
+                for (final candidate in active)
+                  candidateTile(sheetContext, candidate),
+              ],
+              if (inactive.isNotEmpty) ...[
+                sectionHeader(l10n.contacts_detailInactive),
+                for (final candidate in inactive)
+                  candidateTile(sheetContext, candidate),
+              ],
+              if (hop.networkMatches.isNotEmpty) ...[
+                sectionHeader(l10n.channelPath_networkMapTag),
+                for (final repeater in hop.networkMatches)
+                  ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.public),
+                    title: Text(
+                      '${(repeater.name?.isNotEmpty ?? false) ? repeater.name! : repeater.key.substring(0, 8)}'
+                      ' · ${l10n.channelPath_networkMapTag}',
+                    ),
+                    subtitle: Text(
+                      '${repeater.cell.center.latitude.toStringAsFixed(4)}, '
+                      '${repeater.cell.center.longitude.toStringAsFixed(4)}',
+                      style: MeshTheme.mono(fontSize: 12),
+                    ),
+                    trailing: hop.contact?.publicKeyHex == repeater.key
+                        ? const Icon(Icons.check, color: MeshPalette.blue)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      onSelect(hop.hopHex, repeater.key);
+                    },
+                  ),
+              ],
+              const SizedBox(height: 8),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              hop.hopHex,
-              style: MeshTheme.mono(fontSize: 12, color: MeshPalette.ink3),
-            ),
-          ),
-          const SizedBox(height: 8),
-          for (final candidate in hop.candidates)
-            ListTile(
-              dense: true,
-              leading: AvatarCircle(name: candidate.name, size: 32),
-              title: Text(candidate.name),
-              subtitle: Text(
-                _candidateSubtitle(candidate, hop, distance, l10n),
-                style: MeshTheme.mono(fontSize: 12),
-              ),
-              trailing: hop.contact?.publicKeyHex == candidate.publicKeyHex
-                  ? const Icon(Icons.check, color: MeshPalette.blue)
-                  : null,
-              onTap: () {
-                Navigator.pop(sheetContext);
-                onSelect(hop.hopHex, candidate.publicKeyHex);
-              },
-            ),
-          for (final repeater in hop.networkMatches)
-            ListTile(
-              dense: true,
-              leading: const Icon(Icons.public),
-              title: Text(
-                '${(repeater.name?.isNotEmpty ?? false) ? repeater.name! : repeater.key.substring(0, 8)}'
-                ' · ${l10n.channelPath_networkMapTag}',
-              ),
-              subtitle: Text(
-                '${repeater.cell.center.latitude.toStringAsFixed(4)}, '
-                '${repeater.cell.center.longitude.toStringAsFixed(4)}',
-                style: MeshTheme.mono(fontSize: 12),
-              ),
-              trailing: hop.contact?.publicKeyHex == repeater.key
-                  ? const Icon(Icons.check, color: MeshPalette.blue)
-                  : null,
-              onTap: () {
-                Navigator.pop(sheetContext);
-                onSelect(hop.hopHex, repeater.key);
-              },
-            ),
-          const SizedBox(height: 8),
-        ],
+        ),
       ),
     ),
   );

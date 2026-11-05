@@ -4072,6 +4072,24 @@ abstract class AppLocalizations {
   /// **'No BLE activity yet'**
   String get debugLog_noBleActivity;
 
+  /// No description provided for @rxLog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'RX log'**
+  String get rxLog_title;
+
+  /// No description provided for @rxLog_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No packets seen yet'**
+  String get rxLog_empty;
+
+  /// No description provided for @rxLog_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'RX log copied'**
+  String get rxLog_copied;
+
   /// No description provided for @debugFrame_length.
   ///
   /// In en, this message translates to:
@@ -5504,6 +5522,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Auto (use saved path)'**
   String get login_autoUseSavedPath;
+
+  /// No description provided for @login_setPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Set path…'**
+  String get login_setPath;
 
   /// No description provided for @login_forceFloodMode.
   ///

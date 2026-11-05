@@ -205,4 +205,35 @@ void main() {
     expect(picked.single.selected?.name, 'Second');
     expect(picked.single.ambiguous, isFalse);
   });
+
+  test('prioritises active repeaters over recently seen inactive ones', () {
+    final activeKey = Uint8List(32)..first = 0xAA;
+    final inactiveKey = Uint8List(32)..first = 0xAA;
+    inactiveKey[1] = 0x02;
+    final staleActive = Contact(
+      publicKey: activeKey,
+      name: 'Active',
+      type: advTypeRepeater,
+      pathLength: 0,
+      path: Uint8List(0),
+      lastSeen: DateTime.utc(2024),
+    );
+    final recentInactive = Contact(
+      publicKey: inactiveKey,
+      name: 'Inactive',
+      type: advTypeRepeater,
+      pathLength: 0,
+      path: Uint8List(0),
+      lastSeen: DateTime.utc(2026),
+      isActive: false,
+    );
+
+    final resolved = PathHopResolver.resolveDetailed(
+      pathBytes: const [0xAA],
+      contacts: [recentInactive, staleActive],
+    );
+
+    expect(resolved.single.candidates.first.name, 'Active');
+    expect(resolved.single.selected?.name, 'Active');
+  });
 }

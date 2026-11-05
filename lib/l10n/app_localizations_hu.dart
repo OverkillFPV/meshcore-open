@@ -2283,6 +2283,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get debugLog_noBleActivity => 'Még nincs BLE tevékenység';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'Keret hossza: $count bájt';
   }
@@ -3114,6 +3123,9 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get login_autoUseSavedPath =>
       'Automatikus (mentett útvonal használata)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => 'Force Flood mód';

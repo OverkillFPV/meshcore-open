@@ -2290,6 +2290,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get debugLog_noBleActivity => 'Активность BLE пока отсутствует';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'Длина фрейма: $count байт';
   }
@@ -3124,6 +3133,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get login_autoUseSavedPath =>
       'Авто (использовать сохранённый маршрут)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => 'Принудительный режим рассылки';

@@ -12,8 +12,8 @@ class PathHopResolution {
   final Uint8List hopBytes;
   final String hopHex;
 
-  /// All local repeaters/rooms matching this hop's prefix hash, most recently
-  /// seen first.
+  /// All local repeaters/rooms matching this hop's prefix hash, active ones
+  /// first, then most recently seen first.
   final List<Contact> candidates;
 
   /// Contact chosen by an explicit user selection, if any.
@@ -83,7 +83,13 @@ class PathHopResolver {
       candidatesByPrefix.putIfAbsent(prefix, () => <Contact>[]).add(contact);
     }
     for (final candidates in candidatesByPrefix.values) {
-      candidates.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
+      // Active repeaters win over inactive ones, then most recently seen.
+      candidates.sort((a, b) {
+        if (a.isActive != b.isActive) {
+          return a.isActive ? -1 : 1;
+        }
+        return b.lastSeen.compareTo(a.lastSeen);
+      });
     }
 
     final hops = PathHelper.splitPathBytes(pathBytes, width);

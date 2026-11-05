@@ -14,6 +14,7 @@ import '../theme/mesh_theme.dart';
 import '../widgets/mesh_ui.dart';
 import '../utils/app_logger.dart';
 import '../helpers/utf8_length_limiter.dart';
+import 'path_editor_sheet.dart';
 import 'routing_sheet.dart';
 
 class RepeaterLoginDialog extends StatefulWidget {
@@ -274,6 +275,43 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
     return (result, isAdmin);
   }
 
+  bool _hasManualPath(Contact repeater) {
+    final override = repeater.pathOverride;
+    return override != null && override > 0;
+  }
+
+  /// Opens the path editor straight from the routing menu so a login path can
+  /// be set without leaving the dialog flow.
+  Future<void> _setPathDirectly(
+    MeshCoreConnector connector,
+    Contact repeater,
+  ) async {
+    final override = repeater.pathOverride;
+    final initial = override != null && override > 0
+        ? (repeater.pathOverrideBytes ?? Uint8List(0))
+        : (repeater.pathLength > 0 &&
+                  repeater.pathHashWidth == connector.pathHashByteWidth
+              ? repeater.path
+              : Uint8List(0));
+    final available = connector.allContacts
+        .where((c) => c.publicKeyHex != repeater.publicKeyHex)
+        .toList();
+    final result = await PathEditorSheet.show(
+      context,
+      availableContacts: available,
+      initialPath: initial,
+      pathHashByteWidth: connector.pathHashByteWidth,
+    );
+    if (result == null || !mounted) return;
+    final hopCount = result.length ~/ connector.pathHashByteWidth;
+    await connector.setPathOverride(
+      repeater,
+      pathLen: hopCount,
+      pathBytes: result,
+    );
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -436,11 +474,13 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
                                   repeater,
                                   pathLen: -1,
                                 );
-                              } else {
+                              } else if (mode == 'auto') {
                                 await connector.setPathOverride(
                                   repeater,
                                   pathLen: null,
                                 );
+                              } else if (mode == 'path') {
+                                await _setPathDirectly(connector, repeater);
                               }
                             },
                             itemBuilder: (context) => [
@@ -460,6 +500,29 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
                                       l10n.login_autoUseSavedPath,
                                       style: TextStyle(
                                         fontWeight: !isFloodMode
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'path',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.edit_road,
+                                      size: 20,
+                                      color: _hasManualPath(repeater)
+                                          ? scheme.primary
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.login_setPath,
+                                      style: TextStyle(
+                                        fontWeight: _hasManualPath(repeater)
                                             ? FontWeight.bold
                                             : FontWeight.normal,
                                       ),

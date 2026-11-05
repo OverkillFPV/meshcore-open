@@ -36,6 +36,7 @@ import 'channel_chat_screen.dart';
 import 'community_qr_scanner_screen.dart';
 import 'contacts_screen.dart';
 import 'map_screen.dart';
+import 'rx_log_screen.dart';
 import 'settings_screen.dart';
 import '../review_mode/review_mode_banner.dart';
 import '../theme/theme_icons.dart';
@@ -146,6 +147,21 @@ class _ChannelsScreenState extends State<ChannelsScreen>
                     ],
                   ),
                   onTap: () => _showManageCommunitiesDialog(context),
+                ),
+                PopupMenuItem(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.radar),
+                      const SizedBox(width: 8),
+                      Text(menuContext.l10n.rxLog_title),
+                    ],
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RxLogScreen(),
+                    ),
+                  ),
                 ),
                 PopupMenuItem(
                   child: Row(

@@ -2188,6 +2188,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get debugLog_noBleActivity => 'まだ BLE アクティビティはありません';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'フレーム長: $count バイト';
   }
@@ -2995,6 +3004,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get login_autoUseSavedPath => '自動 (保存されたパスを使用)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => '強制的にフラッドモードを起動';

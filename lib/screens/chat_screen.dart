@@ -52,6 +52,7 @@ import '../theme/mesh_theme.dart';
 import '../widgets/future_timestamp_indicator.dart';
 import '../widgets/mesh_ui.dart';
 import 'telemetry_screen.dart';
+import 'rx_log_screen.dart';
 import '../services/chat_background_service.dart';
 import '../widgets/chat_background.dart';
 import '../widgets/holiday_animations.dart';
@@ -289,6 +290,13 @@ class _ChatScreenState extends State<ChatScreen> {
                               TelemetryScreen(contact: widget.contact),
                         ),
                       );
+                    case 'rxLog':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RxLogScreen(),
+                        ),
+                      );
                     case 'clearChat':
                       _confirmClearChat(context, connector);
                   }
@@ -341,6 +349,16 @@ class _ChatScreenState extends State<ChatScreen> {
                         const Icon(Icons.wallpaper, size: 20),
                         const SizedBox(width: 12),
                         Text(context.l10n.chatBackground_title),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'rxLog',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.radar, size: 20),
+                        const SizedBox(width: 12),
+                        Text(context.l10n.rxLog_title),
                       ],
                     ),
                   ),

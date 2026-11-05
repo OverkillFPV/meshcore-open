@@ -66,6 +66,7 @@ import 'app_settings_screen.dart';
 import 'channel_message_path_screen.dart';
 import 'map_screen.dart';
 import 'region_management_screen.dart';
+import 'rx_log_screen.dart';
 import '../storage/region_store.dart';
 import '../utils/share_origin.dart';
 import '../services/chat_background_service.dart';
@@ -447,6 +448,11 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                   context,
                   ChatBackgroundService.channelKey(widget.channel),
                 );
+              } else if (value == 'rxLog') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RxLogScreen()),
+                );
               } else if (value == 'clearChat') {
                 _confirmClearChat();
               }
@@ -471,6 +477,16 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                     const Icon(Icons.wallpaper, size: 20),
                     const SizedBox(width: 12),
                     Text(context.l10n.chatBackground_title),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'rxLog',
+                child: Row(
+                  children: [
+                    const Icon(Icons.radar, size: 20),
+                    const SizedBox(width: 12),
+                    Text(context.l10n.rxLog_title),
                   ],
                 ),
               ),

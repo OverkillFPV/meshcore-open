@@ -2278,6 +2278,15 @@ class AppLocalizationsSl extends AppLocalizations {
   String get debugLog_noBleActivity => 'Ni BLE aktivnosti.';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'Izhodni rob: $count bajtov';
   }
@@ -3107,6 +3116,9 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get login_autoUseSavedPath => 'Avto (uporabi shranjeno pot)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => 'Vsili flood način';

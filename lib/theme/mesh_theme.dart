@@ -767,33 +767,58 @@ class MeshTheme {
     );
   }
 
+  /// LoRa SNR operating limits: about -20 dB (SF12 sensitivity floor) up to
+  /// roughly +10 dB at the top of range.
+  static const double loraSnrMinDb = -20;
+  static const double loraSnrMaxDb = 10;
+
+  /// LoRa RSSI operating limits: noise floor near -120 dBm up to around
+  /// -20 dBm at maximum signal.
+  static const int loraRssiMinDbm = -120;
+  static const int loraRssiMaxDbm = -20;
+
+  /// Severity across the LoRa SNR range: thirds of -20..+10 dB map to
+  /// alert, warn and signal respectively.
+  static int _snrSeverity(num snr) {
+    final t = (snr - loraSnrMinDb) / (loraSnrMaxDb - loraSnrMinDb);
+    if (t >= 2 / 3) return 0;
+    if (t >= 1 / 3) return 1;
+    return 2;
+  }
+
+  /// Severity across the LoRa RSSI range: thirds of -120..-20 dBm map to
+  /// alert, warn and signal respectively.
+  static int _rssiSeverity(int rssiDbm) {
+    final t = (rssiDbm - loraRssiMinDbm) / (loraRssiMaxDbm - loraRssiMinDbm);
+    if (t >= 2 / 3) return 0;
+    if (t >= 1 / 3) return 1;
+    return 2;
+  }
+
   /// Color-code an SNR value for consistency across the app.
   static Color snrColor(num? snr, {required bool blocked}) {
     if (blocked) return MeshPalette.alert;
     if (snr == null) return MeshPalette.ink3;
-    if (snr > -5) return MeshPalette.signal;
-    if (snr > -12) return MeshPalette.warn;
-    return MeshPalette.alert;
+    return switch (_snrSeverity(snr)) {
+      2 => MeshPalette.alert,
+      1 => MeshPalette.warn,
+      _ => MeshPalette.signal,
+    };
   }
 
   /// Colour-code a received signal from its SNR and/or RSSI, using the worse
-  /// of the two so a strong SNR cannot hide a weak RSSI.
+  /// of the two so a strong SNR cannot hide a weak RSSI. Both scales span the
+  /// LoRa limits so colours reflect how close a link is to the edge of the
+  /// modulation range.
   static Color signalColor({double? snrDb, int? rssiDbm}) {
     if (snrDb == null && rssiDbm == null) return MeshPalette.ink3;
     var severity = 0;
     if (snrDb != null) {
-      if (snrDb <= -12) {
-        severity = 2;
-      } else if (snrDb <= -5) {
-        severity = 1;
-      }
+      severity = _snrSeverity(snrDb);
     }
     if (rssiDbm != null) {
-      if (rssiDbm <= -115) {
-        severity = 2;
-      } else if (rssiDbm <= -100 && severity < 1) {
-        severity = 1;
-      }
+      final rssiSeverity = _rssiSeverity(rssiDbm);
+      if (rssiSeverity > severity) severity = rssiSeverity;
     }
     return switch (severity) {
       2 => MeshPalette.alert,

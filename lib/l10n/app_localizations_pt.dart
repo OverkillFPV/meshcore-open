@@ -2286,6 +2286,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get debugLog_noBleActivity => 'Ainda não há atividade BLE.';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'Comprimento do Quadro: $count bytes';
   }
@@ -3117,6 +3126,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get login_autoUseSavedPath => 'Auto (usar caminho salvo)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => 'Modo de Inundação Forçado';

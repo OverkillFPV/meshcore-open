@@ -2283,6 +2283,15 @@ class AppLocalizationsSk extends AppLocalizations {
   String get debugLog_noBleActivity => 'Zatiaľ žiadna aktivita BLE.';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return 'Dĺžka rámca: $count bajtov';
   }
@@ -3113,6 +3122,9 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get login_autoUseSavedPath => 'Použiť uloženú cestu';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => 'Zavrieť núdzový flood režim';

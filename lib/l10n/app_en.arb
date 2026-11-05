@@ -1156,6 +1156,9 @@
   "debugLog_frames": "Frames",
   "debugLog_rawLogRx": "Raw Log-RX",
   "debugLog_noBleActivity": "No BLE activity yet",
+  "rxLog_title": "RX log",
+  "rxLog_empty": "No packets seen yet",
+  "rxLog_copied": "RX log copied",
   "debugFrame_length": "Frame Length: {count} bytes",
   "@debugFrame_length": {
     "placeholders": {
@@ -1684,6 +1687,7 @@
   "login_routing": "Routing",
   "login_routingMode": "Routing mode",
   "login_autoUseSavedPath": "Auto (use saved path)",
+  "login_setPath": "Set path…",
   "login_forceFloodMode": "Force Flood Mode",
   "login_managePaths": "Manage Paths",
   "login_login": "Login",

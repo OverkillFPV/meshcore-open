@@ -2191,6 +2191,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get debugLog_noBleActivity => '현재 BLE 관련 활동은 없습니다.';
 
   @override
+  String get rxLog_title => 'RX log';
+
+  @override
+  String get rxLog_empty => 'No packets seen yet';
+
+  @override
+  String get rxLog_copied => 'RX log copied';
+
+  @override
   String debugFrame_length(int count) {
     return '프레임 길이: $count 바이트';
   }
@@ -2998,6 +3007,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get login_autoUseSavedPath => '자동 (저장된 경로 사용)';
+
+  @override
+  String get login_setPath => 'Set path…';
 
   @override
   String get login_forceFloodMode => '플러딩 모드 강제 활성화';
