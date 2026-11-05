@@ -4090,6 +4090,18 @@ abstract class AppLocalizations {
   /// **'RX log copied'**
   String get rxLog_copied;
 
+  /// No description provided for @rxLog_senderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender'**
+  String get rxLog_senderLabel;
+
+  /// No description provided for @rxLog_destLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get rxLog_destLabel;
+
   /// No description provided for @debugFrame_length.
   ///
   /// In en, this message translates to:
@@ -4299,6 +4311,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forget path'**
   String get routing_forgetPath;
+
+  /// No description provided for @routing_directPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get routing_directPath;
+
+  /// No description provided for @routing_directPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No repeater hops'**
+  String get routing_directPathHint;
 
   /// No description provided for @routing_knownPaths.
   ///
@@ -5529,11 +5553,35 @@ abstract class AppLocalizations {
   /// **'Set path…'**
   String get login_setPath;
 
+  /// No description provided for @login_directMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get login_directMode;
+
   /// No description provided for @login_forceFloodMode.
   ///
   /// In en, this message translates to:
   /// **'Force Flood Mode'**
   String get login_forceFloodMode;
+
+  /// No description provided for @login_directLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Login'**
+  String get login_directLogin;
+
+  /// No description provided for @login_autoLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Login'**
+  String get login_autoLogin;
+
+  /// No description provided for @login_forget.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get login_forget;
 
   /// No description provided for @login_managePaths.
   ///

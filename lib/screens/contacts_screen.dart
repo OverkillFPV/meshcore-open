@@ -1635,6 +1635,42 @@ class _ContactsScreenState extends State<ContactsScreen>
                     _showRepeaterLogin(context, contact);
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icons.my_location, color: MeshPalette.signal),
+                  title: Text(context.l10n.login_directLogin),
+                  onTap: () async {
+                    Navigator.pop(sheetContext);
+                    await connector.setPathOverride(
+                      contact,
+                      pathLen: 0,
+                      pathBytes: Uint8List(0),
+                    );
+                    if (!context.mounted) return;
+                    _showRepeaterLogin(context, contact);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.auto_awesome),
+                  title: Text(context.l10n.login_autoLogin),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    unawaited(autoLoginRepeater(context, contact));
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_sweep),
+                  title: Text(context.l10n.login_forget),
+                  onTap: () async {
+                    Navigator.pop(sheetContext);
+                    await connector.clearContactPath(contact);
+                    await connector.setPathOverride(contact, pathLen: null);
+                    if (!context.mounted) return;
+                    showDismissibleSnackBar(
+                      context,
+                      content: Text(context.l10n.chat_pathCleared),
+                    );
+                  },
+                ),
               ] else if (isRoom) ...[
                 ListTile(
                   leading: Icon(Icons.radar, color: MeshPalette.signal),

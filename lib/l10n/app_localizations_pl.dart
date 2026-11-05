@@ -2315,6 +2315,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return 'Długość ramy: $count bajtów';
   }
@@ -2458,6 +2464,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get routing_forgetPath => 'Zapomnij o ścieżce';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => 'Znane trasy';
@@ -3155,7 +3167,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => 'Wymuś tryb flood';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => 'Zarządzaj Ścieżkami';

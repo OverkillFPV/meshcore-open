@@ -2170,6 +2170,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return '帧长度：$count 字节';
   }
@@ -2297,6 +2303,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get routing_forgetPath => '忘记原路';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => '已知的路径';
@@ -2969,7 +2981,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => '强制泛洪模式';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => '管理路径';

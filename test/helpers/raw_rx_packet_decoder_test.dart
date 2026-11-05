@@ -33,6 +33,55 @@ void main() {
     expect(info.summary, contains('GRP_TXT hash=5a mac=01 02 cipher=2'));
     expect(info.summary, contains('Path=aa bb'));
     expect(info.summary, contains('len=13'));
+    expect(info.destPrefix, isEmpty);
+    expect(info.senderPrefix, isEmpty);
+  });
+
+  test('decodes a direct packet destination prefix', () {
+    // header: payload type 2 (TXT) << 2 | route 2 (DIRECT)
+    final header = (2 << 2) | 2;
+    final packet = Uint8List.fromList([
+      header,
+      0x01, // 1 hash of 1-byte width
+      0xAB,
+      // Direct payloads start with the 6-byte destination key prefix.
+      0x11,
+      0x22,
+      0x33,
+      0x44,
+      0x55,
+      0x66,
+      0x01,
+      0x02,
+    ]);
+
+    final info = decodeRawRxPacket(packet);
+
+    expect(info.label, 'TXT • DIRECT • v0');
+    expect(info.destPrefix, [0x11, 0x22, 0x33, 0x44, 0x55, 0x66]);
+    expect(info.summary, contains('dest=112233445566'));
+    expect(info.senderPrefix, isEmpty);
+  });
+
+  test('exposes the advertising node prefix for adverts', () {
+    // header: version 1 << 6 | payload type 4 (ADVERT) << 2 | route 1
+    final header = (1 << 6) | (4 << 2) | 1;
+    final packet = Uint8List.fromList([
+      header,
+      0x00, // no path
+      0xDE,
+      0xAD,
+      0xBE,
+      0xEF,
+      0xCA,
+      0xFE,
+    ]);
+
+    final info = decodeRawRxPacket(packet);
+
+    expect(info.label, 'ADVERT • FLOOD • v1');
+    expect(info.senderPrefix, [0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE]);
+    expect(info.destPrefix, isEmpty);
   });
 
   test('decodes an ACK payload with its CRC', () {

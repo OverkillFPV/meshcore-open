@@ -178,6 +178,24 @@ class RxLogScreen extends StatelessWidget {
         '${time.second.toString().padLeft(2, '0')}';
   }
 
+  String _resolvePrefix(MeshCoreConnector connector, List<int> prefix) {
+    final hex = bytesToHex(prefix, spaced: false);
+    final matches = connector.allContacts
+        .where(
+          (c) =>
+              c.publicKey.length >= prefix.length &&
+              c.publicKey
+                  .sublist(0, prefix.length)
+                  .asMap()
+                  .entries
+                  .every((e) => e.value == prefix[e.key]),
+        )
+        .map((c) => c.name)
+        .toList();
+    if (matches.isEmpty) return hex;
+    return '${matches.join(' | ')} ($hex)';
+  }
+
   void _showEntryDialog(
     BuildContext context,
     MeshCoreConnector connector,
@@ -197,6 +215,18 @@ class RxLogScreen extends StatelessWidget {
       ..writeln('${l10n.rxLog_title}: ${info.label}')
       ..writeln(info.summary);
     if (signal != null) decoded.writeln(signal);
+    if (info.senderPrefix.isNotEmpty) {
+      decoded.writeln(
+        '${l10n.rxLog_senderLabel}: '
+        '${_resolvePrefix(connector, info.senderPrefix)}',
+      );
+    }
+    if (info.destPrefix.isNotEmpty) {
+      decoded.writeln(
+        '${l10n.rxLog_destLabel}: '
+        '${_resolvePrefix(connector, info.destPrefix)}',
+      );
+    }
     if (resolvedPath != null && resolvedPath.isNotEmpty) {
       decoded.writeln('Path: $resolvedPath');
     }

@@ -2200,6 +2200,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return '프레임 길이: $count 바이트';
   }
@@ -2335,6 +2341,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get routing_forgetPath => '경로 지우기';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => '알려진 경로';
@@ -3012,7 +3024,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => '플러딩 모드 강제 활성화';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => '경로 관리';

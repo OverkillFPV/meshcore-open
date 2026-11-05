@@ -2305,6 +2305,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return 'Rahmenlänge: $count Bytes';
   }
@@ -2444,6 +2450,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get routing_forgetPath => 'Pfad vergessen';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => 'Bekannte Pfade';
@@ -3140,7 +3152,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => 'Flood-Modus erzwingen';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => 'Pfadverwaltung';

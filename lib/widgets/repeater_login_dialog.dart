@@ -14,6 +14,7 @@ import '../theme/mesh_theme.dart';
 import '../widgets/mesh_ui.dart';
 import '../utils/app_logger.dart';
 import '../helpers/utf8_length_limiter.dart';
+import '../screens/repeater_hub_screen.dart';
 import 'path_editor_sheet.dart';
 import 'routing_sheet.dart';
 
@@ -240,39 +241,12 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
   }
 
   // _awaitLoginResponse returns a record of bool, for success and if the client is an admin
-  Future<(bool?, bool)> _awaitLoginResponse(Duration timeout) async {
-    final completer = Completer<bool?>();
-    Timer? timer;
-    StreamSubscription<Uint8List>? subscription;
-    final targetPrefix = widget.repeater.publicKey.sublist(0, 6);
-    bool isAdmin = false;
-    subscription = _connector.receivedFrames.listen((frame) {
-      if (frame.isEmpty) return;
-      final code = frame[0];
-      if (code != pushCodeLoginSuccess && code != pushCodeLoginFail) return;
-      if (frame.length < 8) return;
-      // NOTE: a bug in the repeater firmware only ever sends 1 or 0 back, not the
-      // expected client permissions
-      isAdmin = (frame[1] == 1);
-      final prefix = frame.sublist(2, 8);
-      if (!listEquals(prefix, targetPrefix)) return;
-
-      completer.complete(code == pushCodeLoginSuccess);
-      subscription?.cancel();
-      timer?.cancel();
-    });
-
-    timer = Timer(timeout, () {
-      if (!completer.isCompleted) {
-        completer.complete(null);
-        subscription?.cancel();
-      }
-    });
-
-    final result = await completer.future;
-    timer.cancel();
-    await subscription.cancel();
-    return (result, isAdmin);
+  Future<(bool?, bool)> _awaitLoginResponse(Duration timeout) {
+    return awaitRepeaterLoginResponse(
+      _connector,
+      widget.repeater.publicKey.sublist(0, 6),
+      timeout,
+    );
   }
 
   bool _hasManualPath(Contact repeater) {
@@ -319,6 +293,7 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
     final connector = context.watch<MeshCoreConnector>();
     final repeater = _resolveRepeater(connector);
     final isFloodMode = repeater.pathOverride == -1;
+    final isDirectMode = repeater.pathOverride == 0;
     return AlertDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
@@ -466,7 +441,13 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
                           ),
                           const Spacer(),
                           PopupMenuButton<String>(
-                            icon: Icon(isFloodMode ? Icons.waves : Icons.route),
+                            icon: Icon(
+                              isFloodMode
+                                  ? Icons.waves
+                                  : isDirectMode
+                                  ? Icons.my_location
+                                  : Icons.route,
+                            ),
                             tooltip: l10n.login_routingMode,
                             onSelected: (mode) async {
                               if (mode == 'flood') {
@@ -478,6 +459,12 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
                                 await connector.setPathOverride(
                                   repeater,
                                   pathLen: null,
+                                );
+                              } else if (mode == 'direct') {
+                                await connector.setPathOverride(
+                                  repeater,
+                                  pathLen: 0,
+                                  pathBytes: Uint8List(0),
                                 );
                               } else if (mode == 'path') {
                                 await _setPathDirectly(connector, repeater);
@@ -523,6 +510,29 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
                                       l10n.login_setPath,
                                       style: TextStyle(
                                         fontWeight: _hasManualPath(repeater)
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'direct',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.my_location,
+                                      size: 20,
+                                      color: isDirectMode
+                                          ? scheme.primary
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.login_directMode,
+                                      style: TextStyle(
+                                        fontWeight: isDirectMode
                                             ? FontWeight.bold
                                             : FontWeight.normal,
                                       ),
@@ -621,4 +631,127 @@ class _RepeaterLoginDialogState extends State<RepeaterLoginDialog> {
       ],
     );
   }
+}
+
+/// Waits for the login success/failure push for [targetPrefix]. The success
+/// flag is null when no response arrived before [timeout]; the second flag
+/// reports whether the repeater answered with admin permissions.
+Future<(bool?, bool)> awaitRepeaterLoginResponse(
+  MeshCoreConnector connector,
+  Uint8List targetPrefix,
+  Duration timeout,
+) async {
+  final completer = Completer<bool?>();
+  Timer? timer;
+  StreamSubscription<Uint8List>? subscription;
+  bool isAdmin = false;
+  subscription = connector.receivedFrames.listen((frame) {
+    if (frame.isEmpty) return;
+    final code = frame[0];
+    if (code != pushCodeLoginSuccess && code != pushCodeLoginFail) return;
+    if (frame.length < 8) return;
+    // NOTE: a bug in the repeater firmware only ever sends 1 or 0 back, not the
+    // expected client permissions
+    isAdmin = (frame[1] == 1);
+    final prefix = frame.sublist(2, 8);
+    if (!listEquals(prefix, targetPrefix)) return;
+
+    completer.complete(code == pushCodeLoginSuccess);
+    subscription?.cancel();
+    timer?.cancel();
+  });
+
+  timer = Timer(timeout, () {
+    if (!completer.isCompleted) {
+      completer.complete(null);
+      subscription?.cancel();
+    }
+  });
+
+  final result = await completer.future;
+  timer.cancel();
+  await subscription.cancel();
+  return (result, isAdmin);
+}
+
+void _showRepeaterLoginDialog(BuildContext context, Contact repeater) {
+  showDialog(
+    context: context,
+    builder: (context) => RepeaterLoginDialog(
+      repeater: repeater,
+      onLogin: (password, isAdmin) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RepeaterHubScreen(
+              repeater: repeater,
+              password: password,
+              isAdmin: isAdmin,
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+/// Logs into [repeater] with the saved password using its current routing,
+/// without showing the dialog. Opens the login dialog when no password has
+/// been saved or when the attempt fails.
+Future<void> autoLoginRepeater(BuildContext context, Contact repeater) async {
+  final connector = context.read<MeshCoreConnector>();
+  final storage = StorageService();
+  final password = await storage.getRepeaterPassword(repeater.publicKeyHex);
+  if (!context.mounted) return;
+  if (password == null) {
+    _showRepeaterLoginDialog(context, repeater);
+    return;
+  }
+
+  var target = repeater;
+  for (final contact in connector.contacts) {
+    if (contact.publicKeyHex == repeater.publicKeyHex) {
+      target = contact;
+      break;
+    }
+  }
+
+  try {
+    final selection = await connector.preparePathForContactSend(target);
+    final loginFrame = buildSendLoginFrame(target.publicKey, password);
+    final timeoutMs = connector.calculateTimeout(
+      pathLength: selection.useFlood ? -1 : selection.hopCount,
+      messageBytes: loginFrame.length > maxFrameSize
+          ? loginFrame.length
+          : maxFrameSize,
+    );
+    final (ok, isAdmin) = await awaitRepeaterLoginResponse(
+      connector,
+      target.publicKey.sublist(0, 6),
+      Duration(milliseconds: timeoutMs + 2000),
+    );
+    connector.recordRepeaterPathResult(target, selection, ok == true, null);
+    if (!context.mounted) return;
+    if (ok == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RepeaterHubScreen(
+            repeater: target,
+            password: password,
+            isAdmin: isAdmin,
+          ),
+        ),
+      );
+      return;
+    }
+  } catch (e) {
+    appLogger.warn(
+      'Auto login error for ${target.name}: $e',
+      tag: 'RepeaterLogin',
+    );
+  }
+
+  if (!context.mounted) return;
+  _showRepeaterLoginDialog(context, repeater);
 }

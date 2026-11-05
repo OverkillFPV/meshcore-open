@@ -2197,6 +2197,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return 'フレーム長: $count バイト';
   }
@@ -2331,6 +2337,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get routing_forgetPath => '経路を忘れる';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => '既知の経路';
@@ -3009,7 +3021,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => '強制的にフラッドモードを起動';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => 'パスの管理';

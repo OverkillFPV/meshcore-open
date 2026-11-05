@@ -2292,6 +2292,12 @@ class AppLocalizationsSk extends AppLocalizations {
   String get rxLog_copied => 'RX log copied';
 
   @override
+  String get rxLog_senderLabel => 'Sender';
+
+  @override
+  String get rxLog_destLabel => 'Destination';
+
+  @override
   String debugFrame_length(int count) {
     return 'Dĺžka rámca: $count bajtov';
   }
@@ -2432,6 +2438,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get routing_forgetPath => 'Zabudnite na trasu';
+
+  @override
+  String get routing_directPath => 'Direct';
+
+  @override
+  String get routing_directPathHint => 'No repeater hops';
 
   @override
   String get routing_knownPaths => 'Známe cesty';
@@ -3127,7 +3139,19 @@ class AppLocalizationsSk extends AppLocalizations {
   String get login_setPath => 'Set path…';
 
   @override
+  String get login_directMode => 'Direct';
+
+  @override
   String get login_forceFloodMode => 'Zavrieť núdzový flood režim';
+
+  @override
+  String get login_directLogin => 'Direct Login';
+
+  @override
+  String get login_autoLogin => 'Auto Login';
+
+  @override
+  String get login_forget => 'Forget';
 
   @override
   String get login_managePaths => 'Spravovať Cesty';

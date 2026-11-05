@@ -508,6 +508,55 @@ class _RoutingSheetBodyState extends State<_RoutingSheetBody> {
     );
   }
 
+  Widget _directTile(
+    BuildContext context,
+    MeshCoreConnector connector,
+    Contact contact,
+    _RoutingMode mode,
+  ) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final inUse = mode == _RoutingMode.manual && contact.pathOverride == 0;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: ListTile(
+        leading: CircleAvatar(
+          radius: 18,
+          backgroundColor: scheme.surfaceContainerHighest,
+          child: Icon(
+            Icons.my_location,
+            size: 18,
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        title: Text(l10n.routing_directPath),
+        subtitle: Text(
+          l10n.routing_directPathHint,
+          style: const TextStyle(fontSize: 12),
+        ),
+        trailing: inUse
+            ? Icon(
+                Icons.check_circle,
+                color: scheme.primary,
+                semanticLabel: l10n.routing_inUse,
+              )
+            : null,
+        onTap: inUse
+            ? null
+            : () async {
+                final bytes = Uint8List(0);
+                await connector.setPathOverride(
+                  contact,
+                  pathLen: 0,
+                  pathBytes: bytes,
+                );
+                await _verifyPath(connector, contact, bytes);
+              },
+      ),
+    );
+  }
+
   Widget _pathRecordTile(
     BuildContext context,
     MeshCoreConnector connector,
@@ -741,6 +790,7 @@ class _RoutingSheetBodyState extends State<_RoutingSheetBody> {
             const SizedBox(height: 8),
             if (hasFloodStats)
               _floodTile(context, connector, contact, mode, floodStats),
+            _directTile(context, connector, contact, mode),
             if (entries.isEmpty && !hasFloodStats)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),

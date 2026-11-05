@@ -141,7 +141,11 @@ SNRUi snrUiFromSNR(double? snr, int? spreadingFactor) {
       : 4;
   final signalUi = signalUiForStrengthTier(tier);
 
-  return SNRUi(signalUi.icon, signalUi.color, text);
+  return SNRUi(
+    signalUi.icon,
+    MeshTheme.gradientAt(MeshTheme.snrGradientPosition(snr)),
+    text,
+  );
 }
 
 class SNRIndicator extends StatefulWidget {

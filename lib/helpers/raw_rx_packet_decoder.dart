@@ -16,14 +16,28 @@ class RawRxPacketInfo {
   final Uint8List pathBytes;
   final int hashWidth;
 
+  /// Public-key prefix of the advertising node for ADVERT payloads, empty
+  /// otherwise.
+  final List<int> senderPrefix;
+
+  /// Public-key prefix of the destination for DIRECT/TRANS_DIRECT payloads,
+  /// empty for broadcasts and when the packet is too short to carry it.
+  final List<int> destPrefix;
+
   const RawRxPacketInfo({
     required this.label,
     required this.summary,
     required this.raw,
     required this.pathBytes,
     required this.hashWidth,
+    this.senderPrefix = const <int>[],
+    this.destPrefix = const <int>[],
   });
 }
+
+/// Length of the destination public-key prefix carried by direct messages
+/// (MeshCore `initDirectMessage`).
+const int destPrefixSize = 6;
 
 RawRxPacketInfo decodeRawRxPacket(Uint8List raw) {
   if (raw.length < 2) {
@@ -90,7 +104,16 @@ RawRxPacketInfo decodeRawRxPacket(Uint8List raw) {
   final payload = raw.sublist(index);
 
   final label = '$payloadLabel • $routeLabel • v$payloadVer';
-  final detail = decodePayloadSummary(payloadType, payload);
+  var detail = decodePayloadSummary(payloadType, payload);
+  var senderPrefix = Uint8List(0);
+  var destPrefix = Uint8List(0);
+  if (payloadType == 0x04 && payload.length >= destPrefixSize) {
+    senderPrefix = payload.sublist(0, destPrefixSize);
+  }
+  if ((routeType == 2 || routeType == 3) && payload.length > destPrefixSize) {
+    destPrefix = payload.sublist(0, destPrefixSize);
+    detail = '$detail dest=${bytesToHex(destPrefix, spaced: false)}';
+  }
   final pathSummary = pathByteLen > 0
       ? 'Path=${bytesToHex(pathBytes)}'
       : 'Path=none';
@@ -100,6 +123,8 @@ RawRxPacketInfo decodeRawRxPacket(Uint8List raw) {
     raw: raw,
     pathBytes: pathBytes,
     hashWidth: hashWidth,
+    senderPrefix: senderPrefix,
+    destPrefix: destPrefix,
   );
 }
 
@@ -282,7 +307,7 @@ String deviceRoleLabel(int role) {
   }
 }
 
-String bytesToHex(Uint8List bytes, {bool spaced = true}) {
+String bytesToHex(List<int> bytes, {bool spaced = true}) {
   if (bytes.isEmpty) return '';
   if (!spaced) {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
