@@ -6566,6 +6566,156 @@ abstract class AppLocalizations {
   /// **'{action} failed: {error}'**
   String repeater_actionFailed(String action, String error);
 
+  /// No description provided for @repeater_aclTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access control'**
+  String get repeater_aclTitle;
+
+  /// No description provided for @repeater_aclTileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions allowed to log in to this repeater'**
+  String get repeater_aclTileSubtitle;
+
+  /// No description provided for @repeater_aclScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access control list'**
+  String get repeater_aclScreenTitle;
+
+  /// No description provided for @repeater_aclEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No companions in the ACL'**
+  String get repeater_aclEmpty;
+
+  /// No description provided for @repeater_aclLoadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap refresh to load the ACL from the repeater'**
+  String get repeater_aclLoadHint;
+
+  /// No description provided for @repeater_aclRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh ACL'**
+  String get repeater_aclRefresh;
+
+  /// No description provided for @repeater_aclUnknownNode.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown node'**
+  String get repeater_aclUnknownNode;
+
+  /// No description provided for @repeater_aclRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get repeater_aclRole;
+
+  /// No description provided for @repeater_aclRoleGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get repeater_aclRoleGuest;
+
+  /// No description provided for @repeater_aclRoleReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-only'**
+  String get repeater_aclRoleReadOnly;
+
+  /// No description provided for @repeater_aclRoleReadWrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Read-write'**
+  String get repeater_aclRoleReadWrite;
+
+  /// No description provided for @repeater_aclRoleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get repeater_aclRoleAdmin;
+
+  /// No description provided for @repeater_aclRemoveTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from ACL'**
+  String get repeater_aclRemoveTooltip;
+
+  /// No description provided for @repeater_aclRemoveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from ACL'**
+  String get repeater_aclRemoveConfirmTitle;
+
+  /// No description provided for @repeater_aclRemoveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the ACL?'**
+  String repeater_aclRemoveConfirmMessage(String name);
+
+  /// No description provided for @repeater_aclRemoveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}'**
+  String repeater_aclRemoveAction(String name);
+
+  /// No description provided for @repeater_aclAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add companion'**
+  String get repeater_aclAdd;
+
+  /// No description provided for @repeater_aclAddAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Add companion'**
+  String get repeater_aclAddAction;
+
+  /// No description provided for @repeater_aclSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search companions'**
+  String get repeater_aclSearch;
+
+  /// No description provided for @repeater_aclNoCompanionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No companions found'**
+  String get repeater_aclNoCompanionsFound;
+
+  /// No description provided for @repeater_aclManualEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Public key'**
+  String get repeater_aclManualEntry;
+
+  /// No description provided for @repeater_aclManualEntryHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Full public key in hex (64 characters)'**
+  String get repeater_aclManualEntryHelper;
+
+  /// No description provided for @repeater_aclManualAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get repeater_aclManualAdd;
+
+  /// No description provided for @repeater_aclInvalidPubkey.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the full public key (64 hex characters)'**
+  String get repeater_aclInvalidPubkey;
+
+  /// No description provided for @repeater_aclLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the ACL: {error}'**
+  String repeater_aclLoadFailed(String error);
+
   /// No description provided for @repeater_settingsSavedRebootNeeded.
   ///
   /// In en, this message translates to:
@@ -11616,6 +11766,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transcript copied'**
   String get repeater_cliTranscriptCopied;
+
+  /// No description provided for @repeater_cliCommandCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Command copied'**
+  String get repeater_cliCommandCopied;
+
+  /// No description provided for @repeater_cliResendCommand.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend command'**
+  String get repeater_cliResendCommand;
 
   /// No description provided for @repeater_cliClearHistoryConfirm.
   ///

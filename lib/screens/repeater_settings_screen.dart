@@ -20,6 +20,7 @@ import '../widgets/map_location_picker.dart';
 import '../widgets/routing_sheet.dart';
 import '../utils/keys.dart';
 import '../helpers/snack_bar_builder.dart';
+import 'repeater_acl_screen.dart';
 
 class RepeaterSettingsScreen extends StatefulWidget {
   final Contact repeater;
@@ -1567,6 +1568,16 @@ class _RepeaterSettingsScreenState extends State<RepeaterSettingsScreen> {
                 onTap: !canAct
                     ? null
                     : () => _runAction('clock sync', l10n.repeater_clockSync),
+                contentPadding: EdgeInsets.zero,
+              ),
+              ListTile(
+                leading: const Icon(Icons.admin_panel_settings),
+                title: Text(l10n.repeater_aclTitle),
+                subtitle: Text(l10n.repeater_aclTileSubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                enabled: context.watch<MeshCoreConnector>().isConnected,
+                onTap: () =>
+                    RepeaterAclScreen.push(context, repeater: widget.repeater),
                 contentPadding: EdgeInsets.zero,
               ),
             ],

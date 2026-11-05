@@ -2008,6 +2008,52 @@
       }
     }
   },
+  "repeater_aclTitle": "Access control",
+  "repeater_aclTileSubtitle": "Companions allowed to log in to this repeater",
+  "repeater_aclScreenTitle": "Access control list",
+  "repeater_aclEmpty": "No companions in the ACL",
+  "repeater_aclLoadHint": "Tap refresh to load the ACL from the repeater",
+  "repeater_aclRefresh": "Refresh ACL",
+  "repeater_aclUnknownNode": "Unknown node",
+  "repeater_aclRole": "Role",
+  "repeater_aclRoleGuest": "Guest",
+  "repeater_aclRoleReadOnly": "Read-only",
+  "repeater_aclRoleReadWrite": "Read-write",
+  "repeater_aclRoleAdmin": "Admin",
+  "repeater_aclRemoveTooltip": "Remove from ACL",
+  "repeater_aclRemoveConfirmTitle": "Remove from ACL",
+  "repeater_aclRemoveConfirmMessage": "Remove {name} from the ACL?",
+  "@repeater_aclRemoveConfirmMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "repeater_aclRemoveAction": "Remove {name}",
+  "@repeater_aclRemoveAction": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "repeater_aclAdd": "Add companion",
+  "repeater_aclAddAction": "Add companion",
+  "repeater_aclSearch": "Search companions",
+  "repeater_aclNoCompanionsFound": "No companions found",
+  "repeater_aclManualEntry": "Public key",
+  "repeater_aclManualEntryHelper": "Full public key in hex (64 characters)",
+  "repeater_aclManualAdd": "Add",
+  "repeater_aclInvalidPubkey": "Enter the full public key (64 hex characters)",
+  "repeater_aclLoadFailed": "Could not load the ACL: {error}",
+  "@repeater_aclLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "repeater_settingsSavedRebootNeeded": "Settings saved — reboot the repeater to apply",
   "repeater_settingsPartialFailure": "Some settings failed: {failures}",
   "@repeater_settingsPartialFailure": {
@@ -3822,6 +3868,8 @@
   "repeater_cliCopyTranscript": "Copy transcript",
   "repeater_cliShareTranscript": "Share transcript",
   "repeater_cliTranscriptCopied": "Transcript copied",
+  "repeater_cliCommandCopied": "Command copied",
+  "repeater_cliResendCommand": "Resend command",
   "repeater_cliClearHistoryConfirm": "Clear the command history? This cannot be undone.",
   "repeater_cliSearchCommands": "Search commands",
   "repeater_cliNoMatchingCommands": "No matching commands",

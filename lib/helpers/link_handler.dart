@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../connector/meshcore_connector.dart';
 import '../l10n/l10n.dart';
 import '../models/channel.dart';
+import '../screens/channel_chat_screen.dart';
 import '../utils/platform_info.dart';
 import '../helpers/snack_bar_builder.dart';
 import '../helpers/utf8_length_limiter.dart';
@@ -258,13 +259,30 @@ class LinkHandler {
     }
   }
 
-  /// Offers to add a tapped `#hashtag` as a hashtag channel on the radio.
+  /// Opens the tapped `#hashtag` channel, or offers to add it if missing.
   static Future<void> handleHashtagTap(
     BuildContext context,
     String hashtag,
   ) async {
     final channelName = '#$hashtag';
     final connector = context.read<MeshCoreConnector>();
+
+    final existing = connector.channels.where(
+      (c) => c.name.toLowerCase() == channelName.toLowerCase(),
+    );
+    if (existing.isNotEmpty) {
+      final channel = existing.first;
+      final unread = connector.getUnreadCountForChannelIndex(channel.index);
+      connector.markChannelRead(channel.index);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ChannelChatScreen(channel: channel, initialUnreadCount: unread),
+        ),
+      );
+      return;
+    }
 
     final shouldAdd = await showDialog<bool>(
       context: context,

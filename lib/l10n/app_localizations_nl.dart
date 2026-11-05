@@ -3710,6 +3710,91 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get repeater_aclTitle => 'Access control';
+
+  @override
+  String get repeater_aclTileSubtitle =>
+      'Companions allowed to log in to this repeater';
+
+  @override
+  String get repeater_aclScreenTitle => 'Access control list';
+
+  @override
+  String get repeater_aclEmpty => 'No companions in the ACL';
+
+  @override
+  String get repeater_aclLoadHint =>
+      'Tap refresh to load the ACL from the repeater';
+
+  @override
+  String get repeater_aclRefresh => 'Refresh ACL';
+
+  @override
+  String get repeater_aclUnknownNode => 'Unknown node';
+
+  @override
+  String get repeater_aclRole => 'Role';
+
+  @override
+  String get repeater_aclRoleGuest => 'Guest';
+
+  @override
+  String get repeater_aclRoleReadOnly => 'Read-only';
+
+  @override
+  String get repeater_aclRoleReadWrite => 'Read-write';
+
+  @override
+  String get repeater_aclRoleAdmin => 'Admin';
+
+  @override
+  String get repeater_aclRemoveTooltip => 'Remove from ACL';
+
+  @override
+  String get repeater_aclRemoveConfirmTitle => 'Remove from ACL';
+
+  @override
+  String repeater_aclRemoveConfirmMessage(String name) {
+    return 'Remove $name from the ACL?';
+  }
+
+  @override
+  String repeater_aclRemoveAction(String name) {
+    return 'Remove $name';
+  }
+
+  @override
+  String get repeater_aclAdd => 'Add companion';
+
+  @override
+  String get repeater_aclAddAction => 'Add companion';
+
+  @override
+  String get repeater_aclSearch => 'Search companions';
+
+  @override
+  String get repeater_aclNoCompanionsFound => 'No companions found';
+
+  @override
+  String get repeater_aclManualEntry => 'Public key';
+
+  @override
+  String get repeater_aclManualEntryHelper =>
+      'Full public key in hex (64 characters)';
+
+  @override
+  String get repeater_aclManualAdd => 'Add';
+
+  @override
+  String get repeater_aclInvalidPubkey =>
+      'Enter the full public key (64 hex characters)';
+
+  @override
+  String repeater_aclLoadFailed(String error) {
+    return 'Could not load the ACL: $error';
+  }
+
+  @override
   String get repeater_settingsSavedRebootNeeded =>
       'Instellingen opgeslagen — herstart de repeater om ze toe te passen';
 
@@ -6881,6 +6966,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get repeater_cliTranscriptCopied => 'Transcript gekopieerd';
+
+  @override
+  String get repeater_cliCommandCopied => 'Command copied';
+
+  @override
+  String get repeater_cliResendCommand => 'Resend command';
 
   @override
   String get repeater_cliClearHistoryConfirm =>
