@@ -161,6 +161,7 @@ class MessageRetryService extends ChangeNotifier {
     String? translationModelId,
     Uint8List? pathBytes,
     int? pathLength,
+    DateTime? timestamp,
   }) async {
     final messageId = const Uuid().v4();
     final resolved = resolvePathSelection(contact);
@@ -174,7 +175,7 @@ class MessageRetryService extends ChangeNotifier {
       originalText: originalText,
       translatedLanguageCode: translatedLanguageCode,
       translationModelId: translationModelId,
-      timestamp: DateTime.now(),
+      timestamp: timestamp ?? DateTime.now(),
       isOutgoing: true,
       status: MessageStatus.pending,
       messageId: messageId,

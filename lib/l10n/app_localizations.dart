@@ -11982,6 +11982,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Happy New Year|Happy New Year\'s'**
   String get holidayGreeting_newYear;
+
+  /// No description provided for @chat_resend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get chat_resend;
+
+  /// No description provided for @chat_resendingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Resending message'**
+  String get chat_resendingMessage;
+
+  /// No description provided for @chat_hashtagAddChannelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add hashtag channel'**
+  String get chat_hashtagAddChannelTitle;
+
+  /// No description provided for @chat_hashtagAddChannelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add \"{name}\" as a channel?'**
+  String chat_hashtagAddChannelConfirm(String name);
+
+  /// No description provided for @chat_hashtagChannelExists.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" is already a channel'**
+  String chat_hashtagChannelExists(String name);
+
+  /// No description provided for @backup_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Export / import data'**
+  String get backup_title;
+
+  /// No description provided for @backup_titleSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up selected settings and data to a file, or restore them'**
+  String get backup_titleSubtitle;
+
+  /// No description provided for @backup_exportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Export selection'**
+  String get backup_exportTitle;
+
+  /// No description provided for @backup_exportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Export selected'**
+  String get backup_exportButton;
+
+  /// No description provided for @backup_exportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup exported.'**
+  String get backup_exportSuccess;
+
+  /// No description provided for @backup_exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed.'**
+  String get backup_exportFailed;
+
+  /// No description provided for @backup_importTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get backup_importTitle;
+
+  /// No description provided for @backup_importButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from file'**
+  String get backup_importButton;
+
+  /// No description provided for @backup_importButtonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which items to restore; they replace what is stored now.'**
+  String get backup_importButtonSubtitle;
+
+  /// No description provided for @backup_importApplyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get backup_importApplyButton;
+
+  /// No description provided for @backup_importWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported items replace the data currently stored. This cannot be undone.'**
+  String get backup_importWarning;
+
+  /// No description provided for @backup_importInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a valid backup file.'**
+  String get backup_importInvalid;
+
+  /// No description provided for @backup_importResult.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No entries imported.} other{{count} entries imported.}}'**
+  String backup_importResult(int count);
+
+  /// No description provided for @backup_importRestartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart the app to fully apply the imported data.'**
+  String get backup_importRestartHint;
+
+  /// No description provided for @backup_categorySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'App settings'**
+  String get backup_categorySettings;
+
+  /// No description provided for @backup_categorySettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme, language, maps, notifications, translations, image codec'**
+  String get backup_categorySettingsDesc;
+
+  /// No description provided for @backup_categoryUiState.
+  ///
+  /// In en, this message translates to:
+  /// **'Interface state'**
+  String get backup_categoryUiState;
+
+  /// No description provided for @backup_categoryUiStateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorts, filters, map camera, dismissed banners'**
+  String get backup_categoryUiStateDesc;
+
+  /// No description provided for @backup_categoryContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get backup_categoryContacts;
+
+  /// No description provided for @backup_categoryContactsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Companions, repeaters and room servers'**
+  String get backup_categoryContactsDesc;
+
+  /// No description provided for @backup_categoryContactGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact groups'**
+  String get backup_categoryContactGroups;
+
+  /// No description provided for @backup_categoryContactGroupsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom contact groups'**
+  String get backup_categoryContactGroupsDesc;
+
+  /// No description provided for @backup_categoryContactSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact settings'**
+  String get backup_categoryContactSettings;
+
+  /// No description provided for @backup_categoryContactSettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-contact compression and transliteration'**
+  String get backup_categoryContactSettingsDesc;
+
+  /// No description provided for @backup_categoryDiscoveredContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discovered contacts'**
+  String get backup_categoryDiscoveredContacts;
+
+  /// No description provided for @backup_categoryDiscoveredContactsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts found while scanning'**
+  String get backup_categoryDiscoveredContactsDesc;
+
+  /// No description provided for @backup_categoryMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Companion messages'**
+  String get backup_categoryMessages;
+
+  /// No description provided for @backup_categoryMessagesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'1:1 and room chat history'**
+  String get backup_categoryMessagesDesc;
+
+  /// No description provided for @backup_categoryChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels'**
+  String get backup_categoryChannels;
+
+  /// No description provided for @backup_categoryChannelsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel list and slots'**
+  String get backup_categoryChannelsDesc;
+
+  /// No description provided for @backup_categoryChannelSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel settings'**
+  String get backup_categoryChannelSettings;
+
+  /// No description provided for @backup_categoryChannelSettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Order, regions, compression, transliteration'**
+  String get backup_categoryChannelSettingsDesc;
+
+  /// No description provided for @backup_categoryChannelMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel messages'**
+  String get backup_categoryChannelMessages;
+
+  /// No description provided for @backup_categoryChannelMessagesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel chat history'**
+  String get backup_categoryChannelMessagesDesc;
+
+  /// No description provided for @backup_categoryCommunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Communities'**
+  String get backup_categoryCommunities;
+
+  /// No description provided for @backup_categoryCommunitiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Communities and their hashtag channels'**
+  String get backup_categoryCommunitiesDesc;
+
+  /// No description provided for @backup_categoryUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread counts'**
+  String get backup_categoryUnread;
+
+  /// No description provided for @backup_categoryUnreadDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-contact unread badges'**
+  String get backup_categoryUnreadDesc;
+
+  /// No description provided for @backup_categoryPaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Learned routes'**
+  String get backup_categoryPaths;
+
+  /// No description provided for @backup_categoryPathsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Path history, delivery observations, packet paths'**
+  String get backup_categoryPathsDesc;
+
+  /// No description provided for @backup_categoryRepeaterPasswords.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeater passwords'**
+  String get backup_categoryRepeaterPasswords;
+
+  /// No description provided for @backup_categoryRepeaterPasswordsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved repeater login passwords'**
+  String get backup_categoryRepeaterPasswordsDesc;
+
+  /// No description provided for @backup_categoryRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'Regions'**
+  String get backup_categoryRegions;
+
+  /// No description provided for @backup_categoryRegionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom flood regions'**
+  String get backup_categoryRegionsDesc;
+
+  /// No description provided for @backup_categoryMapMarkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Map markers'**
+  String get backup_categoryMapMarkers;
+
+  /// No description provided for @backup_categoryMapMarkersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed map marker IDs'**
+  String get backup_categoryMapMarkersDesc;
 }
 
 class _AppLocalizationsDelegate

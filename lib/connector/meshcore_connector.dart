@@ -960,8 +960,23 @@ class MeshCoreConnector extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Re-sends a message keeping its original timestamp so the packet bytes
+  /// (and therefore the packet hash the mesh deduplicates on) are identical
+  /// for the first attempts; repeaters that already forwarded it drop the
+  /// copy instead of duplicating it.
   Future<void> resendMessage(Contact contact, Message message) async {
     await deleteMessage(message);
+    if (_retryService != null) {
+      await _retryService!.sendMessageWithRetry(
+        contact: contact,
+        text: message.text,
+        originalText: message.originalText,
+        translatedLanguageCode: message.translatedLanguageCode,
+        translationModelId: message.translationModelId,
+        timestamp: message.timestamp,
+      );
+      return;
+    }
     await sendMessage(
       contact,
       message.text,
@@ -969,6 +984,61 @@ class MeshCoreConnector extends ChangeNotifier {
       translatedLanguageCode: message.translatedLanguageCode,
       translationModelId: message.translationModelId,
     );
+  }
+
+  /// Re-transmits an outgoing channel message with its original timestamp,
+  /// so every copy carries the same packet hash and repeaters that already
+  /// forwarded it drop the duplicate. The message returns to pending and is
+  /// marked sent again when the radio confirms the send.
+  Future<void> resendChannelMessage(ChannelMessage message) async {
+    final channelIndex = message.channelIndex;
+    if (!isConnected ||
+        !message.isOutgoing ||
+        message.text.isEmpty ||
+        channelIndex == null) {
+      return;
+    }
+    final channel = _findChannelByIndex(channelIndex);
+    if (channel == null) return;
+
+    // The stored text has the reply prefix stripped; put it back so the
+    // retransmitted payload matches the original packet byte for byte.
+    final replyPrefix = message.replyToSenderName == null
+        ? ''
+        : '@[${message.replyToSenderName}] ';
+    final outboundText = prepareChannelOutboundText(
+      channel.index,
+      '$replyPrefix${message.text}',
+    );
+
+    final slot = _canonicalSlot(channel.index);
+    final messages = _channelMessages[slot];
+    final index = messages?.indexWhere((m) => m.messageId == message.messageId);
+    if (messages != null && index != null && index >= 0) {
+      messages[index] = messages[index].copyWith(
+        status: ChannelMessageStatus.pending,
+      );
+      unawaited(_saveChannelMessages(slot, messages));
+    }
+    _pendingChannelSentQueue.add(message.messageId);
+    notifyListeners();
+
+    try {
+      await _runScopedChannelSend(() async {
+        await _waitForRadioQuiet(lastInboundRxTime: _lastChannelMsgRxTime);
+        await _sendFrameAndWaitForCommandAck(
+          buildSendChannelTextMsgFrame(
+            channel.index,
+            outboundText,
+            timestamp: message.timestamp.millisecondsSinceEpoch ~/ 1000,
+          ),
+          channelSendQueueId: message.messageId,
+        );
+      }, region: _channelSendScope(channel.index));
+    } catch (_) {
+      _pendingChannelSentQueue.remove(message.messageId);
+      rethrow;
+    }
   }
 
   Future<void> _loadMessagesForContact(String contactKeyHex) async {

@@ -2472,6 +2472,15 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                     _markAsUnread(message);
                   },
                 ),
+              if (message.isOutgoing)
+                ListTile(
+                  leading: const Icon(Icons.refresh),
+                  title: Text(context.l10n.chat_resend),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    unawaited(_resendChannelMessage(message));
+                  },
+                ),
               const Divider(height: 1),
               ListTile(
                 leading: Icon(
@@ -2493,6 +2502,28 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
         ),
       ),
     );
+  }
+
+  /// Re-transmits one of our own channel messages with its original
+  /// timestamp, so the packet hash is unchanged and repeaters drop
+  /// duplicates instead of relaying it twice.
+  Future<void> _resendChannelMessage(ChannelMessage message) async {
+    final connector = context.read<MeshCoreConnector>();
+    try {
+      await connector.resendChannelMessage(message);
+      if (!mounted) return;
+      showDismissibleSnackBar(
+        context,
+        content: Text(context.l10n.chat_resendingMessage),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showDismissibleSnackBar(
+        context,
+        content: Text('$e'),
+        backgroundColor: Colors.red,
+      );
+    }
   }
 
   void _showEmojiPicker(ChannelMessage message) {

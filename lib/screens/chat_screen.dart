@@ -1196,10 +1196,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     _markAsUnread(message);
                   },
                 ),
-              if (message.isOutgoing && message.status == MessageStatus.failed)
+              if (message.isOutgoing)
                 ListTile(
                   leading: const Icon(Icons.refresh),
-                  title: Text(context.l10n.common_retry),
+                  title: Text(
+                    message.status == MessageStatus.failed
+                        ? context.l10n.common_retry
+                        : context.l10n.chat_resend,
+                  ),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _retryMessage(message);

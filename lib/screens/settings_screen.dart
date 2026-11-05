@@ -20,6 +20,7 @@ import '../widgets/map_location_picker.dart';
 import '../widgets/radio_settings_dialog.dart';
 import 'app_settings_screen.dart';
 import 'app_debug_log_screen.dart';
+import 'backup_screen.dart';
 import 'ble_debug_log_screen.dart';
 import 'companion_cli_screen.dart';
 import '../widgets/radio_stats_entry.dart';
@@ -738,6 +739,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               l10n.settings_gpxExportShareSubject,
             );
           },
+        ),
+        const Divider(height: 1, indent: 16),
+        MeshNavTile(
+          icon: Icons.import_export_outlined,
+          title: l10n.backup_title,
+          subtitle: l10n.backup_titleSubtitle,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BackupScreen()),
+          ),
         ),
       ],
     );

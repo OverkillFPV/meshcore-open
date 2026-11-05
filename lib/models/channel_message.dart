@@ -383,9 +383,13 @@ class ChannelMessage {
     final regex = RegExp(r'^@\[([^\]]+)\]\s+(.+)$', dotAll: true);
     final match = regex.firstMatch(text);
     if (match == null) return null;
+    final actualMessage = match.group(2)!;
+    // A second leading mention makes this a multi-mention post, not a reply
+    // to one node. Keep the full text so every `@[name]` renders individually.
+    if (RegExp(r'^@\[([^\]]+)\]\s').hasMatch(actualMessage)) return null;
     return ReplyInfo(
       mentionedNode: match.group(1)!,
-      actualMessage: match.group(2)!,
+      actualMessage: actualMessage,
     );
   }
 

@@ -7075,4 +7075,182 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get holidayGreeting_newYear =>
       'Gott nytt år|Happy New Year|Ett gott nytt år';
+
+  @override
+  String get chat_resend => 'Resend';
+
+  @override
+  String get chat_resendingMessage => 'Resending message';
+
+  @override
+  String get chat_hashtagAddChannelTitle => 'Add hashtag channel';
+
+  @override
+  String chat_hashtagAddChannelConfirm(String name) {
+    return 'Add \"$name\" as a channel?';
+  }
+
+  @override
+  String chat_hashtagChannelExists(String name) {
+    return '\"$name\" is already a channel';
+  }
+
+  @override
+  String get backup_title => 'Export / import data';
+
+  @override
+  String get backup_titleSubtitle =>
+      'Back up selected settings and data to a file, or restore them';
+
+  @override
+  String get backup_exportTitle => 'Export selection';
+
+  @override
+  String get backup_exportButton => 'Export selected';
+
+  @override
+  String get backup_exportSuccess => 'Backup exported.';
+
+  @override
+  String get backup_exportFailed => 'Export failed.';
+
+  @override
+  String get backup_importTitle => 'Import';
+
+  @override
+  String get backup_importButton => 'Import from file';
+
+  @override
+  String get backup_importButtonSubtitle =>
+      'Choose which items to restore; they replace what is stored now.';
+
+  @override
+  String get backup_importApplyButton => 'Import';
+
+  @override
+  String get backup_importWarning =>
+      'Imported items replace the data currently stored. This cannot be undone.';
+
+  @override
+  String get backup_importInvalid => 'Not a valid backup file.';
+
+  @override
+  String backup_importResult(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entries imported.',
+      zero: 'No entries imported.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get backup_importRestartHint =>
+      'Restart the app to fully apply the imported data.';
+
+  @override
+  String get backup_categorySettings => 'App settings';
+
+  @override
+  String get backup_categorySettingsDesc =>
+      'Theme, language, maps, notifications, translations, image codec';
+
+  @override
+  String get backup_categoryUiState => 'Interface state';
+
+  @override
+  String get backup_categoryUiStateDesc =>
+      'Sorts, filters, map camera, dismissed banners';
+
+  @override
+  String get backup_categoryContacts => 'Contacts';
+
+  @override
+  String get backup_categoryContactsDesc =>
+      'Companions, repeaters and room servers';
+
+  @override
+  String get backup_categoryContactGroups => 'Contact groups';
+
+  @override
+  String get backup_categoryContactGroupsDesc => 'Custom contact groups';
+
+  @override
+  String get backup_categoryContactSettings => 'Contact settings';
+
+  @override
+  String get backup_categoryContactSettingsDesc =>
+      'Per-contact compression and transliteration';
+
+  @override
+  String get backup_categoryDiscoveredContacts => 'Discovered contacts';
+
+  @override
+  String get backup_categoryDiscoveredContactsDesc =>
+      'Contacts found while scanning';
+
+  @override
+  String get backup_categoryMessages => 'Companion messages';
+
+  @override
+  String get backup_categoryMessagesDesc => '1:1 and room chat history';
+
+  @override
+  String get backup_categoryChannels => 'Channels';
+
+  @override
+  String get backup_categoryChannelsDesc => 'Channel list and slots';
+
+  @override
+  String get backup_categoryChannelSettings => 'Channel settings';
+
+  @override
+  String get backup_categoryChannelSettingsDesc =>
+      'Order, regions, compression, transliteration';
+
+  @override
+  String get backup_categoryChannelMessages => 'Channel messages';
+
+  @override
+  String get backup_categoryChannelMessagesDesc => 'Channel chat history';
+
+  @override
+  String get backup_categoryCommunities => 'Communities';
+
+  @override
+  String get backup_categoryCommunitiesDesc =>
+      'Communities and their hashtag channels';
+
+  @override
+  String get backup_categoryUnread => 'Unread counts';
+
+  @override
+  String get backup_categoryUnreadDesc => 'Per-contact unread badges';
+
+  @override
+  String get backup_categoryPaths => 'Learned routes';
+
+  @override
+  String get backup_categoryPathsDesc =>
+      'Path history, delivery observations, packet paths';
+
+  @override
+  String get backup_categoryRepeaterPasswords => 'Repeater passwords';
+
+  @override
+  String get backup_categoryRepeaterPasswordsDesc =>
+      'Saved repeater login passwords';
+
+  @override
+  String get backup_categoryRegions => 'Regions';
+
+  @override
+  String get backup_categoryRegionsDesc => 'Custom flood regions';
+
+  @override
+  String get backup_categoryMapMarkers => 'Map markers';
+
+  @override
+  String get backup_categoryMapMarkersDesc => 'Removed map marker IDs';
 }

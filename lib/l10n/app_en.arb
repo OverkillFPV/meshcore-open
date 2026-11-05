@@ -3904,5 +3904,77 @@
   "holidayGreeting_newYear": "Happy New Year|Happy New Year's",
   "@holidayGreeting_newYear": {
     "description": "Holiday greeting that plays the New Year's fireworks animation when it appears in a chat message. Matched in every app language and ignoring case and punctuation, so translate it as people actually write the greeting. Separate alternative phrasings with |."
-  }
+  },
+  "chat_resend": "Resend",
+  "chat_resendingMessage": "Resending message",
+  "chat_hashtagAddChannelTitle": "Add hashtag channel",
+  "chat_hashtagAddChannelConfirm": "Add \"{name}\" as a channel?",
+  "@chat_hashtagAddChannelConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_hashtagChannelExists": "\"{name}\" is already a channel",
+  "@chat_hashtagChannelExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "backup_title": "Export / import data",
+  "backup_titleSubtitle": "Back up selected settings and data to a file, or restore them",
+  "backup_exportTitle": "Export selection",
+  "backup_exportButton": "Export selected",
+  "backup_exportSuccess": "Backup exported.",
+  "backup_exportFailed": "Export failed.",
+  "backup_importTitle": "Import",
+  "backup_importButton": "Import from file",
+  "backup_importButtonSubtitle": "Choose which items to restore; they replace what is stored now.",
+  "backup_importApplyButton": "Import",
+  "backup_importWarning": "Imported items replace the data currently stored. This cannot be undone.",
+  "backup_importInvalid": "Not a valid backup file.",
+  "backup_importResult": "{count, plural, =0{No entries imported.} other{{count} entries imported.}}",
+  "@backup_importResult": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backup_importRestartHint": "Restart the app to fully apply the imported data.",
+  "backup_categorySettings": "App settings",
+  "backup_categorySettingsDesc": "Theme, language, maps, notifications, translations, image codec",
+  "backup_categoryUiState": "Interface state",
+  "backup_categoryUiStateDesc": "Sorts, filters, map camera, dismissed banners",
+  "backup_categoryContacts": "Contacts",
+  "backup_categoryContactsDesc": "Companions, repeaters and room servers",
+  "backup_categoryContactGroups": "Contact groups",
+  "backup_categoryContactGroupsDesc": "Custom contact groups",
+  "backup_categoryContactSettings": "Contact settings",
+  "backup_categoryContactSettingsDesc": "Per-contact compression and transliteration",
+  "backup_categoryDiscoveredContacts": "Discovered contacts",
+  "backup_categoryDiscoveredContactsDesc": "Contacts found while scanning",
+  "backup_categoryMessages": "Companion messages",
+  "backup_categoryMessagesDesc": "1:1 and room chat history",
+  "backup_categoryChannels": "Channels",
+  "backup_categoryChannelsDesc": "Channel list and slots",
+  "backup_categoryChannelSettings": "Channel settings",
+  "backup_categoryChannelSettingsDesc": "Order, regions, compression, transliteration",
+  "backup_categoryChannelMessages": "Channel messages",
+  "backup_categoryChannelMessagesDesc": "Channel chat history",
+  "backup_categoryCommunities": "Communities",
+  "backup_categoryCommunitiesDesc": "Communities and their hashtag channels",
+  "backup_categoryUnread": "Unread counts",
+  "backup_categoryUnreadDesc": "Per-contact unread badges",
+  "backup_categoryPaths": "Learned routes",
+  "backup_categoryPathsDesc": "Path history, delivery observations, packet paths",
+  "backup_categoryRepeaterPasswords": "Repeater passwords",
+  "backup_categoryRepeaterPasswordsDesc": "Saved repeater login passwords",
+  "backup_categoryRegions": "Regions",
+  "backup_categoryRegionsDesc": "Custom flood regions",
+  "backup_categoryMapMarkers": "Map markers",
+  "backup_categoryMapMarkersDesc": "Removed map marker IDs"
 }
