@@ -2848,6 +2848,36 @@ abstract class AppLocalizations {
   /// **'Contacts'**
   String get contacts_title;
 
+  /// No description provided for @contacts_statNodes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} nodes'**
+  String contacts_statNodes(int count);
+
+  /// No description provided for @contacts_statCompanions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} companions'**
+  String contacts_statCompanions(int count);
+
+  /// No description provided for @contacts_statRepeaters.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} repeaters'**
+  String contacts_statRepeaters(int count);
+
+  /// No description provided for @contacts_statActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active'**
+  String contacts_statActive(int count);
+
+  /// No description provided for @contacts_statInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} inactive'**
+  String contacts_statInactive(int count);
+
   /// No description provided for @contacts_noContacts.
   ///
   /// In en, this message translates to:

@@ -938,8 +938,61 @@ class _ContactsScreenState extends State<ContactsScreen>
       ),
     );
 
+    final selfKeyHex = connector.selfPublicKey == null
+        ? null
+        : pubKeyToHex(connector.selfPublicKey!);
+    final knownNodes = connector.allContacts
+        .where((c) => c.publicKeyHex != selfKeyHex)
+        .toList();
+    final activeNodeCount = knownNodes.where((c) => c.isActive).length;
+    final summaryChips = [
+      StatusChip(
+        label: context.l10n.contacts_statNodes(knownNodes.length),
+        color: MeshPalette.blue,
+        icon: Icons.hub_outlined,
+      ),
+      StatusChip(
+        label: context.l10n.contacts_statCompanions(
+          knownNodes.where((c) => c.type == advTypeChat).length,
+        ),
+        color: MeshPalette.magenta,
+        icon: Icons.person_outline,
+      ),
+      StatusChip(
+        label: context.l10n.contacts_statRepeaters(
+          knownNodes.where((c) => c.type == advTypeRepeater).length,
+        ),
+        color: MeshPalette.warn,
+        icon: Icons.cell_tower,
+      ),
+      StatusChip(
+        label: context.l10n.contacts_statActive(activeNodeCount),
+        color: MeshPalette.signal,
+        icon: Icons.bolt,
+      ),
+      StatusChip(
+        label: context.l10n.contacts_statInactive(
+          knownNodes.length - activeNodeCount,
+        ),
+        color: MeshPalette.line3,
+        icon: Icons.hourglass_empty,
+      ),
+    ];
+
     return Column(
       children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+          child: Row(
+            children: [
+              for (final (index, chip) in summaryChips.indexed) ...[
+                if (index > 0) const SizedBox(width: 6),
+                chip,
+              ],
+            ],
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

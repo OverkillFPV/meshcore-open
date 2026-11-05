@@ -1571,6 +1571,31 @@ class AppLocalizationsSk extends AppLocalizations {
   String get contacts_title => 'Kontakty';
 
   @override
+  String contacts_statNodes(int count) {
+    return '$count nodes';
+  }
+
+  @override
+  String contacts_statCompanions(int count) {
+    return '$count companions';
+  }
+
+  @override
+  String contacts_statRepeaters(int count) {
+    return '$count repeaters';
+  }
+
+  @override
+  String contacts_statActive(int count) {
+    return '$count active';
+  }
+
+  @override
+  String contacts_statInactive(int count) {
+    return '$count inactive';
+  }
+
+  @override
   String get contacts_noContacts => 'Zatiaľ žiadne kontakty.';
 
   @override

@@ -682,6 +682,46 @@
   "appSettings_appDebugLoggingEnabled": "App debug logging enabled",
   "appSettings_appDebugLoggingDisabled": "App debug logging disabled",
   "contacts_title": "Contacts",
+  "contacts_statNodes": "{count} nodes",
+  "@contacts_statNodes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contacts_statCompanions": "{count} companions",
+  "@contacts_statCompanions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contacts_statRepeaters": "{count} repeaters",
+  "@contacts_statRepeaters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contacts_statActive": "{count} active",
+  "@contacts_statActive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "contacts_statInactive": "{count} inactive",
+  "@contacts_statInactive": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "contacts_noContacts": "No contacts yet",
   "contacts_contactsWillAppear": "Contacts will appear when devices advertise",
   "contacts_unread": "Unread",

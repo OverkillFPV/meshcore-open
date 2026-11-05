@@ -1478,6 +1478,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contacts_title => '联系人';
 
   @override
+  String contacts_statNodes(int count) {
+    return '$count nodes';
+  }
+
+  @override
+  String contacts_statCompanions(int count) {
+    return '$count companions';
+  }
+
+  @override
+  String contacts_statRepeaters(int count) {
+    return '$count repeaters';
+  }
+
+  @override
+  String contacts_statActive(int count) {
+    return '$count active';
+  }
+
+  @override
+  String contacts_statInactive(int count) {
+    return '$count inactive';
+  }
+
+  @override
   String get contacts_noContacts => '暂无联系人';
 
   @override
