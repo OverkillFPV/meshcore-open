@@ -1444,6 +1444,13 @@ class AppLocalizationsNl extends AppLocalizations {
       'Toon andere nodetypes op de kaart';
 
   @override
+  String get appSettings_showOnlineLinks => 'Show Online Map Connections';
+
+  @override
+  String get appSettings_showOnlineLinksSubtitle =>
+      'Display connection lines between nodes from the online map';
+
+  @override
   String get appSettings_timeFilter => 'Filter op tijd';
 
   @override
@@ -2811,6 +2818,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get map_otherNodes => 'Andere Nodes';
+
+  @override
+  String get map_showOnlineLinks => 'Show Online Map Connections';
 
   @override
   String get map_showOverlaps => 'Overlappende repeatersleutels';

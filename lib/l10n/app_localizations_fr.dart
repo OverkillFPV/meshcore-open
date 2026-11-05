@@ -1453,6 +1453,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher d\'autres types de nœuds sur la carte';
 
   @override
+  String get appSettings_showOnlineLinks => 'Show Online Map Connections';
+
+  @override
+  String get appSettings_showOnlineLinksSubtitle =>
+      'Display connection lines between nodes from the online map';
+
+  @override
   String get appSettings_timeFilter => 'Filtre du temps';
 
   @override
@@ -2827,6 +2834,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get map_otherNodes => 'Autres nœuds';
+
+  @override
+  String get map_showOnlineLinks => 'Show Online Map Connections';
 
   @override
   String get map_showOverlaps => 'Chevauchements de clés de répéteur';

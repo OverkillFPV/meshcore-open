@@ -1446,6 +1446,13 @@ class AppLocalizationsUk extends AppLocalizations {
       'Відображати інші типи вузлів на карті';
 
   @override
+  String get appSettings_showOnlineLinks => 'Show Online Map Connections';
+
+  @override
+  String get appSettings_showOnlineLinksSubtitle =>
+      'Display connection lines between nodes from the online map';
+
+  @override
   String get appSettings_timeFilter => 'Фільтр часу';
 
   @override
@@ -2820,6 +2827,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get map_otherNodes => 'Інші вузли';
+
+  @override
+  String get map_showOnlineLinks => 'Show Online Map Connections';
 
   @override
   String get map_showOverlaps => 'Перекриття ключів ретрансляторів';
