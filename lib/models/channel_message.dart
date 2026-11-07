@@ -83,6 +83,12 @@ class ChannelMessage {
   final String? replyToText;
   final Map<String, List<String?>> reactions;
 
+  /// Set when the message filter hid this message (a FilterReason JSON name).
+  final String? filterReason;
+
+  /// Extra context for [filterReason], e.g. the matching rule pattern.
+  final String? filterDetail;
+
   ChannelMessage({
     this.senderKey,
     required this.senderName,
@@ -113,6 +119,8 @@ class ChannelMessage {
     this.replyToSenderName,
     this.replyToText,
     Map<String, List<String?>>? reactions,
+    this.filterReason,
+    this.filterDetail,
   }) : messageId =
            messageId ??
            '${timestamp.millisecondsSinceEpoch}_${senderName.hashCode}_${text.hashCode}',
@@ -129,6 +137,8 @@ class ChannelMessage {
          rssiDbm,
          pathSignals,
        );
+
+  bool get isFiltered => filterReason != null;
 
   String? get senderKeyHex =>
       senderKey != null ? pubKeyToHex(senderKey!) : null;
@@ -165,6 +175,9 @@ class ChannelMessage {
     Object? translationModelId = _unset,
     Map<String, List<String?>>? reactions,
     int? channelIndex,
+    String? filterReason,
+    String? filterDetail,
+    bool clearFilter = false,
   }) {
     return ChannelMessage(
       senderKey: senderKey,
@@ -204,6 +217,8 @@ class ChannelMessage {
       replyToSenderName: replyToSenderName ?? this.replyToSenderName,
       replyToText: replyToText ?? this.replyToText,
       reactions: reactions ?? this.reactions,
+      filterReason: clearFilter ? null : (filterReason ?? this.filterReason),
+      filterDetail: clearFilter ? null : (filterDetail ?? this.filterDetail),
     );
   }
 
