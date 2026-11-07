@@ -1811,6 +1811,11 @@
   "repeater_uptime": "Uptime",
   "repeater_queueLength": "Queue Length",
   "repeater_debugFlags": "Debug Flags",
+  "repeater_flagDetails": "Flag Details",
+  "repeater_flagPoolFull": "Packet pool exhausted",
+  "repeater_flagCadTimeout": "CAD timeout",
+  "repeater_flagRxTimeout": "Radio stuck outside RX",
+  "repeater_flagRadioWatchdog": "Radio watchdog reset",
   "repeater_radioStatistics": "Radio Statistics",
   "repeater_lastRssi": "Last RSSI",
   "repeater_lastSnr": "Last SNR",
@@ -1818,6 +1823,10 @@
   "repeater_txAirtime": "TX Airtime",
   "repeater_rxAirtime": "RX Airtime",
   "repeater_chanUtil": "Channel Utilization",
+  "repeater_txPerMin": "TX/min",
+  "repeater_rxPerMin": "RX/min",
+  "repeater_packetErrorRate": "Packet Error Rate",
+  "repeater_rxErrorRatio": "RX Error Ratio",
   "repeater_packetStatistics": "Packet Statistics",
   "repeater_sent": "Sent",
   "repeater_received": "Received",
@@ -2350,6 +2359,20 @@
       }
     }
   },
+  "telemetry_batteryCellsValue": "{percent}% / {cellVolts}V ({cells}S)",
+  "@telemetry_batteryCellsValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "cellVolts": {
+        "type": "String"
+      },
+      "cells": {
+        "type": "int"
+      }
+    }
+  },
   "telemetry_voltageValue": "{volts}V",
   "@telemetry_voltageValue": {
     "placeholders": {
@@ -2665,6 +2688,9 @@
   },
   "channelPath_noHopDetailsAvailable": "No hop details available for this packet.",
   "channelPath_unknownRepeater": "Unknown Repeater",
+  "channelPath_lastHeardLabel": "Last heard",
+  "channelPath_copyPath": "Copy path",
+  "channelPath_pathCopied": "Path copied to clipboard",
   "community_title": "Community",
   "community_create": "Create Community",
   "community_createDesc": "Create a new community and share via QR code.",

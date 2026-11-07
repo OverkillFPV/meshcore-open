@@ -3201,6 +3201,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get repeater_debugFlags => 'デバッグフラグ';
 
   @override
+  String get repeater_flagDetails => 'Flag Details';
+
+  @override
+  String get repeater_flagPoolFull => 'Packet pool exhausted';
+
+  @override
+  String get repeater_flagCadTimeout => 'CAD timeout';
+
+  @override
+  String get repeater_flagRxTimeout => 'Radio stuck outside RX';
+
+  @override
+  String get repeater_flagRadioWatchdog => 'Radio watchdog reset';
+
+  @override
   String get repeater_radioStatistics => 'ラジオに関する統計';
 
   @override
@@ -3220,6 +3235,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get repeater_chanUtil => 'チャンネルの利用状況';
+
+  @override
+  String get repeater_txPerMin => 'TX/min';
+
+  @override
+  String get repeater_rxPerMin => 'RX/min';
+
+  @override
+  String get repeater_packetErrorRate => 'Packet Error Rate';
+
+  @override
+  String get repeater_rxErrorRatio => 'RX Error Ratio';
 
   @override
   String get repeater_packetStatistics => 'パケット統計';
@@ -4356,6 +4383,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String telemetry_batteryCellsValue(int percent, String cellVolts, int cells) {
+    return '$percent% / ${cellVolts}V (${cells}S)';
+  }
+
+  @override
   String telemetry_voltageValue(String volts) {
     return '${volts}V';
   }
@@ -4698,6 +4730,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get channelPath_unknownRepeater => '不明な増幅機';
+
+  @override
+  String get channelPath_lastHeardLabel => 'Last heard';
+
+  @override
+  String get channelPath_copyPath => 'Copy path';
+
+  @override
+  String get channelPath_pathCopied => 'Path copied to clipboard';
 
   @override
   String get community_title => 'コミュニティ';

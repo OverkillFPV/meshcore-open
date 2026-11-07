@@ -54,16 +54,18 @@ Three information cards:
 - Clock at login time
 - Uptime (days/hours/minutes/seconds)
 - Queue length
-- Debug flags (error event count)
+- Debug flags (raw value), plus a Flag Details card listing the raw hex value and a description for each flag bit: packet pool exhausted (0x01), CAD timeout (0x02), radio stuck outside RX (0x04), and radio watchdog reset (0x08)
 
 **Radio Statistics**:
 - Last RSSI and SNR
 - Noise floor
-- TX airtime and RX airtime
+- TX airtime and RX airtime, each with its utilization as a percentage of uptime
 
 **Packet Statistics**:
 - Packets sent and received, each broken down by flood vs. direct
+- Average TX and RX packets per minute (packet throughput)
 - Duplicates, broken down by flood vs. direct
+- Receive errors, packet error rate (errors over total sent + received packets), and RX error ratio (errors over received packets)
 - Channel utilization (% of uptime used by TX + RX)
 
 ### Key Interactions

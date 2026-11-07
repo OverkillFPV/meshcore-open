@@ -1056,9 +1056,16 @@ class _TelemetryScreenState extends State<TelemetryScreen> {
         (telemetryVolts == null ? null : (telemetryVolts * 1000).round());
     if (batteryMv == null) return l10n.common_notAvailable;
     final chemistry = _batteryChemistry();
-    final percent = estimateBatteryPercentFromMillivolts(batteryMv, chemistry);
-    final volts = (batteryMv / 1000).toStringAsFixed(2);
-    return l10n.telemetry_batteryValue(percent, volts);
+    final reading = batteryReadingFromMillivolts(batteryMv, chemistry);
+    final cellVolts = (reading.averageCellMillivolts / 1000).toStringAsFixed(2);
+    if (reading.cellCount > 1) {
+      return l10n.telemetry_batteryCellsValue(
+        reading.percent,
+        cellVolts,
+        reading.cellCount,
+      );
+    }
+    return l10n.telemetry_batteryValue(reading.percent, cellVolts);
   }
 
   String _batteryChemistry() {

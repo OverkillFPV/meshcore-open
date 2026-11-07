@@ -840,6 +840,12 @@ class MeshCoreConnector extends ChangeNotifier {
           _batteryMillivolts!,
           _batteryChemistryForDevice(),
         );
+  BatteryCellReading? get batteryCellReading => _batteryMillivolts == null
+      ? null
+      : batteryReadingFromMillivolts(
+          _batteryMillivolts!,
+          _batteryChemistryForDevice(),
+        );
   RepeaterBatterySnapshot? getRepeaterBatterySnapshot(String contactKeyHex) =>
       _repeaterBatterySnapshots[contactKeyHex];
   int? getRepeaterBatteryMillivolts(String contactKeyHex) =>

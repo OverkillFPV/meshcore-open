@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:meshcore_open/helpers/path_helper.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../connector/meshcore_connector.dart';
 import '../helpers/network_map_fill.dart';
 import '../helpers/path_hop_resolver.dart';
+import '../helpers/snack_bar_builder.dart';
 import '../services/map_tile_cache_service.dart';
 import '../services/app_settings_service.dart';
 import '../l10n/app_localizations.dart';
@@ -65,10 +67,12 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             (widget.message.pathHashWidth ?? connector.pathHashByteWidth)
                 .clamp(1, 4)
                 .toInt();
+        final reverseOrientation =
+            !widget.channelMessage && !widget.message.isOutgoing;
         final primaryPath = _orientPathBytes(
           primaryPathTmp,
           hashByteWidth,
-          reverse: !widget.channelMessage && !widget.message.isOutgoing,
+          reverse: reverseOrientation,
         );
         final lastHopSignal = widget.message.isOutgoing
             ? null
@@ -85,6 +89,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
           networkFill: _networkFill,
           anchorAtStart: widget.message.isOutgoing,
         );
+        final lastHeardLabel = hops.isEmpty ? null : hops.last.displayLabel;
         _maybeFetchNetworkFill(primaryPath, hops, selfPoint);
         final hasHopDetails = primaryPath.isNotEmpty;
 
@@ -111,6 +116,16 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
           appBar: AppBar(
             title: AdaptiveAppBarTitle(l10n.channelPath_title),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.copy),
+                tooltip: l10n.channelPath_copyPath,
+                onPressed: primaryPath.isEmpty
+                    ? null
+                    : () => _copyPath(
+                        context,
+                        _formatPathPrefixes(primaryPath, hashByteWidth),
+                      ),
+              ),
               IconButton(
                 icon: const Icon(Icons.radar_outlined),
                 tooltip: l10n.channelPath_viewMap,
@@ -153,6 +168,8 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                   hashByteWidth: hashByteWidth,
                   hops: hops,
                   selfPoint: selfPoint,
+                  lastHeardLabel: lastHeardLabel,
+                  lastHeardSignal: lastHopSignal,
                 ),
                 const SizedBox(height: 16),
                 if (extraPaths.isNotEmpty) ...[
@@ -161,7 +178,14 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   ),
                   const SizedBox(height: 8),
-                  _buildPathVariants(context, extraPaths, hashByteWidth),
+                  _buildPathVariants(
+                    context,
+                    extraPaths,
+                    hashByteWidth,
+                    reverseOrientation,
+                    selfPoint,
+                    connector.allContacts,
+                  ),
                   const SizedBox(height: 16),
                 ],
                 SectionHeader(
@@ -191,6 +215,8 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     required int hashByteWidth,
     required List<_PathHop> hops,
     required LatLng? selfPoint,
+    String? lastHeardLabel,
+    PathSignal? lastHeardSignal,
   }) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
@@ -277,6 +303,21 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             _formatPathLabel(effectiveHopCount, l10n),
             scheme: scheme,
           ),
+          if (lastHeardLabel != null)
+            _buildDetailRow(
+              context,
+              l10n.channelPath_lastHeardLabel,
+              [
+                lastHeardLabel,
+                if (lastHeardSignal != null && !lastHeardSignal.isEmpty)
+                  _formatSignal(
+                    lastHeardSignal.snrDb,
+                    lastHeardSignal.rssiDbm,
+                    l10n,
+                  ),
+              ].nonNulls.join(' · '),
+              scheme: scheme,
+            ),
           if (widget.message.region?.isNotEmpty ?? false)
             _buildDetailRow(
               context,
@@ -362,6 +403,9 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     BuildContext context,
     List<Uint8List> variants,
     int hashByteWidth,
+    bool reverseOrientation,
+    LatLng? selfPoint,
+    List<Contact> contacts,
   ) {
     final l10n = context.l10n;
     return Column(
@@ -397,20 +441,32 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        [
-                          _formatPathPrefixes(variants[i], hashByteWidth),
-                          if (!widget.message.isOutgoing)
-                            _formatSignalFor(variants[i]),
-                        ].nonNulls.join(' \u2022 '),
+                        _formatPathPrefixes(variants[i], hashByteWidth),
                         style: MeshTheme.mono(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
+                      _buildLastHeardLine(
+                        variants[i],
+                        hashByteWidth,
+                        reverseOrientation,
+                        selfPoint,
+                        contacts,
+                        l10n,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  tooltip: l10n.channelPath_copyPath,
+                  onPressed: () => _copyPath(
+                    context,
+                    _formatPathPrefixes(variants[i], hashByteWidth),
+                  ),
+                ),
                 Icon(
                   Icons.map_outlined,
                   size: 20,
@@ -423,10 +479,61 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     );
   }
 
-  String? _formatSignalFor(Uint8List pathBytes) {
+  Widget _buildLastHeardLine(
+    Uint8List pathBytes,
+    int hashByteWidth,
+    bool reverseOrientation,
+    LatLng? selfPoint,
+    List<Contact> contacts,
+    AppLocalizations l10n,
+  ) {
+    final oriented = _orientPathBytes(
+      pathBytes,
+      hashByteWidth,
+      reverse: reverseOrientation,
+    );
+    final hops = _buildPathHops(
+      oriented,
+      contacts,
+      selfPoint,
+      l10n,
+      hashByteWidth,
+      resolveFromEnd: !widget.message.isOutgoing,
+      forcedSelection: _forcedSelection,
+      networkFill: _networkFill,
+      anchorAtStart: widget.message.isOutgoing,
+    );
+    if (hops.isEmpty) return const SizedBox.shrink();
     final signal = widget.message.signalFor(pathBytes);
-    if (signal == null) return null;
-    return _formatSignal(signal.snrDb, signal.rssiDbm, context.l10n);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 2),
+        Text(
+          '${l10n.channelPath_lastHeardLabel}: ${hops.last.displayLabel}',
+          style: MeshTheme.mono(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        if (signal != null && !signal.isEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            _formatSignal(signal.snrDb, signal.rssiDbm, l10n) ?? '',
+            style: MeshTheme.mono(fontSize: 12, color: MeshPalette.blue),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _copyPath(BuildContext context, String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!context.mounted) return;
+    showDismissibleSnackBar(
+      context,
+      content: Text(context.l10n.channelPath_pathCopied),
+    );
   }
 
   Widget _buildNoHopCard(BuildContext context, AppLocalizations l10n) {

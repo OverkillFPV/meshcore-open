@@ -5877,6 +5877,36 @@ abstract class AppLocalizations {
   /// **'Debug Flags'**
   String get repeater_debugFlags;
 
+  /// No description provided for @repeater_flagDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag Details'**
+  String get repeater_flagDetails;
+
+  /// No description provided for @repeater_flagPoolFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Packet pool exhausted'**
+  String get repeater_flagPoolFull;
+
+  /// No description provided for @repeater_flagCadTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'CAD timeout'**
+  String get repeater_flagCadTimeout;
+
+  /// No description provided for @repeater_flagRxTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio stuck outside RX'**
+  String get repeater_flagRxTimeout;
+
+  /// No description provided for @repeater_flagRadioWatchdog.
+  ///
+  /// In en, this message translates to:
+  /// **'Radio watchdog reset'**
+  String get repeater_flagRadioWatchdog;
+
   /// No description provided for @repeater_radioStatistics.
   ///
   /// In en, this message translates to:
@@ -5918,6 +5948,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Channel Utilization'**
   String get repeater_chanUtil;
+
+  /// No description provided for @repeater_txPerMin.
+  ///
+  /// In en, this message translates to:
+  /// **'TX/min'**
+  String get repeater_txPerMin;
+
+  /// No description provided for @repeater_rxPerMin.
+  ///
+  /// In en, this message translates to:
+  /// **'RX/min'**
+  String get repeater_rxPerMin;
+
+  /// No description provided for @repeater_packetErrorRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Packet Error Rate'**
+  String get repeater_packetErrorRate;
+
+  /// No description provided for @repeater_rxErrorRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'RX Error Ratio'**
+  String get repeater_rxErrorRatio;
 
   /// No description provided for @repeater_packetStatistics.
   ///
@@ -7928,6 +7982,12 @@ abstract class AppLocalizations {
   /// **'{percent}% / {volts}V'**
   String telemetry_batteryValue(int percent, String volts);
 
+  /// No description provided for @telemetry_batteryCellsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% / {cellVolts}V ({cells}S)'**
+  String telemetry_batteryCellsValue(int percent, String cellVolts, int cells);
+
   /// No description provided for @telemetry_voltageValue.
   ///
   /// In en, this message translates to:
@@ -8491,6 +8551,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown Repeater'**
   String get channelPath_unknownRepeater;
+
+  /// No description provided for @channelPath_lastHeardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last heard'**
+  String get channelPath_lastHeardLabel;
+
+  /// No description provided for @channelPath_copyPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy path'**
+  String get channelPath_copyPath;
+
+  /// No description provided for @channelPath_pathCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Path copied to clipboard'**
+  String get channelPath_pathCopied;
 
   /// No description provided for @community_title.
   ///

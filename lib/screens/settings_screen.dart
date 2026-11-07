@@ -445,14 +445,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = context.l10n;
     final percent = connector.batteryPercent;
     final millivolts = connector.batteryMillivolts;
+    final reading = connector.batteryCellReading;
 
     final String displayValue;
-    if (millivolts == null) {
+    if (millivolts == null || reading == null) {
       displayValue = l10n.common_notAvailable;
     } else if (_showBatteryVoltage) {
-      displayValue = l10n.common_voltageValue(
-        (millivolts / 1000.0).toStringAsFixed(2),
-      );
+      final cellVolts = (reading.averageCellMillivolts / 1000.0)
+          .toStringAsFixed(2);
+      final cells = reading.cellCount > 1 ? ' ×${reading.cellCount}' : '';
+      displayValue = '${l10n.common_voltageValue(cellVolts)}$cells';
     } else {
       displayValue = percent != null
           ? l10n.common_percentValue(percent)
