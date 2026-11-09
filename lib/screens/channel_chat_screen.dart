@@ -146,6 +146,13 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
   final Set<String> _revealedFilteredIds = <String>{};
   int _revealVersion = 0;
 
+  /// Self-mentions flash for attention only while the chat first opens.
+  static const _mentionAttentionWindow = Duration(seconds: 3);
+  late final DateTime _openedAt = DateTime.now();
+
+  bool get _mentionAttention =>
+      DateTime.now().difference(_openedAt) <= _mentionAttentionWindow;
+
   @override
   void initState() {
     super.initState();
@@ -942,6 +949,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     final enableTracing = settingsService.settings.enableMessageTracing;
     final regionOnHopsLine = settingsService.settings.regionOnHopsLine;
     final isOutgoing = message.isOutgoing;
+    final selfMentionName = context.read<MeshCoreConnector>().selfName;
     final gifId = GifHelper.parseGif(message.text);
     final poi = parseMarkerText(message.text);
     final contactShare = parseContactShare(message.text);
@@ -1022,6 +1030,8 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
               onSecondaryTap: PlatformInfo.isDesktop
                   ? () => _showMessageActions(message)
                   : null,
+              selfMentionName: selfMentionName,
+              mentionAttention: _mentionAttention,
             ),
           ),
         ],
@@ -1171,6 +1181,8 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                         onSecondaryTap: PlatformInfo.isDesktop
                                             ? () => _showMessageActions(message)
                                             : null,
+                                        selfMentionName: selfMentionName,
+                                        mentionAttention: _mentionAttention,
                                       ),
                                     ),
                                   ],

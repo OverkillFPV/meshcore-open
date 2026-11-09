@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -13,6 +15,9 @@ import '../helpers/utf8_length_limiter.dart';
 
 /// Matches a `@[name]` mention and captures just the name.
 final RegExp mentionRegExp = RegExp(r'@\[([^\]]+)\]');
+
+/// Base opacity of the background drawn behind a mention.
+const double mentionBackgroundAlpha = 0.42;
 
 /// Matches a `#word` hashtag and captures the word (without the `#`). The
 /// tag must start with a letter so issue numbers like `#123` stay plain, and
@@ -123,22 +128,30 @@ class LinkHandler {
 
   /// Background drawn behind a mention to make it stand out.
   static Color mentionBackground(BuildContext context) {
-    return Theme.of(context).colorScheme.primary.withValues(alpha: 0.3);
+    return Theme.of(
+      context,
+    ).colorScheme.primary.withValues(alpha: mentionBackgroundAlpha);
   }
 
   /// Returns a [SelectableText.rich] on desktop or a [Text.rich] on mobile,
   /// with URLs and emails linkified and `@[name]` mentions rendered as the
   /// bare name in the mention style on a coloured background. The ambient
   /// [TextScaler] applies automatically.
+  ///
+  /// When [selfMentionName] matches a mention, that mention's background
+  /// gently pulses. Pass [mentionAttention] (true while the chat first
+  /// opens) to flash it a few times before it settles. Animations are
+  /// skipped when the platform asks for reduced motion.
   static Widget buildLinkifyText({
     required BuildContext context,
     required String text,
     required TextStyle style,
     TextStyle? linkStyle,
     VoidCallback? onSecondaryTap,
+    String? selfMentionName,
+    bool mentionAttention = false,
   }) {
     final effectiveLinkStyle = linkStyle ?? defaultLinkStyle(context, style);
-    final effectiveMentionStyle = mentionStyle(context, style);
     const options = LinkifyOptions(humanize: false, defaultToHttps: false);
     const linkifiers = [
       MentionLinkifier(),
@@ -147,21 +160,59 @@ class LinkHandler {
       // After URL/Email so `#` inside a URL fragment is not split out.
       HashtagLinkifier(),
     ];
-    void onOpen(LinkableElement link) => handleLinkTap(context, link.url);
 
     var elements = <LinkifyElement>[TextElement(text)];
     for (final linkifier in linkifiers) {
       elements = linkifier.parse(elements, options);
     }
 
+    if (selfMentionName != null &&
+        !(MediaQuery.maybeDisableAnimationsOf(context) ?? false) &&
+        elements.any(
+          (element) =>
+              element is MentionElement &&
+              _namesMatch(element.text, selfMentionName),
+        )) {
+      return _MentionPulseText(
+        elements: elements,
+        style: style,
+        linkStyle: effectiveLinkStyle,
+        selfMentionName: selfMentionName,
+        attention: mentionAttention,
+        onSecondaryTap: onSecondaryTap,
+      );
+    }
+    return _buildText(
+      context,
+      elements,
+      style: style,
+      linkStyle: effectiveLinkStyle,
+      mentionFor: (_) => mentionStyle(context, style),
+      onSecondaryTap: onSecondaryTap,
+    );
+  }
+
+  static bool _namesMatch(String a, String b) =>
+      a.toLowerCase() == b.toLowerCase();
+
+  static Widget _buildText(
+    BuildContext context,
+    List<LinkifyElement> elements, {
+    required TextStyle style,
+    required TextStyle linkStyle,
+    required TextStyle Function(String mentionName) mentionFor,
+    VoidCallback? onSecondaryTap,
+  }) {
+    void onOpen(LinkableElement link) => handleLinkTap(context, link.url);
+
     final children = <InlineSpan>[
       for (final element in elements)
         if (element is MentionElement)
-          TextSpan(text: element.text, style: effectiveMentionStyle)
+          TextSpan(text: element.text, style: mentionFor(element.text))
         else if (element is HashtagElement)
           TextSpan(
             text: '#${element.text}',
-            style: effectiveLinkStyle,
+            style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () => handleHashtagTap(context, element.text),
             mouseCursor: SystemMouseCursors.click,
@@ -169,7 +220,7 @@ class LinkHandler {
         else if (element is LinkableElement)
           TextSpan(
             text: element.text,
-            style: effectiveLinkStyle,
+            style: linkStyle,
             recognizer: TapGestureRecognizer()..onTap = () => onOpen(element),
             mouseCursor: SystemMouseCursors.click,
           )
@@ -375,5 +426,111 @@ class LinkHandler {
         content: Text(context.l10n.channels_channelAdded(channelName)),
       );
     }
+  }
+}
+
+/// Linkified text whose self-mentions gently pulse, flashing a few times
+/// when [attention] is set so opening the chat draws the eye to them.
+class _MentionPulseText extends StatefulWidget {
+  const _MentionPulseText({
+    required this.elements,
+    required this.style,
+    required this.linkStyle,
+    required this.selfMentionName,
+    required this.attention,
+    this.onSecondaryTap,
+  });
+
+  final List<LinkifyElement> elements;
+  final TextStyle style;
+  final TextStyle linkStyle;
+  final String selfMentionName;
+  final bool attention;
+  final VoidCallback? onSecondaryTap;
+
+  @override
+  State<_MentionPulseText> createState() => _MentionPulseTextState();
+}
+
+class _MentionPulseTextState extends State<_MentionPulseText>
+    with TickerProviderStateMixin {
+  static const Duration _pulsePeriod = Duration(milliseconds: 2600);
+  static const Duration _attentionDuration = Duration(milliseconds: 1800);
+  static const double _pulseAmplitude = 0.12;
+  static const double _attentionAmplitude = 0.45;
+
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: _pulsePeriod,
+  )..repeat(reverse: true);
+  AnimationController? _attention;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.attention) return;
+    final attention = AnimationController(
+      vsync: this,
+      duration: _attentionDuration,
+    );
+    _attention = attention;
+    attention.forward().then((_) {
+      if (!mounted) {
+        attention.dispose();
+        return;
+      }
+      setState(() => _attention = null);
+      attention.dispose();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    _attention?.dispose();
+    super.dispose();
+  }
+
+  /// Three flashes that fade out over the attention window.
+  static double _attentionFlash(double t) =>
+      (1.0 - t) * (0.5 + 0.5 * math.cos(t * math.pi * 5));
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (context, _) {
+        final attention = _attention;
+        final flash = attention == null
+            ? 0.0
+            : _attentionFlash(attention.value);
+        final alpha =
+            (mentionBackgroundAlpha +
+                    math.sin(_pulse.value * math.pi) * _pulseAmplitude +
+                    flash * _attentionAmplitude)
+                .clamp(0.0, 0.92);
+        final selfMentionName = widget.selfMentionName;
+        return LinkHandler._buildText(
+          context,
+          widget.elements,
+          style: widget.style,
+          linkStyle: widget.linkStyle,
+          mentionFor: (name) {
+            final base = LinkHandler.mentionStyle(context, widget.style);
+            if (!LinkHandler._namesMatch(name, selfMentionName)) return base;
+            return base.copyWith(
+              backgroundColor: scheme.primary.withValues(alpha: alpha),
+              color: Color.lerp(
+                scheme.primary,
+                scheme.onPrimary,
+                ((alpha - 0.62) / 0.3).clamp(0.0, 1.0),
+              ),
+            );
+          },
+          onSecondaryTap: widget.onSecondaryTap,
+        );
+      },
+    );
   }
 }
