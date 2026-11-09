@@ -2264,7 +2264,7 @@ String _formatHopCount(
 }
 
 String _formatTravelTime(Duration travel, AppLocalizations l10n) {
-  if (travel.inMilliseconds > 9999) return l10n.chat_latencyUnsynced;
+  if (travel.inMilliseconds > 99999) return l10n.chat_latencyUnsynced;
   return l10n.chat_latencyMilliseconds(travel.inMilliseconds);
 }
 

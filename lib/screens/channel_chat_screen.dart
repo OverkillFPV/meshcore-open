@@ -3228,13 +3228,13 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
 
   /// Delivery latency: sender timestamp versus the local clock when the
   /// message arrived. Null for outgoing messages or when the sender clock
-  /// runs ahead of the local one. Values above 9999 ms are treated as clock
+  /// runs ahead of the local one. Values above 99999 ms are treated as clock
   /// drift and reported as unsynced.
   String? _formatLatency(ChannelMessage message, AppLocalizations l10n) {
     if (message.isOutgoing) return null;
     final latency = message.receivedAt.difference(message.timestamp);
     if (latency.isNegative) return null;
-    if (latency.inMilliseconds > 9999) return l10n.chat_latencyUnsynced;
+    if (latency.inMilliseconds > 99999) return l10n.chat_latencyUnsynced;
     return l10n.chat_latencyMilliseconds(latency.inMilliseconds);
   }
 
