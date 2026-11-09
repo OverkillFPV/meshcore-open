@@ -512,6 +512,18 @@ class AppSettingsScreen extends StatelessWidget {
             horizontal: 16,
             vertical: 4,
           ),
+          secondary: const Icon(Icons.alt_route_outlined, size: 24),
+          title: Text(context.l10n.appSettings_showMessageLastHop),
+          subtitle: Text(context.l10n.appSettings_showMessageLastHopSubtitle),
+          value: settingsService.settings.showMessageLastHop,
+          onChanged: settingsService.setShowMessageLastHop,
+        ),
+        const Divider(height: 1, indent: 16),
+        SwitchListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 4,
+          ),
           secondary: const Icon(Icons.straighten, size: 24),
           title: Text(context.l10n.appSettings_showPathByteMode),
           subtitle: Text(context.l10n.appSettings_showPathByteModeSubtitle),

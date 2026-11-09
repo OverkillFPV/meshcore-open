@@ -11,6 +11,7 @@ import '../services/ble_debug_log_service.dart';
 import '../theme/mesh_theme.dart';
 import '../widgets/adaptive_app_bar_title.dart';
 import '../widgets/confirm_clear_dialog.dart';
+import '../widgets/signal_ui.dart';
 
 /// Live log of every packet the radio has seen, with the raw bytes and every
 /// field the app can decode from them.
@@ -131,12 +132,10 @@ class RxLogScreen extends StatelessWidget {
                                       ),
                                     ),
                                     if (signal != null)
-                                      Text(
-                                        signal,
-                                        style: MeshTheme.mono(
-                                          fontSize: 12,
-                                          color: signalColor,
-                                        ),
+                                      SignalText(
+                                        snrDb: entry.snrDb,
+                                        rssiDbm: entry.rssiDbm,
+                                        fontSize: 12,
                                       ),
                                     const SizedBox(height: 2),
                                     Text(

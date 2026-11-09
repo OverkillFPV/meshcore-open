@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../connector/meshcore_connector.dart';
 import '../l10n/l10n.dart';
 import '../services/app_settings_service.dart';
 import '../services/backup_service.dart';
+import '../services/device_backup_service.dart';
 import '../utils/backup_file.dart';
-import '../utils/share_origin.dart';
 import '../helpers/snack_bar_builder.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/mesh_nav_tile.dart';
@@ -25,6 +26,7 @@ class _BackupScreenState extends State<BackupScreen> {
   final Set<String> _exportSelected = kBackupCategories
       .map((c) => c.id)
       .toSet();
+  bool _busy = false;
 
   String _categoryTitle(BackupCategory category) {
     final l10n = context.l10n;
@@ -45,6 +47,7 @@ class _BackupScreenState extends State<BackupScreen> {
       'repeaterPasswords' => l10n.backup_categoryRepeaterPasswords,
       'regions' => l10n.backup_categoryRegions,
       'mapMarkers' => l10n.backup_categoryMapMarkers,
+      'deviceSettings' => l10n.backup_categoryDeviceSettings,
       _ => category.id,
     };
   }
@@ -68,6 +71,7 @@ class _BackupScreenState extends State<BackupScreen> {
       'repeaterPasswords' => l10n.backup_categoryRepeaterPasswordsDesc,
       'regions' => l10n.backup_categoryRegionsDesc,
       'mapMarkers' => l10n.backup_categoryMapMarkersDesc,
+      'deviceSettings' => l10n.backup_categoryDeviceSettingsDesc,
       _ => '',
     };
   }
@@ -121,11 +125,26 @@ class _BackupScreenState extends State<BackupScreen> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: FilledButton.icon(
-                            onPressed: _exportSelected.isEmpty ? null : _export,
-                            icon: const Icon(Icons.download_outlined),
-                            label: Text(l10n.backup_exportButton),
-                          ),
+                          child: _busy
+                              ? const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: SizedBox(
+                                      height: 22,
+                                      width: 22,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : FilledButton.icon(
+                                  onPressed: _exportSelected.isEmpty
+                                      ? null
+                                      : _export,
+                                  icon: const Icon(Icons.download_outlined),
+                                  label: Text(l10n.backup_exportButton),
+                                ),
                         ),
                       ],
                     ),
@@ -151,9 +170,32 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Future<void> _export() async {
+    final l10n = context.l10n;
     final selected = kBackupCategories
         .where((c) => _exportSelected.contains(c.id))
         .toList();
+    Map<String, String>? deviceEntries;
+    if (selected.any((c) => c.isDevice)) {
+      final connector = context.read<MeshCoreConnector>();
+      if (!connector.isConnected) {
+        showDismissibleSnackBar(
+          context,
+          content: Text(l10n.backup_deviceNotConnected),
+        );
+        return;
+      }
+      setState(() => _busy = true);
+      deviceEntries = await readDeviceSettings(connector.runCliCommand);
+      if (!mounted) return;
+      setState(() => _busy = false);
+      if (deviceEntries.isEmpty) {
+        showDismissibleSnackBar(
+          context,
+          content: Text(l10n.backup_deviceUnreadable),
+        );
+        return;
+      }
+    }
     final now = DateTime.now();
     final stamp = now
         .toIso8601String()
@@ -162,12 +204,8 @@ class _BackupScreenState extends State<BackupScreen> {
         .replaceAll(':', '')
         .replaceAll('T', '_');
     final fileName = 'meshcore_backup_$stamp.$kBackupFileExtension';
-    final text = encodeBackup(selected);
-    final result = await exportBackupFile(
-      text,
-      fileName: fileName,
-      sharePositionOrigin: shareOriginOf(context),
-    );
+    final text = encodeBackup(selected, deviceEntries: deviceEntries);
+    final result = await exportBackupFile(text, fileName: fileName);
     if (!mounted) return;
     switch (result) {
       case BackupFileResult.saved:
@@ -264,9 +302,26 @@ class _BackupScreenState extends State<BackupScreen> {
     if (confirmed != true || !mounted) return;
 
     final toApply = available.where((c) => selected.contains(c.id)).toList();
+    MeshCoreConnector? connector;
+    if (toApply.any((c) => c.isDevice)) {
+      connector = context.read<MeshCoreConnector>();
+      if (!connector.isConnected) {
+        showDismissibleSnackBar(
+          context,
+          content: Text(l10n.backup_deviceNotConnected),
+        );
+        return;
+      }
+    }
     int written;
     try {
       written = await applyBackup(file, toApply);
+      if (connector != null) {
+        written += await applyDeviceSettings(
+          connector.runCliCommand,
+          file.categories['deviceSettings'] ?? const <String, dynamic>{},
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       showDismissibleSnackBar(

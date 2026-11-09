@@ -1348,7 +1348,10 @@ class _MessageBubble extends StatelessWidget {
 
     // Stored contact paths are reversed for sending, so the first chunk is
     // the last repeater a received message came through.
-    final lastHopHex = isOutgoing || message.pathBytes.isEmpty
+    final lastHopHex =
+        isOutgoing ||
+            message.pathBytes.isEmpty ||
+            !settingsService.settings.showMessageLastHop
         ? null
         : PathHelper.formatHopHex(
             PathHelper.splitPathBytes(

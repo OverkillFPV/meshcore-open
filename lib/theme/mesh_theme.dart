@@ -769,9 +769,9 @@ class MeshTheme {
     );
   }
 
-  /// LoRa RSSI operating limits: noise floor near -120 dBm up to around
-  /// -20 dBm at maximum signal.
-  static const int loraRssiMinDbm = -120;
+  /// LoRa RSSI operating limits: MeshCore receivers go down to -140 dBm
+  /// minimum sensitivity, up to around -20 dBm at maximum signal.
+  static const int loraRssiMinDbm = -140;
   static const int loraRssiMaxDbm = -20;
 
   /// SNR gradient anchors: full red at or below -10 dB, full green at or
@@ -803,6 +803,13 @@ class MeshTheme {
   static double _rssiGradientPosition(int rssiDbm) {
     return ((rssiDbm - loraRssiMinDbm) / (loraRssiMaxDbm - loraRssiMinDbm))
         .clamp(0.0, 1.0);
+  }
+
+  /// Color-code an RSSI value with the shared gradient, spanning the
+  /// MeshCore receiver range from [loraRssiMinDbm] to [loraRssiMaxDbm].
+  static Color rssiColor(int? rssiDbm) {
+    if (rssiDbm == null) return MeshPalette.ink3;
+    return gradientAt(_rssiGradientPosition(rssiDbm));
   }
 
   /// Color-code an SNR value with the shared gradient for consistency across

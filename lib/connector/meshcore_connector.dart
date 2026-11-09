@@ -936,6 +936,10 @@ class MeshCoreConnector extends ChangeNotifier {
           ? incoming.longitude ?? existing.longitude
           : incoming.longitude,
       clearTelemetryFix: true,
+      // Radio contact records carry no advert metadata; keep what the live
+      // advert (raw packet) told us instead of losing it on every refresh.
+      advertReceivedAt: incoming.advertReceivedAt ?? existing.advertReceivedAt,
+      advertScope: incoming.advertScope ?? existing.advertScope,
     );
     return _withTelemetryFix(existing, base) ?? base;
   }
@@ -946,10 +950,30 @@ class MeshCoreConnector extends ChangeNotifier {
 
   void _stashTelemetryFixes() {
     for (final c in _contacts) {
-      if (c.telemetryFixAt != null) {
+      if (c.telemetryFixAt != null ||
+          c.advertReceivedAt != null ||
+          c.advertScope != null) {
         _telemetryFixesDuringSync[c.publicKeyHex] = c;
       }
     }
+  }
+
+  /// Restores a stashed record's telemetry fix and advert metadata onto
+  /// [incoming], the contact record the radio just resent during a full sync.
+  /// Radio records carry no advert metadata, so without this the local
+  /// receipt time and scope would vanish on every reconnect.
+  Contact? _restoreStashedState(Contact? stashed, Contact incoming) {
+    if (stashed == null) return null;
+    final fixed = _withTelemetryFix(stashed, incoming);
+    final advertReceivedAt =
+        incoming.advertReceivedAt ?? stashed.advertReceivedAt;
+    final advertScope = incoming.advertScope ?? stashed.advertScope;
+    if (advertReceivedAt == null && advertScope == null) return fixed;
+    final base = fixed ?? incoming;
+    return base.copyWith(
+      advertReceivedAt: advertReceivedAt,
+      advertScope: advertScope,
+    );
   }
 
   String _batteryChemistryForDevice() {
@@ -7297,7 +7321,7 @@ class MeshCoreConnector extends ChangeNotifier {
     if (contact == null || listEquals(contact.publicKey, _selfPublicKey)) {
       return;
     }
-    _handleDiscovery(contact, frame);
+    _handleDiscovery(contact.copyWith(advertReceivedAt: DateTime.now()), frame);
     notifyListeners();
   }
 
@@ -7381,12 +7405,10 @@ class MeshCoreConnector extends ChangeNotifier {
           tag: 'Connector',
         );
       } else {
-        // A full sync cleared the list; restore a telemetry fix it held.
+        // A full sync cleared the list; restore the stashed telemetry fix
+        // and advert metadata (local receipt time + scope) it held.
         final stashed = _telemetryFixesDuringSync.remove(contact.publicKeyHex);
-        _contacts.add(
-          (stashed == null ? null : _withTelemetryFix(stashed, contact)) ??
-              contact,
-        );
+        _contacts.add(_restoreStashedState(stashed, contact) ?? contact);
         appLogger.info(
           'Added new contact ${contact.name}: pathLen=${contact.pathLength}',
           tag: 'Connector',
@@ -8865,6 +8887,17 @@ class MeshCoreConnector extends ChangeNotifier {
     return digest[0];
   }
 
+  /// Flood scope (region name) an advert was sent with, resolved from the raw
+  /// packet's transport codes. Null means no scope: legacy packets, zero
+  /// codes, or a scope that cannot be matched to a locally known region.
+  String? _resolveAdvertScope(Uint8List rawPacket) {
+    final packet = _parseRawPacket(rawPacket);
+    if (packet == null) return null;
+    final region = _resolveTransportRegion(packet);
+    if (region == null || region == kUnscopedRegion) return null;
+    return region;
+  }
+
   String? _resolveTransportRegion(_RawPacket packet) {
     if (!packet.isFlood) return null;
 
@@ -9681,6 +9714,8 @@ class MeshCoreConnector extends ChangeNotifier {
         latitude: latitude,
         longitude: longitude,
         lastSeen: DateTime.fromMillisecondsSinceEpoch(timestamp * 1000),
+        advertReceivedAt: DateTime.now(),
+        advertScope: _resolveAdvertScope(frame.sublist(3)),
       ),
     );
   }
@@ -9755,6 +9790,9 @@ class MeshCoreConnector extends ChangeNotifier {
       return;
     }
 
+    final advertScope = _resolveAdvertScope(rawPacket);
+    final advertReceivedAt = DateTime.now();
+
     // Check if this is a new contact
     final isNewContact = !_knownContactKeys.contains(contactKeyHex);
 
@@ -9772,6 +9810,8 @@ class MeshCoreConnector extends ChangeNotifier {
         latitude: latitude,
         longitude: longitude,
         lastSeen: DateTime.fromMillisecondsSinceEpoch(timestamp * 1000),
+        advertReceivedAt: advertReceivedAt,
+        advertScope: advertScope,
       );
       // The firmware decides whether to store it: PUSH_CODE_ADVERT (then
       // GET_CONTACT_BY_KEY) adds it to _contacts and notifies.
@@ -9817,6 +9857,9 @@ class MeshCoreConnector extends ChangeNotifier {
         lastSeen: DateTime.fromMillisecondsSinceEpoch(timestamp * 1000),
         pathOverride: existing.pathOverride, // Preserve user's path choice
         pathOverrideBytes: existing.pathOverrideBytes,
+        advertReceivedAt: advertReceivedAt,
+        advertScope: advertScope,
+        clearAdvertScope: advertScope == null,
       );
 
       // Add path to history if we have a valid path
@@ -10054,6 +10097,8 @@ class MeshCoreConnector extends ChangeNotifier {
         lastSeen: contact.lastSeen,
         flags: 0,
         isActive: addActive,
+        advertReceivedAt: contact.advertReceivedAt,
+        advertScope: contact.advertScope,
       );
       notifyListeners();
       _scheduleDiscoveredContactsPersist();
@@ -10074,6 +10119,8 @@ class MeshCoreConnector extends ChangeNotifier {
       lastMessageAt: contact.lastMessageAt,
       isActive: addActive,
       flags: 0,
+      advertReceivedAt: contact.advertReceivedAt,
+      advertScope: contact.advertScope,
     );
 
     if (_evictDiscoveredContactsEnabled) {

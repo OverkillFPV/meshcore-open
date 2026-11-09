@@ -95,16 +95,17 @@ void main() {
       await tester.pumpWidget(_buildApp(connector: connector));
       await tester.pumpAndSettle();
 
-      // Primary path: last hop (BB) with the signal that copy arrived on.
-      expect(find.text('LAST HEARD'), findsOneWidget);
-      expect(
-        find.textContaining('(BB) RepeaterB · -103dBm 7.2dB'),
-        findsOneWidget,
-      );
+      // Primary path: last hop (BB) with the signal that copy arrived on,
+      // each measurement coloured on its own.
+      expect(find.text('LAST HOP'), findsOneWidget);
+      expect(find.textContaining('(BB) RepeaterB'), findsWidgets);
+      expect(find.textContaining('-103dBm'), findsWidgets);
+      expect(find.textContaining('7.2dB'), findsWidgets);
 
       // Variant path: last hop (CC) with its own observed signal.
-      expect(find.textContaining('Last heard: (CC) RepeaterC'), findsOneWidget);
-      expect(find.textContaining('-110dBm 3.0dB'), findsOneWidget);
+      expect(find.textContaining('Last hop: (CC) RepeaterC'), findsOneWidget);
+      expect(find.textContaining('-110dBm'), findsOneWidget);
+      expect(find.textContaining('3.0dB'), findsOneWidget);
     },
   );
 

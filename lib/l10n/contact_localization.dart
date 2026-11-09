@@ -50,4 +50,35 @@ extension ContactLocalization on Contact {
     if (pathBytes == null || pathBytes.isEmpty) return storedHopCount;
     return PathHelper.splitPathBytes(pathBytes, hashWidth).length;
   }
+
+  /// Hops the last advert was received on: direct, flood when the advert
+  /// carried no path, otherwise the hop count.
+  String advertHopsLabel(AppLocalizations l10n) {
+    if (pathLength < 0) return l10n.contacts_advertHopsFlood;
+    if (pathLength == 0) return l10n.contacts_advertHopsDirect;
+    return l10n.chat_hopsCount(
+      _displayHopCount(path, pathLength, pathHashWidth),
+    );
+  }
+
+  /// Scope the last advert was sent with, or "unscoped" when it carried none.
+  String advertScopeLabel(AppLocalizations l10n) =>
+      advertScope?.isNotEmpty ?? false
+      ? advertScope!
+      : l10n.chat_regionUnscoped;
+
+  /// "3 hops · unscoped" summary shown under a contact.
+  String advertMetaLabel(AppLocalizations l10n) =>
+      '${advertHopsLabel(l10n)} · ${advertScopeLabel(l10n)}';
+
+  /// Whether the node's advert timestamp matches the local receipt time
+  /// within a small tolerance, or '' when no local receipt is stored.
+  String advertTimeSyncLabel(AppLocalizations l10n) {
+    final receivedAt = advertReceivedAt;
+    if (receivedAt == null) return '';
+    final minutes = receivedAt.difference(lastSeen).inMinutes.abs();
+    return minutes <= 15
+        ? l10n.contacts_timeSynced
+        : l10n.contacts_timeUnsynced;
+  }
 }

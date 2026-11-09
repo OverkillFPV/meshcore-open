@@ -541,6 +541,8 @@
   "appSettings_showMessageLatencySubtitle": "Show how long a received channel message took to arrive, next to its hop count.",
   "appSettings_showMessageSignal": "Signal strength",
   "appSettings_showMessageSignalSubtitle": "Show the RSSI and SNR the message was received with, coloured by quality.",
+  "appSettings_showMessageLastHop": "Last-hop prefix",
+  "appSettings_showMessageLastHopSubtitle": "Show the prefix of the last repeater that relayed a received message to you.",
   "appSettings_showPathByteMode": "Path byte mode",
   "appSettings_showPathByteModeSubtitle": "Show the routing hash byte width (1B/2B/3B) next to a channel message's hop count.",
   "appSettings_notifications": "Notifications",
@@ -1300,6 +1302,14 @@
       },
       "snr": {
         "type": "String"
+      }
+    }
+  },
+  "chat_rssiChip": "{rssi}dBm",
+  "@chat_rssiChip": {
+    "placeholders": {
+      "rssi": {
+        "type": "int"
       }
     }
   },
@@ -2688,7 +2698,7 @@
   },
   "channelPath_noHopDetailsAvailable": "No hop details available for this packet.",
   "channelPath_unknownRepeater": "Unknown Repeater",
-  "channelPath_lastHeardLabel": "Last heard",
+  "channelPath_lastHeardLabel": "Last hop",
   "channelPath_copyPath": "Copy path",
   "channelPath_pathCopied": "Path copied to clipboard",
   "community_title": "Community",
@@ -3125,6 +3135,14 @@
   "contacts_detailYes": "Yes",
   "contacts_detailNo": "No",
   "contacts_detailTelemetryNone": "None",
+  "contacts_detailAdvertHops": "Advert hops",
+  "contacts_detailAdvertScope": "Advert scope",
+  "contacts_detailAdvertTime": "Advert time",
+  "contacts_detailLocalTime": "Local time",
+  "contacts_timeSynced": "synced",
+  "contacts_timeUnsynced": "unsynced",
+  "contacts_advertHopsDirect": "direct",
+  "contacts_advertHopsFlood": "flood",
   "notification_activityTitle": "MeshCore Activity",
   "notification_lowBatteryTitle": "Low battery",
   "@notification_lowBatteryTitle": {
@@ -4250,6 +4268,10 @@
   "backup_categoryRegionsDesc": "Custom flood regions",
   "backup_categoryMapMarkers": "Map markers",
   "backup_categoryMapMarkersDesc": "Removed map marker IDs",
+  "backup_categoryDeviceSettings": "Device settings",
+  "backup_categoryDeviceSettingsDesc": "Connected companion's private key, radio, name and other on-device settings",
+  "backup_deviceNotConnected": "Connect to your companion to include or restore device settings.",
+  "backup_deviceUnreadable": "The connected device did not answer. Device settings need firmware 1.14 or newer.",
   "messageFilter_filteredMessagesEmpty": "Nothing has been filtered.",
   "@messageFilter_filteredMessagesEmpty": {
     "description": "Message filter: Nothing has been filtered."

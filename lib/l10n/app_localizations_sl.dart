@@ -1209,6 +1209,13 @@ class AppLocalizationsSl extends AppLocalizations {
       'Show the RSSI and SNR the message was received with, coloured by quality.';
 
   @override
+  String get appSettings_showMessageLastHop => 'Last-hop prefix';
+
+  @override
+  String get appSettings_showMessageLastHopSubtitle =>
+      'Show the prefix of the last repeater that relayed a received message to you.';
+
+  @override
   String get appSettings_showPathByteMode => 'Path byte mode';
 
   @override
@@ -2402,6 +2409,11 @@ class AppLocalizationsSl extends AppLocalizations {
   @override
   String chat_signalChip(int rssi, String snr) {
     return '${rssi}dBm ${snr}dB';
+  }
+
+  @override
+  String chat_rssiChip(int rssi) {
+    return '${rssi}dBm';
   }
 
   @override
@@ -4933,7 +4945,7 @@ class AppLocalizationsSl extends AppLocalizations {
   String get channelPath_unknownRepeater => 'Nepoznati ponovitelj';
 
   @override
-  String get channelPath_lastHeardLabel => 'Last heard';
+  String get channelPath_lastHeardLabel => 'Last hop';
 
   @override
   String get channelPath_copyPath => 'Copy path';
@@ -5514,6 +5526,30 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get contacts_detailTelemetryNone => 'None';
+
+  @override
+  String get contacts_detailAdvertHops => 'Advert hops';
+
+  @override
+  String get contacts_detailAdvertScope => 'Advert scope';
+
+  @override
+  String get contacts_detailAdvertTime => 'Advert time';
+
+  @override
+  String get contacts_detailLocalTime => 'Local time';
+
+  @override
+  String get contacts_timeSynced => 'synced';
+
+  @override
+  String get contacts_timeUnsynced => 'unsynced';
+
+  @override
+  String get contacts_advertHopsDirect => 'direct';
+
+  @override
+  String get contacts_advertHopsFlood => 'flood';
 
   @override
   String get notification_activityTitle => 'Aktivnost MeshCore';
@@ -7576,6 +7612,21 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get backup_categoryMapMarkersDesc => 'Removed map marker IDs';
+
+  @override
+  String get backup_categoryDeviceSettings => 'Device settings';
+
+  @override
+  String get backup_categoryDeviceSettingsDesc =>
+      'Connected companion\'s private key, radio, name and other on-device settings';
+
+  @override
+  String get backup_deviceNotConnected =>
+      'Connect to your companion to include or restore device settings.';
+
+  @override
+  String get backup_deviceUnreadable =>
+      'The connected device did not answer. Device settings need firmware 1.14 or newer.';
 
   @override
   String get messageFilter_filteredMessagesEmpty => 'Nič ni bilo filtrirano.';

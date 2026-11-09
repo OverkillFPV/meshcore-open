@@ -30,6 +30,7 @@ import '../widgets/mesh_ui.dart';
 import '../widgets/path_map_scaffold.dart';
 import '../widgets/path_map_ui.dart';
 import '../widgets/set_my_location_dialog.dart';
+import '../widgets/signal_ui.dart';
 
 class ChannelMessagePathScreen extends StatefulWidget {
   final ChannelMessage message;
@@ -307,16 +308,21 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             _buildDetailRow(
               context,
               l10n.channelPath_lastHeardLabel,
-              [
-                lastHeardLabel,
-                if (lastHeardSignal != null && !lastHeardSignal.isEmpty)
-                  _formatSignal(
-                    lastHeardSignal.snrDb,
-                    lastHeardSignal.rssiDbm,
-                    l10n,
-                  ),
-              ].nonNulls.join(' · '),
+              '',
               scheme: scheme,
+              valueWidget: Wrap(
+                spacing: 6,
+                runSpacing: 2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(lastHeardLabel),
+                  if (lastHeardSignal != null && !lastHeardSignal.isEmpty)
+                    SignalText(
+                      snrDb: lastHeardSignal.snrDb,
+                      rssiDbm: lastHeardSignal.rssiDbm,
+                    ),
+                ],
+              ),
             ),
           if (widget.message.region?.isNotEmpty ?? false)
             _buildDetailRow(
@@ -518,10 +524,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
         ),
         if (signal != null && !signal.isEmpty) ...[
           const SizedBox(height: 2),
-          Text(
-            _formatSignal(signal.snrDb, signal.rssiDbm, l10n) ?? '',
-            style: MeshTheme.mono(fontSize: 12, color: MeshPalette.blue),
-          ),
+          SignalText(snrDb: signal.snrDb, rssiDbm: signal.rssiDbm),
         ],
       ],
     );
@@ -775,13 +778,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
                     ),
                     if (signal != null && !signal.isEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(
-                        _formatSignal(signal.snrDb, signal.rssiDbm, l10n) ?? '',
-                        style: MeshTheme.mono(
-                          fontSize: 12,
-                          color: MeshPalette.blue,
-                        ),
-                      ),
+                      SignalText(snrDb: signal.snrDb, rssiDbm: signal.rssiDbm),
                     ],
                   ],
                 ),
@@ -841,6 +838,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
     String label,
     String value, {
     required ColorScheme scheme,
+    Widget? valueWidget,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -855,7 +853,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(value)),
+          Expanded(child: valueWidget ?? Text(value)),
         ],
       ),
     );
@@ -2426,15 +2424,6 @@ String _candidateSubtitle(
   if (position == null) return l10n.channelPath_noLocationData;
   return '${position.latitude.toStringAsFixed(4)}, '
       '${position.longitude.toStringAsFixed(4)}';
-}
-
-/// Signal our radio measured for one received copy, e.g. `-103dBm 7.2dB`.
-String? _formatSignal(double? snrDb, int? rssiDbm, AppLocalizations l10n) {
-  if (snrDb == null && rssiDbm == null) return null;
-  if (snrDb != null && rssiDbm != null) {
-    return l10n.chat_signalChip(rssiDbm, snrDb.toStringAsFixed(1));
-  }
-  return l10n.chat_snrChip(snrDb!.toStringAsFixed(1));
 }
 
 Uint8List _selectPrimaryPath(Uint8List pathBytes, List<Uint8List> variants) {

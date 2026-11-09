@@ -151,6 +151,10 @@ class AppSettingsService extends ChangeNotifier {
     await updateSettings(_settings.copyWith(showMessageSignal: value));
   }
 
+  Future<void> setShowMessageLastHop(bool value) async {
+    await updateSettings(_settings.copyWith(showMessageLastHop: value));
+  }
+
   Future<void> setShowPathByteMode(bool value) async {
     await updateSettings(_settings.copyWith(showPathByteMode: value));
   }

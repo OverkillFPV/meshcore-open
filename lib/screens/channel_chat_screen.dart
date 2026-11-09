@@ -61,6 +61,7 @@ import '../widgets/image_send_codec_binding.dart';
 import '../widgets/image_send_preview_sheet.dart';
 import '../widgets/message_status_icon.dart';
 import '../widgets/radio_stats_entry.dart';
+import '../widgets/signal_ui.dart';
 import '../widgets/sync_progress_overlay.dart';
 import '../widgets/translated_message_content.dart';
 import '../widgets/unread_divider.dart';
@@ -849,15 +850,22 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     final latencyLabel = settingsService.settings.showMessageLatency
         ? _formatLatency(message, context.l10n)
         : null;
-    final lastHopHex = displayPath.isEmpty
+    final lastHopHex =
+        displayPath.isEmpty || !settingsService.settings.showMessageLastHop
         ? null
         : PathHelper.formatHopHex(
             PathHelper.splitPathBytes(displayPath, displayPathHashWidth).last,
           );
-    final signalLabel =
-        (isOutgoing || !settingsService.settings.showMessageSignal)
+    final signalText =
+        (isOutgoing ||
+            !settingsService.settings.showMessageSignal ||
+            SignalText.isEmpty(message.snrDb, message.rssiDbm))
         ? null
-        : _formatSignal(message.snrDb, message.rssiDbm, context.l10n);
+        : SignalText(
+            snrDb: message.snrDb,
+            rssiDbm: message.rssiDbm,
+            fontSize: 12 * textScale,
+          );
 
     final colors = MessageBubbleColors.of(context, isOutgoing: isOutgoing);
     final textColor = colors.text;
@@ -1229,16 +1237,9 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                               ],
                               if (!isOutgoing &&
                                   (lastHopHex != null ||
-                                      signalLabel != null)) ...[
+                                      signalText != null)) ...[
                                 if (lastHopHex != null) metaChip(lastHopHex),
-                                if (signalLabel != null)
-                                  metaChip(
-                                    signalLabel,
-                                    color: MeshTheme.signalColor(
-                                      snrDb: message.snrDb,
-                                      rssiDbm: message.rssiDbm,
-                                    ),
-                                  ),
+                                ?signalText,
                               ],
                             ],
                           ),
@@ -3076,16 +3077,6 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     if (latency.isNegative) return null;
     if (latency.inMilliseconds > 9999) return l10n.chat_latencyUnsynced;
     return l10n.chat_latencyMilliseconds(latency.inMilliseconds);
-  }
-
-  /// Signal our radio measured for a received copy, e.g. `-103dBm 7.2dB`.
-  /// SNR-only when the firmware did not report RSSI.
-  String? _formatSignal(double? snrDb, int? rssiDbm, AppLocalizations l10n) {
-    if (snrDb == null && rssiDbm == null) return null;
-    if (snrDb != null && rssiDbm != null) {
-      return l10n.chat_signalChip(rssiDbm, snrDb.toStringAsFixed(1));
-    }
-    return l10n.chat_snrChip(snrDb!.toStringAsFixed(1));
   }
 
   Future<void> openRegionSelectDialog(Channel channel) async {

@@ -40,6 +40,23 @@ void main() {
     });
   });
 
+  group('rssiColor gradient', () {
+    test('anchors red at -140 dBm and green at -20 dBm', () {
+      expect(MeshTheme.rssiColor(-140), MeshPalette.alert);
+      expect(MeshTheme.rssiColor(-160), MeshPalette.alert);
+      expect(MeshTheme.rssiColor(-20), MeshPalette.signal);
+      expect(MeshTheme.rssiColor(-10), MeshPalette.signal);
+    });
+
+    test('midpoint is amber', () {
+      expect(MeshTheme.rssiColor(-80), MeshPalette.warn);
+    });
+
+    test('null keeps its fixed color', () {
+      expect(MeshTheme.rssiColor(null), MeshPalette.ink3);
+    });
+  });
+
   group('signalColor gradient', () {
     test('defaults to ink when no measurement is present', () {
       expect(MeshTheme.signalColor(), MeshPalette.ink3);

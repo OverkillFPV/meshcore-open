@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui' show Rect;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../services/backup_service.dart';
 import 'platform_info.dart';
@@ -17,21 +16,20 @@ const _typeGroup = XTypeGroup(
 
 enum BackupFileResult { saved, cancelled, failed }
 
-/// Saves the backup text to a file: a save dialog on desktop, a download on
-/// web, and the share sheet on phones (which have no save dialog).
+/// Saves the backup text to a file: a save dialog on desktop and phones, a
+/// download on web.
 Future<BackupFileResult> exportBackupFile(
   String text, {
   required String fileName,
-  Rect? sharePositionOrigin,
 }) async {
   final bytes = Uint8List.fromList(utf8.encode(text));
-  final file = XFile.fromData(
-    bytes,
-    name: fileName,
-    mimeType: 'application/json',
-  );
   try {
     if (PlatformInfo.isWeb) {
+      final file = XFile.fromData(
+        bytes,
+        name: fileName,
+        mimeType: 'application/json',
+      );
       await file.saveTo(fileName);
       return BackupFileResult.saved;
     }
@@ -41,19 +39,19 @@ Future<BackupFileResult> exportBackupFile(
         acceptedTypeGroups: const [_typeGroup],
       );
       if (location == null) return BackupFileResult.cancelled;
-      await file.saveTo(location.path);
+      await XFile.fromData(
+        bytes,
+        name: fileName,
+        mimeType: 'application/json',
+      ).saveTo(location.path);
       return BackupFileResult.saved;
     }
-    final result = await SharePlus.instance.share(
-      ShareParams(
-        files: [file],
-        fileNameOverrides: [fileName],
-        sharePositionOrigin: sharePositionOrigin,
-      ),
+    final saved = await FilePicker.saveFile(
+      fileName: fileName,
+      bytes: bytes,
+      mimeType: 'application/json',
     );
-    return result.status == ShareResultStatus.dismissed
-        ? BackupFileResult.cancelled
-        : BackupFileResult.saved;
+    return saved == null ? BackupFileResult.cancelled : BackupFileResult.saved;
   } catch (_) {
     return BackupFileResult.failed;
   }

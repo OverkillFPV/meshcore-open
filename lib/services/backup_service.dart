@@ -12,7 +12,15 @@ class BackupCategory {
   /// prefix or starts with it.
   final List<String> prefixes;
 
-  const BackupCategory({required this.id, required this.prefixes});
+  /// True for the category holding the connected device's settings, which
+  /// lives on the radio itself instead of in SharedPreferences.
+  final bool isDevice;
+
+  const BackupCategory({
+    required this.id,
+    required this.prefixes,
+    this.isDevice = false,
+  });
 
   bool matches(String key) =>
       prefixes.any((p) => key == p || key.startsWith(p));
@@ -76,6 +84,7 @@ const List<BackupCategory> kBackupCategories = [
   ),
   BackupCategory(id: 'regions', prefixes: ['regions']),
   BackupCategory(id: 'mapMarkers', prefixes: ['map_removed_marker_ids']),
+  BackupCategory(id: 'deviceSettings', prefixes: [], isDevice: true),
 ];
 
 BackupCategory? backupCategoryById(String id) {
@@ -92,12 +101,22 @@ const String kBackupFileExtension = 'json';
 const int kBackupFormatVersion = 1;
 
 /// Serializes the selected categories' SharedPreferences entries into the
-/// backup file text.
-String encodeBackup(List<BackupCategory> selected) {
+/// backup file text. Device settings are read from the connected radio
+/// beforehand and passed in [deviceEntries] (see device_backup_service).
+String encodeBackup(
+  List<BackupCategory> selected, {
+  Map<String, String>? deviceEntries,
+}) {
   final prefs = PrefsManager.instance;
   final keys = prefs.getKeys();
   final categories = <String, Map<String, dynamic>>{};
   for (final category in selected) {
+    if (category.isDevice) {
+      if (deviceEntries != null && deviceEntries.isNotEmpty) {
+        categories[category.id] = Map<String, dynamic>.from(deviceEntries);
+      }
+      continue;
+    }
     final entries = <String, dynamic>{};
     for (final key in keys) {
       if (!category.matches(key)) continue;
@@ -147,12 +166,13 @@ BackupFile? decodeBackup(String text) {
     if (category == null || entries is! Map<String, dynamic>) continue;
     final filtered = <String, dynamic>{};
     entries.forEach((key, value) {
-      if (!category.matches(key)) return;
+      if (!category.isDevice && !category.matches(key)) return;
       if (value is String ||
-          value is bool ||
-          value is int ||
-          value is double ||
-          value is List<dynamic>) {
+          (!category.isDevice &&
+              (value is bool ||
+                  value is int ||
+                  value is double ||
+                  value is List<dynamic>))) {
         filtered[key] = value;
       }
     });
@@ -163,12 +183,14 @@ BackupFile? decodeBackup(String text) {
 }
 
 /// Applies the selected categories of [file] to SharedPreferences, replacing
-/// any existing entries those categories currently hold. Returns the number
+/// any existing entries those categories currently hold. Device settings are
+/// skipped; the screen restores them on the radio itself. Returns the number
 /// of keys written.
 Future<int> applyBackup(BackupFile file, List<BackupCategory> selected) async {
   final prefs = PrefsManager.instance;
   var written = 0;
   for (final category in selected) {
+    if (category.isDevice) continue;
     final entries = file.categories[category.id];
     if (entries == null) continue;
     // Replace semantics: drop what this category owns now, then restore.

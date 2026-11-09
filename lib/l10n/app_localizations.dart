@@ -2230,6 +2230,18 @@ abstract class AppLocalizations {
   /// **'Show the RSSI and SNR the message was received with, coloured by quality.'**
   String get appSettings_showMessageSignalSubtitle;
 
+  /// No description provided for @appSettings_showMessageLastHop.
+  ///
+  /// In en, this message translates to:
+  /// **'Last-hop prefix'**
+  String get appSettings_showMessageLastHop;
+
+  /// No description provided for @appSettings_showMessageLastHopSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the prefix of the last repeater that relayed a received message to you.'**
+  String get appSettings_showMessageLastHopSubtitle;
+
   /// No description provided for @appSettings_showPathByteMode.
   ///
   /// In en, this message translates to:
@@ -4245,6 +4257,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{rssi}dBm {snr}dB'**
   String chat_signalChip(int rssi, String snr);
+
+  /// No description provided for @chat_rssiChip.
+  ///
+  /// In en, this message translates to:
+  /// **'{rssi}dBm'**
+  String chat_rssiChip(int rssi);
 
   /// No description provided for @chat_snrChip.
   ///
@@ -8555,7 +8573,7 @@ abstract class AppLocalizations {
   /// No description provided for @channelPath_lastHeardLabel.
   ///
   /// In en, this message translates to:
-  /// **'Last heard'**
+  /// **'Last hop'**
   String get channelPath_lastHeardLabel;
 
   /// No description provided for @channelPath_copyPath.
@@ -9523,6 +9541,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get contacts_detailTelemetryNone;
+
+  /// No description provided for @contacts_detailAdvertHops.
+  ///
+  /// In en, this message translates to:
+  /// **'Advert hops'**
+  String get contacts_detailAdvertHops;
+
+  /// No description provided for @contacts_detailAdvertScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Advert scope'**
+  String get contacts_detailAdvertScope;
+
+  /// No description provided for @contacts_detailAdvertTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Advert time'**
+  String get contacts_detailAdvertTime;
+
+  /// No description provided for @contacts_detailLocalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Local time'**
+  String get contacts_detailLocalTime;
+
+  /// No description provided for @contacts_timeSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'synced'**
+  String get contacts_timeSynced;
+
+  /// No description provided for @contacts_timeUnsynced.
+  ///
+  /// In en, this message translates to:
+  /// **'unsynced'**
+  String get contacts_timeUnsynced;
+
+  /// No description provided for @contacts_advertHopsDirect.
+  ///
+  /// In en, this message translates to:
+  /// **'direct'**
+  String get contacts_advertHopsDirect;
+
+  /// No description provided for @contacts_advertHopsFlood.
+  ///
+  /// In en, this message translates to:
+  /// **'flood'**
+  String get contacts_advertHopsFlood;
 
   /// No description provided for @notification_activityTitle.
   ///
@@ -12804,6 +12870,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removed map marker IDs'**
   String get backup_categoryMapMarkersDesc;
+
+  /// No description provided for @backup_categoryDeviceSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Device settings'**
+  String get backup_categoryDeviceSettings;
+
+  /// No description provided for @backup_categoryDeviceSettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected companion\'s private key, radio, name and other on-device settings'**
+  String get backup_categoryDeviceSettingsDesc;
+
+  /// No description provided for @backup_deviceNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to your companion to include or restore device settings.'**
+  String get backup_deviceNotConnected;
+
+  /// No description provided for @backup_deviceUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'The connected device did not answer. Device settings need firmware 1.14 or newer.'**
+  String get backup_deviceUnreadable;
 
   /// Message filter: Nothing has been filtered.
   ///

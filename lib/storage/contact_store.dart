@@ -93,6 +93,8 @@ class ContactStore {
           ? base64Encode(contact.rawPacket!)
           : null,
       'telemetryFixAt': contact.telemetryFixAt?.millisecondsSinceEpoch,
+      'advertReceivedAt': contact.advertReceivedAt?.millisecondsSinceEpoch,
+      'advertScope': contact.advertScope,
     };
   }
 
@@ -162,6 +164,12 @@ class ContactStore {
       telemetryFixAt: telemetryFixMs == null
           ? null
           : DateTime.fromMillisecondsSinceEpoch(telemetryFixMs),
+      advertReceivedAt: (json['advertReceivedAt'] as num?) == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(
+              (json['advertReceivedAt'] as num).toInt(),
+            ),
+      advertScope: json['advertScope'] as String?,
     );
   }
 }

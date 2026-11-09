@@ -1922,6 +1922,26 @@ class _ContactsScreenState extends State<ContactsScreen>
                         label: l10n.map_lastSeen,
                         value: formatDate(contact.lastHeard),
                       ),
+                      NodeInfoRow(
+                        label: l10n.contacts_detailAdvertHops,
+                        value: contact.advertHopsLabel(l10n),
+                      ),
+                      NodeInfoRow(
+                        label: l10n.contacts_detailAdvertScope,
+                        value: contact.advertScopeLabel(l10n),
+                      ),
+                      if (contact.advertReceivedAt != null) ...[
+                        NodeInfoRow(
+                          label: l10n.contacts_detailAdvertTime,
+                          value: formatDate(contact.lastSeen),
+                        ),
+                        NodeInfoRow(
+                          label: l10n.contacts_detailLocalTime,
+                          value:
+                              '${formatDate(contact.advertReceivedAt!)} · '
+                              '${contact.advertTimeSyncLabel(l10n)}',
+                        ),
+                      ],
                       if (contact.type == advTypeChat)
                         NodeInfoRow(
                           label: l10n.contacts_detailLastMessage,
@@ -2198,6 +2218,17 @@ class _ContactTile extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 2),
+                  // Advert hops + scope
+                  Text(
+                    contact.advertMetaLabel(context.l10n),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

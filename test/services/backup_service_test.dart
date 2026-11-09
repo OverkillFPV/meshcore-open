@@ -93,4 +93,36 @@ void main() {
     expect(prefs.getString('channel_messages_abc'), isNull);
     expect(prefs.getString('channel_messages_xyz'), 'kept');
   });
+
+  test(
+    'device settings round-trip without touching SharedPreferences',
+    () async {
+      SharedPreferences.setMockInitialValues({'contacts': 'prefs'});
+      await PrefsManager.initialize();
+
+      final text = encodeBackup(
+        [byId('contacts'), byId('deviceSettings')],
+        deviceEntries: {
+          'public.key': 'ab' * 32,
+          'prv.key': 'cd' * 64,
+          'name': 'Companion',
+        },
+      );
+      final file = decodeBackup(text);
+      expect(file, isNotNull);
+      expect(file!.categories['deviceSettings']!['prv.key'], 'cd' * 64);
+
+      final written = await applyBackup(file, [byId('deviceSettings')]);
+      expect(written, 0);
+      expect(PrefsManager.instance.getString('contacts'), 'prefs');
+    },
+  );
+
+  test('device settings entries must be strings', () async {
+    final file = decodeBackup(
+      '{"format":"meshcore-open-backup","version":1,"categories":'
+      '{"deviceSettings":{"name":"N","tx":22}}}',
+    );
+    expect(file!.categories['deviceSettings'], {'name': 'N'});
+  });
 }

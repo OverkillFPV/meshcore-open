@@ -730,6 +730,7 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
       MapEntry(0x08, l10n.repeater_flagRadioWatchdog),
     ];
     final raw = '0x${flags.toRadixString(16).toUpperCase().padLeft(4, '0')}';
+    final active = entries.where((entry) => flags & entry.key != 0).toList();
     return MeshCard(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       padding: const EdgeInsets.all(12),
@@ -763,36 +764,25 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
               ),
             ],
           ),
-          const Divider(height: 14),
-          for (final entry in entries)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Row(
-                children: [
-                  Icon(
-                    flags & entry.key != 0
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
-                    size: 15,
-                    color: flags & entry.key != 0
-                        ? MeshPalette.warn
-                        : scheme.outlineVariant,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      entry.value,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: flags & entry.key != 0
-                            ? scheme.onSurface
-                            : scheme.onSurfaceVariant,
+          if (active.isNotEmpty) ...[
+            const Divider(height: 14),
+            for (final entry in active)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, size: 15, color: MeshPalette.warn),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        entry.value,
+                        style: TextStyle(fontSize: 13, color: scheme.onSurface),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+          ],
         ],
       ),
     );

@@ -127,6 +127,7 @@ class AppSettings {
   final bool regionOnHopsLine;
   final bool showMessageLatency;
   final bool showMessageSignal;
+  final bool showMessageLastHop;
   final bool showPathByteMode;
   final Map<String, double>? mapCacheBounds;
   final int mapCacheMinZoom;
@@ -285,6 +286,7 @@ class AppSettings {
     this.regionOnHopsLine = false,
     this.showMessageLatency = true,
     this.showMessageSignal = true,
+    this.showMessageLastHop = true,
     this.showPathByteMode = true,
     this.mapCacheBounds,
     this.mapCacheMinZoom = 10,
@@ -386,6 +388,7 @@ class AppSettings {
       'region_on_hops_line': regionOnHopsLine,
       'show_message_latency': showMessageLatency,
       'show_message_signal': showMessageSignal,
+      'show_message_last_hop': showMessageLastHop,
       'show_path_byte_mode': showPathByteMode,
       'map_cache_bounds': mapCacheBounds,
       'map_cache_min_zoom': mapCacheMinZoom,
@@ -527,6 +530,7 @@ class AppSettings {
       regionOnHopsLine: json['region_on_hops_line'] as bool? ?? false,
       showMessageLatency: json['show_message_latency'] as bool? ?? true,
       showMessageSignal: json['show_message_signal'] as bool? ?? true,
+      showMessageLastHop: json['show_message_last_hop'] as bool? ?? true,
       showPathByteMode: json['show_path_byte_mode'] as bool? ?? true,
       mapCacheBounds: (json['map_cache_bounds'] as Map?)?.map(
         (key, value) => MapEntry(key.toString(), (value as num).toDouble()),
@@ -704,6 +708,7 @@ class AppSettings {
     bool? regionOnHopsLine,
     bool? showMessageLatency,
     bool? showMessageSignal,
+    bool? showMessageLastHop,
     bool? showPathByteMode,
     Object? mapCacheBounds = _unset,
     int? mapCacheMinZoom,
@@ -791,6 +796,7 @@ class AppSettings {
       regionOnHopsLine: regionOnHopsLine ?? this.regionOnHopsLine,
       showMessageLatency: showMessageLatency ?? this.showMessageLatency,
       showMessageSignal: showMessageSignal ?? this.showMessageSignal,
+      showMessageLastHop: showMessageLastHop ?? this.showMessageLastHop,
       showPathByteMode: showPathByteMode ?? this.showPathByteMode,
       mapCacheBounds: mapCacheBounds == _unset
           ? this.mapCacheBounds
