@@ -1,13 +1,13 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+  release:
+    types:
+      - published
 
 jobs:
   android:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +32,7 @@ jobs:
       - run: flutter build apk --release --no-pub
 
   ios:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +44,7 @@ jobs:
       - run: flutter build ios --release --no-codesign --no-pub
 
   linux:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -100,6 +102,7 @@ jobs:
           if-no-files-found: warn
 
   linux-arm64:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -178,6 +181,7 @@ jobs:
           if-no-files-found: warn
 
   macos:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -189,6 +193,7 @@ jobs:
       - run: flutter build macos --release --no-pub
 
   web:
+    if: github.event.release.target_commitish == 'dev'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
