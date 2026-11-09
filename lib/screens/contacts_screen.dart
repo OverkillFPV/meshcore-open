@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:meshcore_open/screens/path_trace_map.dart';
+import 'package:meshcore_open/screens/manual_path_trace_screen.dart';
 import 'package:meshcore_open/services/notification_service.dart';
 import 'package:meshcore_open/utils/app_logger.dart';
 import 'package:meshcore_open/utils/platform_info.dart';
@@ -486,6 +487,16 @@ class _ContactsScreenState extends State<ContactsScreen>
                   ),
                   onTap: () => _contactExport(Uint8List.fromList([])),
                 ),
+                PopupMenuItem(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.radar),
+                      const SizedBox(width: 8),
+                      Text(context.l10n.manualTrace_menuItem),
+                    ],
+                  ),
+                  onTap: () => ManualPathTraceScreen.open(context),
+                ),
                 const PopupMenuDivider(),
                 PopupMenuItem(
                   child: Row(
@@ -797,7 +808,7 @@ class _ContactsScreenState extends State<ContactsScreen>
         ),
       ],
       child: SizedBox(
-        height: 48,
+        height: _controlHeight(context),
         child: DecoratedBox(
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline),
@@ -821,6 +832,13 @@ class _ContactsScreenState extends State<ContactsScreen>
         ),
       ),
     );
+  }
+
+  /// Height of the group/search controls; grows with the system font size so
+  /// larger text is not clipped.
+  double _controlHeight(BuildContext context) {
+    final textHeight = MediaQuery.textScalerOf(context).scale(16) * 1.5;
+    return (textHeight + 20).clamp(48.0, 120.0);
   }
 
   Widget _buildContactsBody(BuildContext context, MeshCoreConnector connector) {
@@ -1013,7 +1031,7 @@ class _ContactsScreenState extends State<ContactsScreen>
                 width: viewState.contactsSearchExpanded
                     ? searchExpandedWidth
                     : searchCollapsedWidth,
-                height: 48,
+                height: _controlHeight(context),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -1331,6 +1349,7 @@ class _ContactsScreenState extends State<ContactsScreen>
   }
 
   void _handleQuickSwitch(int index, BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (index == 0) return;
     switch (index) {
       case 1:

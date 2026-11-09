@@ -1051,7 +1051,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get appSettings_languageNl => 'オランダ語';
 
   @override
-  String get appSettings_languageSk => 'スロベニア語';
+  String get appSettings_languageSk => 'スロバキア語';
 
   @override
   String get appSettings_languageBg => 'ブルガリア語';
@@ -1061,6 +1061,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get appSettings_languageUk => 'ウクライナ語';
+
+  @override
+  String get appSettings_languageCs => 'チェコ語';
 
   @override
   String get repeater_pathHashModeOption0 => '0 - 1バイト';
@@ -2029,6 +2032,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_noMessages => 'まだメッセージは届いていません';
 
   @override
+  String get chatSearch_tooltip => 'メッセージを検索';
+
+  @override
+  String get chatSearch_hint => 'メッセージを検索';
+
+  @override
+  String get chatSearch_close => '検索を閉じる';
+
+  @override
+  String chatSearch_resultCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の結果',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatSearch_noResults => '一致するメッセージはありません';
+
+  @override
+  String get chatSearch_noResultsHint => '別の単語を試すか、スペルを確認してください';
+
+  @override
   String get chat_sendMessage => 'メッセージを送信する';
 
   @override
@@ -2519,6 +2547,49 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_poiShared => '共有された POI';
 
   @override
+  String get contactShare_headerOutgoing => '連絡先を共有しました';
+
+  @override
+  String get contactShare_headerIncoming => '連絡先を共有';
+
+  @override
+  String get contactShare_add => '連絡先を追加';
+
+  @override
+  String get contactShare_adding => '連絡先を追加中...';
+
+  @override
+  String get contactShare_saved => '登録済み';
+
+  @override
+  String get contactShare_isYou => 'これはあなたです';
+
+  @override
+  String get contactShare_shareAction => '連絡先を共有';
+
+  @override
+  String get contactShare_pickerTitle => '連絡先を共有';
+
+  @override
+  String get contactShare_myContact => '自分の連絡先';
+
+  @override
+  String get contactShare_searchHint => '連絡先を検索';
+
+  @override
+  String get contactShare_noContacts => '連絡先が見つかりません';
+
+  @override
+  String contactShare_preview(String name) {
+    return '共有された連絡先: $name';
+  }
+
+  @override
+  String contactShare_notification(String name) {
+    return '連絡先を共有: $name';
+  }
+
+  @override
   String chat_unread(int count) {
     return '未読: $count';
   }
@@ -2847,6 +2918,57 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get map_pathTraceViewLast => '前回の結果を表示';
+
+  @override
+  String get manualTrace_menuItem => 'ハッシュで経路追跡';
+
+  @override
+  String get manualTrace_inputLabel => 'リピーターのハッシュ';
+
+  @override
+  String manualTrace_helper(String example) {
+    return '例: $example。カンマまたはスペースで区切ってください。';
+  }
+
+  @override
+  String manualTrace_previewTitle(int count) {
+    return 'ホップ ($count)';
+  }
+
+  @override
+  String get manualTrace_unknownNode => '不明なノード';
+
+  @override
+  String get manualTrace_enterHashes => 'ハッシュを入力';
+
+  @override
+  String get manualTrace_run => '経路トレースを実行';
+
+  @override
+  String get manualTrace_notConnected => 'トレースを実行するには無線機に接続してください';
+
+  @override
+  String get manualTrace_errorInvalidHex => '16進数の文字(0-9、A-F)のみ使用できます';
+
+  @override
+  String get manualTrace_errorOddLength =>
+      '各ハッシュはホップのサイズに合わせて、16進数の文字数が偶数である必要があります';
+
+  @override
+  String get manualTrace_errorMixedWidths => 'すべてのハッシュは同じ長さにしてください';
+
+  @override
+  String get manualTrace_errorUnsupportedWidth =>
+      'ハッシュは1、2、3バイト(16進数で2、4、6文字)にしてください';
+
+  @override
+  String manualTrace_errorTooManyHops(int max) {
+    return '経路が長すぎます(最大 $max バイト)';
+  }
+
+  @override
+  String get manualTrace_errorTraceTooLong =>
+      '1回のリクエストでトレースできるホップ数を超えています。ホップを減らすか、「入力どおり」を選んでください。';
 
   @override
   String get mapCache_title => 'オフライン用地図キャッシュ';
@@ -3282,6 +3404,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String repeater_hoursMinsSecs(int hours, int minutes, int seconds) {
+    return '$hours時間 $minutes分 $seconds秒';
+  }
+
+  @override
   String repeater_packetTxTotal(int total, String flood, String direct) {
     return '合計: $total, フラッド: $flood, 直接: $direct';
   }
@@ -3293,7 +3420,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String repeater_duplicatesFloodDirect(String flood, String direct) {
-    return '$flood: $flood, 直接: $direct';
+    return 'フラッド: $flood, 直接: $direct';
   }
 
   @override
@@ -7185,6 +7312,14 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get messageFilter_duplicatesSubtitle =>
       '同じメッセージが再送されたり、複数の送信者から届いたりしたもの';
+
+  @override
+  String get messageFilter_repeatSends => '繰り返しと見なす送信回数';
+
+  @override
+  String messageFilter_repeatSendsSubtitle(int count) {
+    return '同じ送信者が10分以内に同じメッセージを$count回送信したら非表示にします';
+  }
 
   @override
   String get messageFilter_repeatedCharacters => '繰り返しの文字';

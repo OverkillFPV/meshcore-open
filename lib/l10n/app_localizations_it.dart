@@ -1105,7 +1105,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get appSettings_languageNl => 'Olandese';
 
   @override
-  String get appSettings_languageSk => 'Sloveno';
+  String get appSettings_languageSk => 'Slovacco';
 
   @override
   String get appSettings_languageBg => 'Bulgaro';
@@ -1115,6 +1115,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get appSettings_languageUk => 'Ucraino';
+
+  @override
+  String get appSettings_languageCs => 'Ceco';
 
   @override
   String get repeater_pathHashModeOption0 => '0 - 1 byte';
@@ -2134,6 +2137,33 @@ class AppLocalizationsIt extends AppLocalizations {
   String get chat_noMessages => 'Nessun messaggio ancora';
 
   @override
+  String get chatSearch_tooltip => 'Cerca messaggi';
+
+  @override
+  String get chatSearch_hint => 'Cerca messaggi';
+
+  @override
+  String get chatSearch_close => 'Chiudi ricerca';
+
+  @override
+  String chatSearch_resultCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count risultati',
+      one: '1 risultato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatSearch_noResults => 'Nessun messaggio corrispondente';
+
+  @override
+  String get chatSearch_noResultsHint =>
+      'Prova con un\'altra parola o controlla l\'ortografia';
+
+  @override
   String get chat_sendMessage => 'Invia messaggio';
 
   @override
@@ -2637,6 +2667,49 @@ class AppLocalizationsIt extends AppLocalizations {
   String get chat_poiShared => 'POI condiviso';
 
   @override
+  String get contactShare_headerOutgoing => 'Hai condiviso un contatto';
+
+  @override
+  String get contactShare_headerIncoming => 'Ha condiviso un contatto';
+
+  @override
+  String get contactShare_add => 'Aggiungi contatto';
+
+  @override
+  String get contactShare_adding => 'Aggiunta del contatto...';
+
+  @override
+  String get contactShare_saved => 'Salvato';
+
+  @override
+  String get contactShare_isYou => 'Sei tu';
+
+  @override
+  String get contactShare_shareAction => 'Condividi contatto';
+
+  @override
+  String get contactShare_pickerTitle => 'Condividi un contatto';
+
+  @override
+  String get contactShare_myContact => 'Il mio contatto';
+
+  @override
+  String get contactShare_searchHint => 'Cerca contatti';
+
+  @override
+  String get contactShare_noContacts => 'Nessun contatto trovato';
+
+  @override
+  String contactShare_preview(String name) {
+    return 'Contatto condiviso: $name';
+  }
+
+  @override
+  String contactShare_notification(String name) {
+    return 'Ha condiviso un contatto: $name';
+  }
+
+  @override
   String chat_unread(int count) {
     return 'Non letti: $count';
   }
@@ -2970,6 +3043,60 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get map_pathTraceViewLast => 'Vedi ultimo risultato';
+
+  @override
+  String get manualTrace_menuItem => 'Tracciamento del percorso per hash';
+
+  @override
+  String get manualTrace_inputLabel => 'Hash dei ripetitori';
+
+  @override
+  String manualTrace_helper(String example) {
+    return 'Esempio: $example. Separa con virgole o spazi.';
+  }
+
+  @override
+  String manualTrace_previewTitle(int count) {
+    return 'Salti ($count)';
+  }
+
+  @override
+  String get manualTrace_unknownNode => 'Nodo sconosciuto';
+
+  @override
+  String get manualTrace_enterHashes => 'Inserisci gli hash';
+
+  @override
+  String get manualTrace_run => 'Avvia tracciamento del percorso';
+
+  @override
+  String get manualTrace_notConnected =>
+      'Connettiti a una radio per eseguire una traccia';
+
+  @override
+  String get manualTrace_errorInvalidHex =>
+      'Sono ammessi solo caratteri esadecimali (0-9, A-F)';
+
+  @override
+  String get manualTrace_errorOddLength =>
+      'Ogni hash richiede un numero pari di caratteri esadecimali, corrispondente alla dimensione del salto';
+
+  @override
+  String get manualTrace_errorMixedWidths =>
+      'Tutti gli hash devono avere la stessa lunghezza';
+
+  @override
+  String get manualTrace_errorUnsupportedWidth =>
+      'Gli hash devono essere di 1, 2 o 3 byte (2, 4 o 6 caratteri esadecimali)';
+
+  @override
+  String manualTrace_errorTooManyHops(int max) {
+    return 'Il percorso è troppo lungo (massimo $max byte)';
+  }
+
+  @override
+  String get manualTrace_errorTraceTooLong =>
+      'Troppi salti da tracciare in una sola richiesta. Rimuovi alcuni salti o scegli «Come inserito».';
 
   @override
   String get mapCache_title => 'Cache mappa offline';
@@ -3414,6 +3541,11 @@ class AppLocalizationsIt extends AppLocalizations {
     int seconds,
   ) {
     return '$days giorni ${hours}h ${minutes}m ${seconds}s';
+  }
+
+  @override
+  String repeater_hoursMinsSecs(int hours, int minutes, int seconds) {
+    return '${hours}h ${minutes}m ${seconds}s';
   }
 
   @override
@@ -7519,6 +7651,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get messageFilter_duplicatesSubtitle =>
       'Lo stesso messaggio inviato di nuovo, o da più mittenti';
+
+  @override
+  String get messageFilter_repeatSends => 'Invii da considerare ripetizione';
+
+  @override
+  String messageFilter_repeatSendsSubtitle(int count) {
+    return 'Nascondi un messaggio quando lo stesso mittente lo invia $count volte entro 10 minuti';
+  }
 
   @override
   String get messageFilter_repeatedCharacters => 'Caratteri ripetuti';

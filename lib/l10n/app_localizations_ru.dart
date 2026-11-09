@@ -1112,7 +1112,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get appSettings_languageRu => 'Русский';
 
   @override
-  String get appSettings_languageUk => 'Українська';
+  String get appSettings_languageUk => 'Украинский';
+
+  @override
+  String get appSettings_languageCs => 'Чешский';
 
   @override
   String get repeater_pathHashModeOption0 => '0 - 1 байт';
@@ -2131,6 +2134,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_noMessages => 'Сообщений пока нет';
 
   @override
+  String get chatSearch_tooltip => 'Поиск сообщений';
+
+  @override
+  String get chatSearch_hint => 'Поиск сообщений';
+
+  @override
+  String get chatSearch_close => 'Закрыть поиск';
+
+  @override
+  String chatSearch_resultCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count результата',
+      many: '$count результатов',
+      few: '$count результата',
+      one: '$count результат',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatSearch_noResults => 'Подходящих сообщений нет';
+
+  @override
+  String get chatSearch_noResultsHint =>
+      'Попробуйте другое слово или проверьте написание';
+
+  @override
   String get chat_sendMessage => 'Отправить сообщение';
 
   @override
@@ -2636,6 +2668,49 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_poiShared => 'Точка интереса отправлена';
 
   @override
+  String get contactShare_headerOutgoing => 'Вы отправили контакт';
+
+  @override
+  String get contactShare_headerIncoming => 'Отправил(а) контакт';
+
+  @override
+  String get contactShare_add => 'Добавить контакт';
+
+  @override
+  String get contactShare_adding => 'Добавление контакта...';
+
+  @override
+  String get contactShare_saved => 'Сохранён';
+
+  @override
+  String get contactShare_isYou => 'Это вы';
+
+  @override
+  String get contactShare_shareAction => 'Отправить контакт';
+
+  @override
+  String get contactShare_pickerTitle => 'Отправить контакт';
+
+  @override
+  String get contactShare_myContact => 'Мой контакт';
+
+  @override
+  String get contactShare_searchHint => 'Поиск контактов';
+
+  @override
+  String get contactShare_noContacts => 'Контакты не найдены';
+
+  @override
+  String contactShare_preview(String name) {
+    return 'Контакт: $name';
+  }
+
+  @override
+  String contactShare_notification(String name) {
+    return 'Отправил(а) контакт: $name';
+  }
+
+  @override
   String chat_unread(int count) {
     return 'Непрочитанных: $count';
   }
@@ -2970,6 +3045,59 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get map_pathTraceViewLast => 'Показать последний результат';
+
+  @override
+  String get manualTrace_menuItem => 'Трассировка пути по хэшам';
+
+  @override
+  String get manualTrace_inputLabel => 'Хэши репитеров';
+
+  @override
+  String manualTrace_helper(String example) {
+    return 'Пример: $example. Разделяйте запятыми или пробелами.';
+  }
+
+  @override
+  String manualTrace_previewTitle(int count) {
+    return 'Хопы ($count)';
+  }
+
+  @override
+  String get manualTrace_unknownNode => 'Неизвестная нода';
+
+  @override
+  String get manualTrace_enterHashes => 'Введите хэши';
+
+  @override
+  String get manualTrace_run => 'Запустить трассировку пути';
+
+  @override
+  String get manualTrace_notConnected =>
+      'Подключитесь к радио, чтобы запустить трассировку';
+
+  @override
+  String get manualTrace_errorInvalidHex =>
+      'Допустимы только шестнадцатеричные символы (0-9, A-F)';
+
+  @override
+  String get manualTrace_errorOddLength =>
+      'Каждый хэш должен состоять из чётного числа шестнадцатеричных символов, соответствующего размеру хопа';
+
+  @override
+  String get manualTrace_errorMixedWidths => 'Все хэши должны быть одной длины';
+
+  @override
+  String get manualTrace_errorUnsupportedWidth =>
+      'Хэши должны быть длиной 1, 2 или 3 байта (2, 4 или 6 шестнадцатеричных символов)';
+
+  @override
+  String manualTrace_errorTooManyHops(int max) {
+    return 'Путь слишком длинный (максимум $max байт)';
+  }
+
+  @override
+  String get manualTrace_errorTraceTooLong =>
+      'Слишком много хопов для трассировки за один запрос. Удалите часть хопов или выберите «Как введено».';
 
   @override
   String get mapCache_title => 'Кэш офлайн-карты';
@@ -3413,6 +3541,11 @@ class AppLocalizationsRu extends AppLocalizations {
     int seconds,
   ) {
     return '$days дн. $hoursч $minutesм $secondsс';
+  }
+
+  @override
+  String repeater_hoursMinsSecs(int hours, int minutes, int seconds) {
+    return '$hoursч $minutesм $secondsс';
   }
 
   @override
@@ -7522,6 +7655,14 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get messageFilter_duplicatesSubtitle =>
       'Одно и то же сообщение, отправленное снова или несколькими отправителями';
+
+  @override
+  String get messageFilter_repeatSends => 'Отправка, считающаяся повтором';
+
+  @override
+  String messageFilter_repeatSendsSubtitle(int count) {
+    return 'Скрывать сообщение, если один отправитель отправляет его повторно в течение 10 минут (число отправок: $count)';
+  }
 
   @override
   String get messageFilter_repeatedCharacters => 'Повторяющиеся символы';

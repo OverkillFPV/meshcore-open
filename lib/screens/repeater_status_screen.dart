@@ -393,15 +393,24 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
     final hours = (seconds % 86400) ~/ 3600;
     final minutes = (seconds % 3600) ~/ 60;
     final secs = seconds % 60;
+    if (days == 0) return l10n.repeater_hoursMinsSecs(hours, minutes, secs);
     return l10n.repeater_daysHoursMinsSecs(days, hours, minutes, secs);
   }
+
+  /// Puts each "Label: n" part of a multi-part stat on its own line. Matches
+  /// the comma separators used across locales (ASCII, fullwidth, ideographic,
+  /// Arabic); the values themselves are unformatted integers.
+  static final _partSeparator = RegExp(r'\s*[,\uFF0C\u3001\u060C]\s*');
+  String _multiLine(String text) => text.split(_partSeparator).join('\n');
 
   String _packetTxText() {
     if (_packetsSent == null) return '—';
     final l10n = context.l10n;
     final flood = _formatValue(_floodTx);
     final direct = _formatValue(_directTx);
-    return l10n.repeater_packetTxTotal(_packetsSent!, flood, direct);
+    return _multiLine(
+      l10n.repeater_packetTxTotal(_packetsSent!, flood, direct),
+    );
   }
 
   String _packetRxText() {
@@ -409,7 +418,9 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
     final l10n = context.l10n;
     final flood = _formatValue(_floodRx);
     final direct = _formatValue(_directRx);
-    return l10n.repeater_packetRxTotal(_packetsRecv!, flood, direct);
+    return _multiLine(
+      l10n.repeater_packetRxTotal(_packetsRecv!, flood, direct),
+    );
   }
 
   String _chanUtilText() {
@@ -456,7 +467,7 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
     if (_dupFlood != null || _dupDirect != null) {
       final flood = _formatValue(_dupFlood);
       final direct = _formatValue(_dupDirect);
-      return l10n.repeater_duplicatesFloodDirect(flood, direct);
+      return _multiLine(l10n.repeater_duplicatesFloodDirect(flood, direct));
     }
     if (_packetsRecv == null || _floodRx == null || _directRx == null) {
       return '—';
@@ -852,7 +863,8 @@ class _RepeaterStatusScreenState extends State<RepeaterStatusScreen> {
     final textScaler = MediaQuery.textScalerOf(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth / textScaler.scale(1) < 320
+        // One full-width tile per row on phones; two columns on wide screens.
+        final columns = constraints.maxWidth / textScaler.scale(1) < 520
             ? 1
             : 2;
         // Rows size to their tallest tile, so labels that wrap at large

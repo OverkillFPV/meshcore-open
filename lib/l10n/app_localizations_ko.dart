@@ -1066,6 +1066,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appSettings_languageUk => '우크라이나어';
 
   @override
+  String get appSettings_languageCs => '체코어';
+
+  @override
   String get repeater_pathHashModeOption0 => '1 바이트';
 
   @override
@@ -2034,6 +2037,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chat_noMessages => '아직 메시지가 없습니다.';
 
   @override
+  String get chatSearch_tooltip => '메시지 검색';
+
+  @override
+  String get chatSearch_hint => '메시지 검색';
+
+  @override
+  String get chatSearch_close => '검색 닫기';
+
+  @override
+  String chatSearch_resultCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '결과 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chatSearch_noResults => '일치하는 메시지가 없습니다';
+
+  @override
+  String get chatSearch_noResultsHint => '다른 단어를 입력하거나 철자를 확인해 보세요';
+
+  @override
   String get chat_sendMessage => '메시지를 보내기';
 
   @override
@@ -2523,6 +2551,49 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chat_poiShared => '공유된 POI';
 
   @override
+  String get contactShare_headerOutgoing => '연락처를 공유했습니다';
+
+  @override
+  String get contactShare_headerIncoming => '연락처를 공유받음';
+
+  @override
+  String get contactShare_add => '연락처 추가';
+
+  @override
+  String get contactShare_adding => '연락처 추가 중...';
+
+  @override
+  String get contactShare_saved => '저장됨';
+
+  @override
+  String get contactShare_isYou => '본인입니다';
+
+  @override
+  String get contactShare_shareAction => '연락처 공유';
+
+  @override
+  String get contactShare_pickerTitle => '연락처 공유';
+
+  @override
+  String get contactShare_myContact => '내 연락처';
+
+  @override
+  String get contactShare_searchHint => '연락처 검색';
+
+  @override
+  String get contactShare_noContacts => '연락처를 찾을 수 없습니다';
+
+  @override
+  String contactShare_preview(String name) {
+    return '공유된 연락처: $name';
+  }
+
+  @override
+  String contactShare_notification(String name) {
+    return '연락처를 공유받음: $name';
+  }
+
+  @override
   String chat_unread(int count) {
     return '읽지 않음: $count';
   }
@@ -2851,6 +2922,56 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get map_pathTraceViewLast => '마지막 결과 보기';
+
+  @override
+  String get manualTrace_menuItem => '해시로 경로 추적';
+
+  @override
+  String get manualTrace_inputLabel => '리피터 해시';
+
+  @override
+  String manualTrace_helper(String example) {
+    return '예: $example. 쉼표 또는 공백으로 구분하세요.';
+  }
+
+  @override
+  String manualTrace_previewTitle(int count) {
+    return '홉 ($count)';
+  }
+
+  @override
+  String get manualTrace_unknownNode => '알 수 없는 노드';
+
+  @override
+  String get manualTrace_enterHashes => '해시 입력';
+
+  @override
+  String get manualTrace_run => '경로 추적 실행';
+
+  @override
+  String get manualTrace_notConnected => '추적을 실행하려면 무선 장치에 연결하세요';
+
+  @override
+  String get manualTrace_errorInvalidHex => '16진수 문자(0-9, A-F)만 사용할 수 있습니다';
+
+  @override
+  String get manualTrace_errorOddLength => '각 해시는 홉 크기에 맞게 16진수 문자 수가 짝수여야 합니다';
+
+  @override
+  String get manualTrace_errorMixedWidths => '모든 해시의 길이가 같아야 합니다';
+
+  @override
+  String get manualTrace_errorUnsupportedWidth =>
+      '해시는 1, 2 또는 3바이트(16진수 2, 4 또는 6자)여야 합니다';
+
+  @override
+  String manualTrace_errorTooManyHops(int max) {
+    return '경로가 너무 깁니다(최대 $max바이트)';
+  }
+
+  @override
+  String get manualTrace_errorTraceTooLong =>
+      '한 번의 요청으로 추적하기에는 홉이 너무 많습니다. 홉을 줄이거나 “입력한 대로”를 선택하세요.';
 
   @override
   String get mapCache_title => '오프라인 지도 캐시';
@@ -3283,6 +3404,11 @@ class AppLocalizationsKo extends AppLocalizations {
     int seconds,
   ) {
     return '$days일 $hours시간 $minutes분 $seconds초';
+  }
+
+  @override
+  String repeater_hoursMinsSecs(int hours, int minutes, int seconds) {
+    return '$hours시간 $minutes분 $seconds초';
   }
 
   @override
@@ -5676,7 +5802,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '리피터 설정을 열 때 모든 설정을 요청합니다. 각 설정은 LoRa를 통한 별도의 요청이므로 느리고 전송 시간(airtime)을 사용합니다. 꺼져 있으면 \'모두 새로고침\'을 누르거나 개별 섹션을 새로고침하세요.';
 
   @override
-  String get appSettings_languageHu => '헝가리';
+  String get appSettings_languageHu => '헝가리어';
 
   @override
   String get appSettings_languageJa => '일본어';
@@ -7194,6 +7320,14 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get messageFilter_duplicatesSubtitle =>
       '같은 메시지를 다시 보냈거나 여러 발신자가 보낸 경우';
+
+  @override
+  String get messageFilter_repeatSends => '반복으로 간주할 전송 횟수';
+
+  @override
+  String messageFilter_repeatSendsSubtitle(int count) {
+    return '같은 발신자가 10분 안에 같은 메시지를 $count번 보내면 숨깁니다';
+  }
 
   @override
   String get messageFilter_repeatedCharacters => '반복된 문자';
