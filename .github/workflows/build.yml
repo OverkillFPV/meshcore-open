@@ -5,6 +5,9 @@ on:
     types:
       - published
 
+permissions:
+  contents: write
+
 jobs:
   android:
     if: github.event.release.target_commitish == 'dev'
@@ -30,6 +33,13 @@ jobs:
             ${{ runner.os }}-gradle-
       - run: flutter pub get
       - run: flutter build apk --release --no-pub
+      - name: Upload APK to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk "$RUNNER_TEMP/meshcore-open-$TAG.apk"
+          gh release upload "$TAG" "$RUNNER_TEMP/meshcore-open-$TAG.apk" --clobber
 
   ios:
     if: github.event.release.target_commitish == 'dev'
@@ -42,6 +52,14 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build ios --release --no-codesign --no-pub
+      - name: Upload unsigned iOS app to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd build/ios/iphoneos
+          zip -qr "$RUNNER_TEMP/meshcore-open-$TAG-ios-unsigned.zip" *.app
+          gh release upload "$TAG" "$RUNNER_TEMP/meshcore-open-$TAG-ios-unsigned.zip" --clobber
 
   linux:
     if: github.event.release.target_commitish == 'dev'
@@ -100,6 +118,12 @@ jobs:
             build/linux/x64/release/appimage-tools.json
             build/appimage-runtime/
           if-no-files-found: warn
+      - name: Upload AppImage to release
+        if: always() && hashFiles('build/linux/x64/release/meshcore-open-x86_64.AppImage') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release upload "$TAG" build/linux/x64/release/meshcore-open-x86_64.AppImage --clobber
 
   linux-arm64:
     if: github.event.release.target_commitish == 'dev'
@@ -179,6 +203,12 @@ jobs:
             build/appimage-runtime/
             build/linux-arm64-build.log
           if-no-files-found: warn
+      - name: Upload AppImage to release
+        if: always() && hashFiles('build/linux/arm64/release/meshcore-open-aarch64.AppImage') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release upload "$TAG" build/linux/arm64/release/meshcore-open-aarch64.AppImage --clobber
 
   macos:
     if: github.event.release.target_commitish == 'dev'
@@ -191,6 +221,14 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build macos --release --no-pub
+      - name: Upload macOS app to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -qry "$RUNNER_TEMP/meshcore-open-$TAG-macos.zip" meshcore_open*.app
+          gh release upload "$TAG" "$RUNNER_TEMP/meshcore-open-$TAG-macos.zip" --clobber
 
   web:
     if: github.event.release.target_commitish == 'dev'
@@ -203,3 +241,11 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build web --release --no-pub
+      - name: Upload web build to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd build/web
+          zip -qr "$RUNNER_TEMP/meshcore-open-$TAG-web.zip" .
+          gh release upload "$TAG" "$RUNNER_TEMP/meshcore-open-$TAG-web.zip" --clobber
