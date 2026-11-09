@@ -1373,9 +1373,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                                     ),
                                   ),
                               ],
-                              if (!isOutgoing &&
-                                  (lastHopHex != null ||
-                                      signalText != null)) ...[
+                              if (lastHopHex != null || signalText != null) ...[
                                 if (lastHopHex != null) metaChip(lastHopHex),
                                 ?signalText,
                               ],
