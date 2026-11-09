@@ -255,4 +255,45 @@ void main() {
     expect(merged.snrDb, 11.0);
     expect(merged.rssiDbm, -80);
   });
+
+  test('a sent message shows the strongest echo heard', () async {
+    await _connect();
+    final channel = _channelAt(2);
+    const text = 'Echo probe';
+    await _connector.sendChannelMessage(channel, text);
+
+    final outgoing = _connector.getChannelMessages(channel).last;
+    expect(outgoing.isOutgoing, isTrue);
+    expect(outgoing.snrDb, isNull);
+    final ts = outgoing.timestamp.millisecondsSinceEpoch ~/ 1000;
+    final self = _connector.selfName!;
+
+    _connector.handleFrameForTest(
+      ReviewFrames.channelMessage(
+        channelIndex: 2,
+        sender: self,
+        message: text,
+        timestampSecs: ts,
+        path: Uint8List.fromList([0xAB]),
+        snrQuarterDb: 16,
+      ),
+    );
+    await _waitFor(() => _find(2, text)!.repeatCount == 1);
+
+    _connector.handleFrameForTest(
+      ReviewFrames.channelMessage(
+        channelIndex: 2,
+        sender: self,
+        message: text,
+        timestampSecs: ts,
+        path: Uint8List.fromList([0xCD, 0xEF]),
+        snrQuarterDb: 52,
+      ),
+    );
+    await _waitFor(() => _find(2, text)!.repeatCount == 2);
+
+    final echoed = _find(2, text)!;
+    expect(echoed.isOutgoing, isTrue);
+    expect(echoed.snrDb, 13.0);
+  });
 }

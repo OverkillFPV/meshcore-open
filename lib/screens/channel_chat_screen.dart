@@ -984,8 +984,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
             PathHelper.splitPathBytes(displayPath, displayPathHashWidth).last,
           );
     final signalText =
-        (isOutgoing ||
-            !settingsService.settings.showMessageSignal ||
+        (!settingsService.settings.showMessageSignal ||
             SignalText.isEmpty(message.snrDb, message.rssiDbm))
         ? null
         : SignalText(

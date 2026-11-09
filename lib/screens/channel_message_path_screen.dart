@@ -75,9 +75,7 @@ class _ChannelMessagePathScreenState extends State<ChannelMessagePathScreen> {
           hashByteWidth,
           reverse: reverseOrientation,
         );
-        final lastHopSignal = widget.message.isOutgoing
-            ? null
-            : widget.message.signalFor(primaryPathTmp);
+        final lastHopSignal = widget.message.signalFor(primaryPathTmp);
         final selfPoint = plausibleSelfPoint(connector);
         final hops = _buildPathHops(
           primaryPath,
