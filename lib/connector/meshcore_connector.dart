@@ -9190,18 +9190,31 @@ class MeshCoreConnector extends ChangeNotifier {
         existing.pathVariants,
         processedMessage.pathVariants,
       );
-      final mergedPathSignals = <String, PathSignal>{
-        ...existing.pathSignals,
-        ...processedMessage.pathSignals,
-      };
+      final mergedPathSignals = <String, PathSignal>{};
+      for (final signals in [
+        existing.pathSignals,
+        processedMessage.pathSignals,
+      ]) {
+        for (final entry in signals.entries) {
+          final held = mergedPathSignals[entry.key];
+          if (held == null || entry.value.compareTo(held) > 0) {
+            mergedPathSignals[entry.key] = entry.value;
+          }
+        }
+      }
+      final directSignals = [
+        PathSignal(snrDb: existing.snrDb, rssiDbm: existing.rssiDbm),
+        PathSignal(
+          snrDb: processedMessage.snrDb,
+          rssiDbm: processedMessage.rssiDbm,
+        ),
+      ];
       final mergedSignal =
-          mergedPathSignals[ChannelMessage.pathKey(mergedPathBytes)] ??
-          (listEquals(mergedPathBytes, existing.pathBytes)
-              ? PathSignal(snrDb: existing.snrDb, rssiDbm: existing.rssiDbm)
-              : PathSignal(
-                  snrDb: processedMessage.snrDb,
-                  rssiDbm: processedMessage.rssiDbm,
-                ));
+          PathSignal.strongest({
+            ...mergedPathSignals.values,
+            ...directSignals,
+          }) ??
+          directSignals.first;
       final hashWidth =
           (existing.pathHashWidth ?? processedMessage.pathHashWidth ?? 1)
               .clamp(1, 3)

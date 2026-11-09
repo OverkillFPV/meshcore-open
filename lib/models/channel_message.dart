@@ -19,6 +19,27 @@ class PathSignal {
   const PathSignal({this.snrDb, this.rssiDbm});
 
   bool get isEmpty => snrDb == null && rssiDbm == null;
+
+  /// Compares signal strength: higher SNR wins, then higher RSSI. Missing
+  /// measurements rank below present ones.
+  int compareTo(PathSignal other) {
+    final snr = (snrDb ?? double.negativeInfinity).compareTo(
+      other.snrDb ?? double.negativeInfinity,
+    );
+    if (snr != 0) return snr;
+    return (rssiDbm?.toDouble() ?? double.negativeInfinity).compareTo(
+      other.rssiDbm?.toDouble() ?? double.negativeInfinity,
+    );
+  }
+
+  /// The strongest signal in [signals], or null when it is empty.
+  static PathSignal? strongest(Iterable<PathSignal> signals) {
+    PathSignal? best;
+    for (final signal in signals) {
+      if (best == null || signal.compareTo(best) > 0) best = signal;
+    }
+    return best;
+  }
 }
 
 class Repeat {
@@ -64,14 +85,16 @@ class ChannelMessage {
   final Uint8List pathBytes;
   final List<Uint8List> pathVariants;
 
-  /// SNR (dB) our radio measured for the copy carried by [pathBytes].
+  /// SNR (dB) our radio measured for the strongest copy heard. Until repeats
+  /// merge it is the copy carried by [pathBytes].
   final double? snrDb;
 
-  /// RSSI (dBm) our radio measured for the copy carried by [pathBytes].
+  /// RSSI (dBm) our radio measured for the strongest copy heard, from the
+  /// same copy as [snrDb].
   final int? rssiDbm;
 
   /// Signals keyed by base64 of each observed path's bytes, so every variant
-  /// can show the signal its own copy arrived with.
+  /// can show the strongest signal heard for that variant.
   final Map<String, PathSignal> pathSignals;
 
   final int? channelIndex;
